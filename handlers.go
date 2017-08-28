@@ -31,6 +31,9 @@ func report(d *magtek.Device) (e error) {
 			b, e := di.JSON(!*fReportAll)
 			if e == nil {r = string(b)}
 
+		case "leg":
+			r = fmt.Sprintf("%s,%s\n", di.HostName, di.DeviceSN)
+
 		default:
 			fmt.Fprintf(os.Stderr, "Invalid report format.\n")
 			fsReport.Usage()
@@ -43,6 +46,9 @@ func report(d *magtek.Device) (e error) {
 		switch {
 
 		case len(*fReportFile) > 0:
+			//TODO
+
+		case len(*fReportServer) > 0:
 			//TODO
 
 		case *fReportStdout:
@@ -76,10 +82,10 @@ func config(d *magtek.Device) (e error) {
 	case *fConfigCopy:
 		e = d.CopyFactorySN(7)
 
-	case len(*fConfigSet) > 0:
-		e = d.SetDeviceSN(*fConfigSet)
+	case len(*fConfigString) > 0:
+		e = d.SetDeviceSN(*fConfigString)
 
-	case len(*fConfigUrl) > 0:
+	case len(*fConfigServer) > 0:
 		e = d.SetDeviceSN("24F0000") //TODO: call server
 
 	default:

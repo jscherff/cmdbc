@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/jscherff/gocmdb/usbci/magtek"
-	"github.com/jscherff/gocmdb"
+	//"github.com/jscherff/gocmdb"
 	"github.com/google/gousb"
 	//"encoding/json"
-	"encoding/xml"
+	//"encoding/xml"
 	"flag"
 	"log"
 	"fmt"
@@ -16,12 +16,34 @@ func main() {
 
 // =========================== TESTS ===========================
 
-/*
+/* -------------------------------------------------------------
+
+		di1, _ := magtek.NewDeviceInfo(device)
+		b, _ := di1.JSON(false)
+
+		fmt.Println(string(b))
+
+		di2 := new(magtek.DeviceInfo)
+		_ = json.Unmarshal(b, di2)
+
+		fmt.Println(device)
+		fmt.Println(di2)
+
+		fmt.Println(di1.Matches(di2))
+
+		os.Exit(0)
+*/
+
+/* -------------------------------------------------------------
+
 	dj := "{\"HostName\":\"John-SurfacePro\",\"DeviceSN\":\"B164F78\",\"VendorID\":\"0801\",\"ProductID\":\"0001\",\"SoftwareID\":\"21042840G01\",\"VendorName\":\"Mag-Tek\",\"ProductName\":\"USB Swipe Reader\",\"ProductVer\":\"V05\",\"FactorySN\":\"B164F78022713AA\",\"DescriptSN\":\"B164F78\",\"BusNumber\":\"1\",\"BusAddress\":\"4\",\"USBSpec\":\"1.10\",\"USBClass\":\"per-interface\",\"USBSubclass\":\"per-interface\",\"USBProtocol\":\"0\",\"DeviceSpeed\":\"full\",\"DeviceVer\":\"1.00\",\"MaxPktSize\":\"8\",\"BufferSize\":\"60\"}"
 	di := new(magtek.DeviceInfo)
 	_ = json.Unmarshal([]byte(dj), di)
 	fmt.Println(di)
 */
+
+/* -------------------------------------------------------------
+
 	var e error
 
 	dx1 := []byte("<DeviceInfo><HostName>John-SurfacePro</HostName><DeviceSN>24FA12C</DeviceSN><VendorID>0801</VendorID><ProductID>0001</ProductID><SoftwareID>21042818B01</SoftwareID><ProductVer></ProductVer><FactorySN></FactorySN><VendorName>Mag-Tek</VendorName><ProductName>USB Swipe Reader</ProductName><DescriptSN>24FA12C</DescriptSN><BusNumber>1</BusNumber><BusAddress>8</BusAddress><USBSpec>1.10</USBSpec><USBClass>per-interface</USBClass><USBSubclass>per-interface</USBSubclass><USBProtocol>0</USBProtocol><DeviceSpeed>full</DeviceSpeed><DeviceVer>1.00</DeviceVer><MaxPktSize>8</MaxPktSize><BufferSize>24</BufferSize></DeviceInfo>")
@@ -57,6 +79,7 @@ func main() {
 	fmt.Println(ss)
 
 	os.Exit(0)
+*/
 // =========================== TESTS ===========================
 
 	if len(os.Args) < 2 {
@@ -111,25 +134,6 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error: %v", err); continue
 		}
-
-// =========================== TESTS ===========================
-/*
-		di1, _ := magtek.NewDeviceInfo(device)
-		b, _ := di1.JSON(false)
-
-		fmt.Println(string(b))
-
-		di2 := new(magtek.DeviceInfo)
-		_ = json.Unmarshal(b, di2)
-
-		fmt.Println(device)
-		fmt.Println(di2)
-
-		fmt.Println(di1.Matches(di2))
-
-		os.Exit(0)
-*/
-// =========================== TESTS ===========================
 
 		switch {
 

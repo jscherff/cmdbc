@@ -16,7 +16,8 @@ var (
 var (
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportAll = fsReport.Bool("all", false, "Include all report fields")
-	fReportFile = fsReport.String ("file", "", "Write report to `<file>`")
+	fReportFile = fsReport.String("file", "", "Write report to `<file>`")
+	fReportServer = fsReport.String("server", "", "Submit report to server `<url>`")
 	fReportStdout = fsReport.Bool("stdout", false, "Write output to stdout")
 	fReportFormat *string
 )
@@ -26,8 +27,8 @@ var (
 	fConfigCopy = fsConfig.Bool("copy", false, "Copy factory serial number")
 	fConfigErase = fsConfig.Bool("erase", false, "Erase current serial number")
 	fConfigForce = fsConfig.Bool("force", false, "Force serial number change")
-	fConfigSet = fsConfig.String("set", "", "Set serial number to `<string>`")
-	fConfigUrl = fsConfig.String("url", "", "Set serial number from `<url>`")
+	fConfigString = fsConfig.String("string", "", "Set serial number to string `<value>`")
+	fConfigServer = fsConfig.String("server", "", "Set serial number from server `<url>`")
 
 )
 
@@ -38,7 +39,13 @@ var (
 )
 
 func init() {
-	usage := "Report format `<format>`"
-	for k, v := range gocmdb.ReportFormats {usage += fmt.Sprintf("\n\t%q\t%s", k, v)}
-	fReportFormat = fsReport.String("format", "csv", usage)
+
+	gocmdb.ReportFormats = append(gocmdb.ReportFormats, []string{"leg", "Legacy report format"})
+
+	usage := "Where `<format>` is one of:"
+	for _, f := range gocmdb.ReportFormats {
+		usage += fmt.Sprintf("\n\t%q\t%s", f[gocmdb.NameIx], f[gocmdb.ValueIx])
+	}
+
+	fReportFormat = fsReport.String("format", "", usage)
 }
