@@ -2,42 +2,45 @@ package main
 
 import (
 	"github.com/jscherff/gocmdb/usbci/magtek"
+	//"bytes"
 	"fmt"
 	"os"
 )
 
 func report(d *magtek.Device) (e error) {
 
-	var r string
+	//var s string
+	var b []byte
+
 	di, errs := magtek.NewDeviceInfo(d)
 
 	if len(errs) > 0 {
-		e = fmt.Errorf("Errors encountered getting device information")
+		e = fmt.Errorf("Error(s) getting device information")
 	} else {
 
 		switch *fReportFormat {
 
 		case "csv":
-			r, e = di.CSV(!*fReportAll)
+			//r, e = di.CSV(!*fReportAll)
+			b, e = di.CSV(!*fReportAll)
 
 		case "nvp":
-			r, e = di.NVP(!*fReportAll)
+			//r, e = di.NVP(!*fReportAll)
+			b, e = di.NVP(!*fReportAll)
 
 		case "xml":
-			b, e := di.XML(!*fReportAll)
-			if e == nil {r = string(b)}
+			//if e == nil {r = string(b)}
+			b, e = di.XML(!*fReportAll)
 
 		case "json":
-			b, e := di.JSON(!*fReportAll)
-			if e == nil {r = string(b)}
+			//if e == nil {r = string(b)}
+			b, e = di.JSON(!*fReportAll)
 
 		case "leg":
-			r = fmt.Sprintf("%s,%s\n", di.HostName, di.DeviceSN)
+			b = []byte(fmt.Sprintf("%s,%s\n", di.HostName, di.SerialNum))
 
 		default:
-			fmt.Fprintf(os.Stderr, "Invalid report format.\n")
-			fsReport.Usage()
-			os.Exit(1)
+			e = fmt.Errorf("invalid report format %q", *fReportFormat)
 		}
 	}
 
@@ -52,12 +55,11 @@ func report(d *magtek.Device) (e error) {
 			//TODO
 
 		case *fReportStdout:
-			fmt.Fprintf(os.Stdout, r)
+			//fmt.Fprintf(os.Stdout, string(b))
+			fmt.Fprintf(os.Stdout, string(b))
 
 		default:
-			fmt.Fprintf(os.Stderr, "No report destination selected.\n")
-			fsReport.Usage()
-			os.Exit(1)
+			e = fmt.Errorf("no report destintion selected")
 		}
 
 	}
@@ -68,28 +70,30 @@ func report(d *magtek.Device) (e error) {
 func config(d *magtek.Device) (e error) {
 
 	s, e := d.GetDeviceSN()
-	if e != nil {return e}
 
-	switch {
+	if e == nil {
 
-	case *fConfigErase:
-		e = d.EraseDeviceSN()
-		fallthrough
+		switch {
 
-	case len(s) > 0 && !*fConfigForce:
-		fmt.Fprintf(os.Stderr, "Serial number already set. Exiting.\n")
+		case *fConfigErase:
+			e = d.EraseDeviceSN()
+			fallthrough
 
-	case *fConfigCopy:
-		e = d.CopyFactorySN(7)
+		case len(s) > 0 && !*fConfigForce:
+			e = fmt.Errorf("serial number already configured")
 
-	case len(*fConfigString) > 0:
-		e = d.SetDeviceSN(*fConfigString)
+		case *fConfigCopy:
+			e = d.CopyFactorySN(7)
 
-	case len(*fConfigServer) > 0:
-		e = d.SetDeviceSN("24F0000") //TODO: call server
+		case len(*fConfigString) > 0:
+			e = d.SetDeviceSN(*fConfigString)
 
-	default:
-		//TODO
+		case len(*fConfigServer) > 0:
+			e = d.SetDeviceSN("24F0000") //TODO: call server
+
+		default:
+			e = fmt.Errorf("nothing to do")
+		}
 	}
 
 	return e
@@ -108,4 +112,3 @@ func reset(d *magtek.Device) (e error) {
 
 	return e
 }
-

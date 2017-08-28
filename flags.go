@@ -16,7 +16,7 @@ var (
 var (
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportAll = fsReport.Bool("all", false, "Include all report fields")
-	fReportFile = fsReport.String("file", "", "Write report to `<file>`")
+	fReportFile = fsReport.String("file", "", "Write report to file `<file>`")
 	fReportServer = fsReport.String("server", "", "Submit report to server `<url>`")
 	fReportStdout = fsReport.Bool("stdout", false, "Write output to stdout")
 	fReportFormat *string

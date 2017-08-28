@@ -1,0 +1,7 @@
+{
+	"app_path": "C:\\Windows\\24HourFitness\\Utils",
+	"log_file": "gousbinv.log",
+	"out_file": "gousbinv.csv",
+	"legacy_log_file": "usb_log.txt",
+	"legacy_out_file": "usb_serial.txt"
+}

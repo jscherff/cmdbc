@@ -12,7 +12,17 @@ import (
 	"os"
 )
 
+var conf *Config
+
 func main() {
+
+	conf, err := GetConfig("config.json")
+
+	if err != nil {
+		log.Fatalf("Error reading config: %v", err)
+	}
+
+	fmt.Println(conf)
 
 // =========================== TESTS ===========================
 
@@ -70,11 +80,11 @@ func main() {
 	dc3, e := di3.CSV(false)
 	fmt.Println(string(dc3))
 
-	ss, e := gocmdb.StructCompare(*di1, *di2)
+	ss, e := gocmdb.CompareObjects(*di1, *di2)
 	if e != nil {fmt.Printf("ERROR: %v", e)}
 	fmt.Println(ss)
 
-	ss, e = gocmdb.StructCompare(*di2, *di3)
+	ss, e = gocmdb.CompareObjects(*di2, *di3)
 	if e != nil {fmt.Printf("ERROR: %v", e)}
 	fmt.Println(ss)
 
@@ -123,7 +133,7 @@ func main() {
 	})
 
 	if len(devices) == 0 {
-		log.Fatalf("No devices found")
+		log.Fatalf("Error: no devices found")
 	}
 
 	for _, device := range devices {
@@ -131,20 +141,34 @@ func main() {
 		defer device.Close()
 		device, err := magtek.NewDevice(device)
 
-		if err != nil {
-			log.Fatalf("Error: %v", err); continue
+		di, errs := magtek.NewDeviceInfo(device)
+		if len(errs) > 0 {log.Printf("Error")}
+		di.Save("test.json", true)
+
+		di2, err := magtek.GetDeviceInfo("test.json")
+		if err != nil {log.Printf("%v", err)}
+		b, err := di2.JSON(true)
+		fmt.Println(string(b))
+
+		os.Exit(0)
+
+		if err == nil {
+
+			switch {
+
+			case *fModeReport:
+				err = report(device)
+
+			case *fModeConfig:
+				err = config(device)
+
+			case *fModeReset:
+				err = reset(device)
+			}
 		}
 
-		switch {
-
-		case *fModeReport:
-			err = report(device)
-
-		case *fModeConfig:
-			err = config(device)
-
-		case *fModeReset:
-			err = reset(device)
+		if err != nil {
+			log.Printf("%v", err)
 		}
 	}
 }
