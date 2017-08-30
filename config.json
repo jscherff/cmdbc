@@ -1,19 +1,32 @@
 {
-	"app_path": "C:\\Windows\\24HourFitness\\Utils",
+	"app_dir": "C:\\Windows\\24HourFitness\\Utils",
+
+	"log_dir": "log",
+	"out_dir": "out",
+	"audit_dir": "audit",
+
 	"log_file": "gousbinv.log",
 	"out_file": "gousbinv.csv",
-	"state_file": "gousbinv.json",
+
+	"audit_url": "http://localhost:8080/audit",
+	"checkin_url": "http://localhost:8080/checkin",
+
 	"legacy_log_file": "usb_log.txt",
 	"legacy_out_file": "usb_serial.txt",
+
+
 	"include_pid": {
 		"0801": {
 			"0001": true
 		}
 	},
+
 	"include_vid": {
 		"0801": true,
 		"043d": false,
 		"045e": false
 	},
-	"include_default": true
+
+	"default_include": true,
+	"default_format": "csv"
 }

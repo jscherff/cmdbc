@@ -1,31 +1,32 @@
+// Copyright 2017 John Scherff
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
 	"github.com/jscherff/gocmdb/usbci/magtek"
-	"github.com/jscherff/gocmdb/usbci"
 	"github.com/google/gousb"
-	"errors"
 	"log"
 	"fmt"
 	"os"
 )
 
-var conf *Config
-
-func init() {
-
-	var err error
-
-	conf, err = GetConfig("config.json")
-
-	if err != nil {
-		log.Fatalf("error reading config: %v", err)
-	}
-}
-
 func main() {
 
-	var err error
+	var e error
+
+	// Process command-line actions and options.
 
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "You must specify an action.\n")
@@ -33,45 +34,58 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Parse action flag.
+
 	fsAction.Parse(os.Args[1:2])
+
+	// Parse option flags associated with selected action flag.
 
 	switch {
 
 	case *fActionReport:
 		if fsReport.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
+			fmt.Fprintf(os.Stderr, "You must specify an option.\n")
 			fsReport.Usage()
 			os.Exit(1)
 		}
 
-	case *fActionConfig:
-		if fsConfig.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
-			fsConfig.Usage()
+	case *fActionSerial:
+		if fsSerial.Parse(os.Args[2:]); fsSerial.NFlag() == 0 {
+			fmt.Fprintf(os.Stderr, "You must specify an option.\n")
+			fsSerial.Usage()
 			os.Exit(1)
 		}
 	}
 
+	// Instantiate context to enumerate attached USB devices.
+
 	context := gousb.NewContext()
 	defer context.Close()
 
-	// Open devices that report a Magtek vendor ID, 0x0801.
-	// We omit error checking on OpenDevices() because this
-	// function terminates with 'libusb: not found [code -5]'
-	// on Windows systems.
+	// Open devices that match selection criteria in the IncludePID
+	// and IncludeVID maps from the configuration file.
 
 	devices, _ := context.OpenDevices(func(desc *gousb.DeviceDesc) bool {
 
-		vid := desc.Vendor.String()
-		pid := desc.Product.String()
+		vid, pid := desc.Vendor.String(), desc.Product.String()
 
-		if val, ok := conf.IncludePID[vid][pid]; ok {return val}
-		if val, ok := conf.IncludeVID[vid]; ok {return val}
+		if val, ok := config.IncludePID[vid][pid]; ok {
+			return val
+		}
+		if val, ok := config.IncludeVID[vid]; ok {
+			return val
+		}
 
-		return conf.IncludeDefault
+		return config.IncludeDefault
 	})
+
+	// Log and exit if no relevant devices found.
 
 	if len(devices) == 0 {
 		log.Fatalf("no devices found")
 	}
+
+	// Pass devices to relevant device handlers.
 
 	for _, device := range devices {
 
@@ -80,60 +94,14 @@ func main() {
 		switch uint16(device.Desc.Vendor) {
 
 		case magtek.MagtekVendorID:
-
-			var mdev *magtek.Device
-			var info *magtek.DeviceInfo
-
-			mdev, err = magtek.NewDevice(device)
-
-			if err == nil {
-				info, err = magtek.NewDeviceInfo(mdev)
-			}
-
-			if err == nil {
-				switch {
-
-				case *fActionReport:
-					err = report(info)
-
-				case *fActionConfig:
-					err = config(mdev)
-
-				case *fActionReset:
-					err = reset(mdev)
-
-				default:
-					err = errors.New("action not supported")
-				}
-			}
+			e = handleMagtek(device)
 
 		default:
-
-			var gdev *usbci.Device
-			var info *usbci.DeviceInfo
-			gdev, err = usbci.NewDevice(device)
-
-			if err == nil {
-				info, err = usbci.NewDeviceInfo(gdev)
-			}
-
-			if err == nil {
-				switch {
-
-				case *fActionReport:
-					err = report(info)
-
-				case *fActionReset:
-					err = reset(gdev)
-
-				default:
-					err = errors.New("action not supported")
-				}
-			}
+			e = handleGeneric(device)
 		}
 
-		if err != nil {
-			log.Printf("%v", err)
+		if e != nil {
+			log.Printf("%v", e)
 		}
 	}
 }

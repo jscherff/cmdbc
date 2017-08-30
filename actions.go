@@ -1,3 +1,17 @@
+// Copyright 2017 John Scherff
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -44,7 +58,7 @@ func report(o gocmdb.Reportable) (e error) {
 			fmt.Fprintf(os.Stdout, string(b))
 
 		default:
-			e = fmt.Errorf("no report destintion selected")
+			e = fmt.Errorf("no report destintion")
 		}
 
 	}
@@ -52,7 +66,7 @@ func report(o gocmdb.Reportable) (e error) {
 	return e
 }
 
-func config(o gocmdb.Configurable) (e error) {
+func serial(o gocmdb.Configurable) (e error) {
 
 	if *fConfigErase {
 		e = o.EraseDeviceSN()
@@ -70,7 +84,7 @@ func config(o gocmdb.Configurable) (e error) {
 		case len(*fConfigString) > 0:
 			e = o.SetDeviceSN(*fConfigString)
 
-		case len(*fConfigServer) > 0:
+		case *fConfigServer:
 			e = o.SetDeviceSN("24F0000") //TODO: call server
 
 		case *fConfigCopy:
@@ -88,16 +102,23 @@ func reset(o gocmdb.Resettable) (error) {
 	return o.Reset()
 }
 
+func audit(o gocmdb.Reportable) (error) {
+	return nil
+}
+
+func checkin(o gocmdb.Reportable) (error) {
+	return nil
+}
+
 func writeFile(s string, b []byte) (e error) {
 
 	d, f := filepath.Split(s)
 
 	if len(d) == 0 {
-		d = conf.AppPath
+		d = config.AppDir
 	}
 
 	p := fmt.Sprintf("%s%c%s", d, filepath.Separator, f)
-	fmt.Println(p)
 
 	if e = os.MkdirAll(d, 0755); e == nil {
 		e = ioutil.WriteFile(p, b, 0644)
