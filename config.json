@@ -2,6 +2,18 @@
 	"app_path": "C:\\Windows\\24HourFitness\\Utils",
 	"log_file": "gousbinv.log",
 	"out_file": "gousbinv.csv",
+	"state_file": "gousbinv.json",
 	"legacy_log_file": "usb_log.txt",
-	"legacy_out_file": "usb_serial.txt"
+	"legacy_out_file": "usb_serial.txt",
+	"include_pid": {
+		"0801": {
+			"0001": true
+		}
+	},
+	"include_vid": {
+		"0801": true,
+		"043d": false,
+		"045e": false
+	},
+	"include_default": true
 }

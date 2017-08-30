@@ -8,12 +8,15 @@ import (
 )
 
 type Config struct {
-	AppPath		string	`json:"app_path"`
-	LogFile		string	`json:"log_file"`
-	OutFile		string	`json:"out_file"`
-	//stateFile	string	`json:"state_file"`
-	LegacyLogFile	string	`json:"legacy_log_file"`
-	LegacyOutFile	string	`json:"legacy_out_file"`
+	AppPath		string `json:"app_path"`
+	LogFile		string `json:"log_file"`
+	OutFile		string `json:"out_file"`
+	InvFile		string `json:"state_file"`
+	LegacyLogFile	string `json:"legacy_log_file"`
+	LegacyOutFile	string `json:"legacy_out_file"`
+	IncludeDefault	bool `json:"include_default"`
+	IncludeVID	map[string]bool `json:"include_vid"`
+	IncludePID	map[string]map[string]bool `json:"include_pid"`
 }
 
 func GetConfig(cf string) (*Config, error) {
@@ -26,19 +29,9 @@ func GetConfig(cf string) (*Config, error) {
 	defer fh.Close()
 
 	if e == nil {
-		d := json.NewDecoder(fh)
-		e = d.Decode(&c)
+		jd := json.NewDecoder(fh)
+		e = jd.Decode(&c)
 	}
-
-/*
-	j, e := ioutil.ReadFile(fn)
-	fmt.Println(j)
-	fmt.Println(string(j))
-
-	if e == nil {
-		e = json.Unmarshal(j, *c)
-	}
-*/
 
 	return c, e
 }

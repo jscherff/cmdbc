@@ -1,47 +1,36 @@
 package main
 
 import (
-	"github.com/jscherff/gocmdb/usbci/magtek"
-	//"bytes"
+	"github.com/jscherff/gocmdb"
+	"path/filepath"
+	"io/ioutil"
 	"fmt"
 	"os"
 )
 
-func report(d *magtek.Device) (e error) {
+func report(o gocmdb.Reportable) (e error) {
 
-	//var s string
 	var b []byte
 
-	di, errs := magtek.NewDeviceInfo(d)
+	switch *fReportFormat {
 
-	if len(errs) > 0 {
-		e = fmt.Errorf("Error(s) getting device information")
-	} else {
+	case "csv":
+		b, e = o.CSV()
 
-		switch *fReportFormat {
+	case "nvp":
+		b, e = o.NVP()
 
-		case "csv":
-			//r, e = di.CSV(!*fReportAll)
-			b, e = di.CSV(!*fReportAll)
+	case "xml":
+		b, e = o.XML()
 
-		case "nvp":
-			//r, e = di.NVP(!*fReportAll)
-			b, e = di.NVP(!*fReportAll)
+	case "json":
+		b, e = o.JSON()
 
-		case "xml":
-			//if e == nil {r = string(b)}
-			b, e = di.XML(!*fReportAll)
+	case "bare":
+		b = o.Bare()
 
-		case "json":
-			//if e == nil {r = string(b)}
-			b, e = di.JSON(!*fReportAll)
-
-		case "leg":
-			b = []byte(fmt.Sprintf("%s,%s\n", di.HostName, di.SerialNum))
-
-		default:
-			e = fmt.Errorf("invalid report format %q", *fReportFormat)
-		}
+	default:
+		e = fmt.Errorf("invalid report format %q", *fReportFormat)
 	}
 
 	if e == nil {
@@ -49,13 +38,9 @@ func report(d *magtek.Device) (e error) {
 		switch {
 
 		case len(*fReportFile) > 0:
-			//TODO
-
-		case len(*fReportServer) > 0:
-			//TODO
+			e = writeFile(*fReportFile, b)
 
 		case *fReportStdout:
-			//fmt.Fprintf(os.Stdout, string(b))
 			fmt.Fprintf(os.Stdout, string(b))
 
 		default:
@@ -67,29 +52,29 @@ func report(d *magtek.Device) (e error) {
 	return e
 }
 
-func config(d *magtek.Device) (e error) {
+func config(o gocmdb.Configurable) (e error) {
 
-	s, e := d.GetDeviceSN()
+	if *fConfigErase {
+		e = o.EraseDeviceSN()
+	}
+
+	s, e := o.DeviceSN()
 
 	if e == nil {
 
 		switch {
 
-		case *fConfigErase:
-			e = d.EraseDeviceSN()
-			fallthrough
-
 		case len(s) > 0 && !*fConfigForce:
 			e = fmt.Errorf("serial number already configured")
 
-		case *fConfigCopy:
-			e = d.CopyFactorySN(7)
-
 		case len(*fConfigString) > 0:
-			e = d.SetDeviceSN(*fConfigString)
+			e = o.SetDeviceSN(*fConfigString)
 
 		case len(*fConfigServer) > 0:
-			e = d.SetDeviceSN("24F0000") //TODO: call server
+			e = o.SetDeviceSN("24F0000") //TODO: call server
+
+		case *fConfigCopy:
+			e = o.CopyFactorySN(7)
 
 		default:
 			e = fmt.Errorf("nothing to do")
@@ -99,15 +84,23 @@ func config(d *magtek.Device) (e error) {
 	return e
 }
 
-func reset(d *magtek.Device) (e error) {
+func reset(o gocmdb.Resettable) (error) {
+	return o.Reset()
+}
 
-	switch {
+func writeFile(s string, b []byte) (e error) {
 
-	case *fResetUsb:
-		e = d.Reset()
+	d, f := filepath.Split(s)
 
-	case *fResetDev:
-		e = d.DeviceReset()
+	if len(d) == 0 {
+		d = conf.AppPath
+	}
+
+	p := fmt.Sprintf("%s%c%s", d, filepath.Separator, f)
+	fmt.Println(p)
+
+	if e = os.MkdirAll(d, 0755); e == nil {
+		e = ioutil.WriteFile(p, b, 0644)
 	}
 
 	return e
