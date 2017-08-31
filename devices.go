@@ -36,19 +36,19 @@ func handleMagtek(d *gousb.Device) (e error) {
 		switch {
 
 		case *fActionReport:
-			e = report(mdi)
+			e = reportAction(mdi)
 
 		case *fActionSerial:
-			e = serial(md)
+			e = serialAction(md, mdi)
 
 		case *fActionReset:
-			e = reset(md)
+			e = resetAction(md)
 
 		case *fActionAudit:
-			e = audit(mdi)
+			e = auditRequest(mdi)
 
 		case *fActionCheckin:
-			e = checkin(mdi)
+			e = checkinRequest(mdi)
 
 		default:
 			e = errors.New("action not supported")
@@ -73,16 +73,16 @@ func handleGeneric(d *gousb.Device) (e error) {
 		switch {
 
 		case *fActionReport:
-			e = report(gdi)
+			e = reportAction(gdi)
 
 		case *fActionReset:
-			e = reset(gd)
+			e = resetAction(gd)
 
 		case *fActionAudit:
-			e = audit(gdi)
+			e = auditRequest(gdi)
 
 		case *fActionCheckin:
-			e = checkin(gdi)
+			e = checkinRequest(gdi)
 
 		default:
 			e = errors.New("action not supported")

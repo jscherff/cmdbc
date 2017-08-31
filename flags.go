@@ -32,19 +32,19 @@ var (
 	fActionSerial = fsAction.Bool("serial", false, "Serial number config")
 	fActionReset = fsAction.Bool("reset", false, "Reset device")
 	fActionAudit = fsAction.Bool("audit", false, "Audit device")
-	fActionCheckin = fsAction.Bool("checkin", false, "Checkin to server")
+	fActionCheckin = fsAction.Bool("checkin", false, "Check in with server")
 
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFile = fsReport.String("file", "", "Write report to `<file>`")
-	fReportStdout = fsReport.Bool("stdout", true, "Write output to stdout")
+	fReportStdout = fsReport.Bool("stdout", false, "Write output to stdout")
 	fReportFormat *string
 
 	fsSerial = flag.NewFlagSet("serial", flag.ExitOnError)
-	fConfigCopy = fsSerial.Bool("copy", false, "Copy factory serial number")
-	fConfigErase = fsSerial.Bool("erase", false, "Erase current serial number")
-	fConfigForce = fsSerial.Bool("force", false, "Force serial number change")
-	fConfigServer = fsSerial.Bool("server", false, "Set serial number from server")
-	fConfigString = fsSerial.String("string", "", "Set serial number to `<value>`")
+	fSerialCopy = fsSerial.Bool("copy", false, "Copy factory serial number")
+	fSerialErase = fsSerial.Bool("erase", false, "Erase current serial number")
+	fSerialForce = fsSerial.Bool("force", false, "Force serial number change")
+	fSerialServer = fsSerial.Bool("server", false, "Set serial number from server")
+	fSerialConfig = fsSerial.String("config", "", "Set serial number to `<string>`")
 )
 
 func init() {

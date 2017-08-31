@@ -22,6 +22,19 @@ import (
 	"os"
 )
 
+// The config variable holds the runtime configuration.
+var config *Config
+
+func init() {
+
+	var e error
+	config, e = getConfig()
+
+	if e != nil {
+		log.Fatalf("error processing config: %v", e)
+	}
+}
+
 func main() {
 
 	var e error
@@ -76,7 +89,7 @@ func main() {
 			return val
 		}
 
-		return config.IncludeDefault
+		return config.DefaultInclude
 	})
 
 	// Log and exit if no relevant devices found.

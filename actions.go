@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	 http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,12 @@ package main
 import (
 	"github.com/jscherff/gocmdb"
 	"path/filepath"
-	"io/ioutil"
 	"fmt"
 	"os"
 )
 
-func report(o gocmdb.Reportable) (e error) {
+// Process report action and options.
+func reportAction(o gocmdb.Reportable) (e error) {
 
 	var b []byte
 
@@ -44,7 +44,7 @@ func report(o gocmdb.Reportable) (e error) {
 		b = o.Bare()
 
 	default:
-		e = fmt.Errorf("invalid report format %q", *fReportFormat)
+		e = fmt.Errorf("report: invalid format %q", *fReportFormat)
 	}
 
 	if e == nil {
@@ -52,13 +52,15 @@ func report(o gocmdb.Reportable) (e error) {
 		switch {
 
 		case len(*fReportFile) > 0:
-			e = writeFile(*fReportFile, b)
+			d, f := filepath.Split(*fReportFile)
+			if len(d) == 0 {d = config.ReportDir}
+			e = writeFile(b, filepath.Join(d, f))
 
 		case *fReportStdout:
 			fmt.Fprintf(os.Stdout, string(b))
 
 		default:
-			e = fmt.Errorf("no report destintion")
+			e = fmt.Errorf("report: no destintion")
 		}
 
 	}
@@ -66,63 +68,46 @@ func report(o gocmdb.Reportable) (e error) {
 	return e
 }
 
-func serial(o gocmdb.Configurable) (e error) {
+// Process serial number action and options.
+func serialAction(o gocmdb.Configurable, i gocmdb.Registerable) (e error) {
 
-	if *fConfigErase {
+	if *fSerialErase {
 		e = o.EraseDeviceSN()
 	}
 
 	s, e := o.DeviceSN()
 
+	if len(s) != 0 && !*fSerialForce {
+		e = fmt.Errorf("serial: already configured")
+	}
+
 	if e == nil {
 
 		switch {
 
-		case len(s) > 0 && !*fConfigForce:
-			e = fmt.Errorf("serial number already configured")
+		case len(*fSerialConfig) > 0:
+			e = o.SetDeviceSN(*fSerialConfig)
 
-		case len(*fConfigString) > 0:
-			e = o.SetDeviceSN(*fConfigString)
-
-		case *fConfigServer:
-			e = o.SetDeviceSN("24F0000") //TODO: call server
-
-		case *fConfigCopy:
+		case *fSerialCopy:
 			e = o.CopyFactorySN(7)
 
-		default:
-			e = fmt.Errorf("nothing to do")
+		case *fSerialServer:
+			s, e := serialRequest(i)
+			if e != nil {
+				break
+			}
+			if len(s) == 0 {
+				e = fmt.Errorf("serial: empty serial number")
+				break
+			}
+			e = o.SetDeviceSN(s)
 		}
 	}
 
 	return e
 }
 
-func reset(o gocmdb.Resettable) (error) {
+// Process reset action.
+func resetAction(o gocmdb.Resettable) (error) {
 	return o.Reset()
-}
-
-func audit(o gocmdb.Reportable) (error) {
-	return nil
-}
-
-func checkin(o gocmdb.Reportable) (error) {
-	return nil
-}
-
-func writeFile(s string, b []byte) (e error) {
-
-	d, f := filepath.Split(s)
-
-	if len(d) == 0 {
-		d = config.AppDir
-	}
-
-	p := fmt.Sprintf("%s%c%s", d, filepath.Separator, f)
-
-	if e = os.MkdirAll(d, 0755); e == nil {
-		e = ioutil.WriteFile(p, b, 0644)
-	}
-
-	return e
 }
