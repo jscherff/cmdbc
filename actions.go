@@ -15,10 +15,11 @@
 package main
 
 import (
-	"github.com/jscherff/gocmdb"
 	"path/filepath"
 	"fmt"
 	"os"
+
+	"github.com/jscherff/gocmdb"
 )
 
 // Process report action and options.

@@ -15,10 +15,11 @@
 package main
 
 import (
-	"github.com/google/gousb"
-	"github.com/jscherff/gocmdb/usbci/magtek"
-	"github.com/jscherff/gocmdb/usbci"
 	"errors"
+
+	"github.com/google/gousb"
+	"github.com/jscherff/gocmdb/usbci"
+	"github.com/jscherff/gocmdb/usbci/magtek"
 )
 
 func handleMagtek(d *gousb.Device) (e error) {
@@ -40,6 +41,7 @@ func handleMagtek(d *gousb.Device) (e error) {
 
 		case *fActionSerial:
 			e = serialAction(md, mdi)
+			defer resetAction(md)
 
 		case *fActionReset:
 			e = resetAction(md)

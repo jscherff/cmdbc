@@ -15,10 +15,11 @@
 package main
 
 import (
-	"github.com/jscherff/gocmdb"
 	"strings"
 	"flag"
 	"fmt"
+
+	"github.com/jscherff/gocmdb"
 )
 
 const (

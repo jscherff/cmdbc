@@ -15,11 +15,12 @@
 package main
 
 import (
-	"github.com/jscherff/gocmdb/usbci/magtek"
-	"github.com/google/gousb"
 	"log"
 	"fmt"
 	"os"
+
+	"github.com/jscherff/gocmdb/usbci/magtek"
+	"github.com/google/gousb"
 )
 
 // The config variable holds the runtime configuration.
