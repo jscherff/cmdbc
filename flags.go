@@ -29,11 +29,12 @@ const (
 
 var (
 	fsAction = flag.NewFlagSet("action", flag.ExitOnError)
+	fActionAudit = fsAction.Bool("audit", false, "Audit devices")
+	fActionCheckin = fsAction.Bool("checkin", false, "Check devices in")
+	fActionLegacy = fsAction.Bool("legacy", false, "Legacy operation")
 	fActionReport = fsAction.Bool("report", false, "Report actions")
-	fActionSerial = fsAction.Bool("serial", false, "Serial number config")
 	fActionReset = fsAction.Bool("reset", false, "Reset device")
-	fActionAudit = fsAction.Bool("audit", false, "Audit device")
-	fActionCheckin = fsAction.Bool("checkin", false, "Check in with server")
+	fActionSerial = fsAction.Bool("serial", false, "Set serial number")
 
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFile = fsReport.String("file", "", "Write report to `<file>`")

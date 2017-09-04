@@ -15,12 +15,21 @@
 package main
 
 import (
-	"path/filepath"
 	"fmt"
+	"path/filepath"
 	"os"
 
 	"github.com/jscherff/gocmdb"
 )
+
+// Write legacy report to application directory.
+func legacyAction(o gocmdb.Reportable) (e error) {
+
+	f := filepath.Join(config.AppPath, config.LegacyReport)
+	e = writeFile(o.Bare(), f)
+
+	return e
+}
 
 // Process report action and options.
 func reportAction(o gocmdb.Reportable) (e error) {
@@ -41,9 +50,6 @@ func reportAction(o gocmdb.Reportable) (e error) {
 	case "json":
 		b, e = o.JSON()
 
-	case "bare":
-		b = o.Bare()
-
 	default:
 		e = fmt.Errorf("report: invalid format %q", *fReportFormat)
 	}
@@ -61,12 +67,17 @@ func reportAction(o gocmdb.Reportable) (e error) {
 			fmt.Fprintf(os.Stdout, string(b))
 
 		default:
-			e = fmt.Errorf("report: no destintion")
+			e = fmt.Errorf("no report destintion selected")
 		}
 
 	}
 
 	return e
+}
+
+// Process reset action.
+func resetAction(o gocmdb.Resettable) (error) {
+	return o.Reset()
 }
 
 // Process serial number action and options.
@@ -79,7 +90,7 @@ func serialAction(o gocmdb.Configurable, i gocmdb.Registerable) (e error) {
 	s, e := o.DeviceSN()
 
 	if len(s) != 0 && !*fSerialForce {
-		e = fmt.Errorf("serial: already configured")
+		e = fmt.Errorf("serial number already configured")
 	}
 
 	if e == nil {
@@ -93,22 +104,20 @@ func serialAction(o gocmdb.Configurable, i gocmdb.Registerable) (e error) {
 			e = o.CopyFactorySN(7)
 
 		case *fSerialServer:
-			s, e := serialRequest(i)
-			if e != nil {
+			var s string
+
+			if s, e = serialRequest(i); e != nil {
 				break
 			}
+
 			if len(s) == 0 {
-				e = fmt.Errorf("serial: empty serial number")
+				e = fmt.Errorf("empty serial number from server")
 				break
 			}
+
 			e = o.SetDeviceSN(s)
 		}
 	}
 
 	return e
-}
-
-// Process reset action.
-func resetAction(o gocmdb.Resettable) (error) {
-	return o.Reset()
 }

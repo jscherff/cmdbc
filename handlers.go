@@ -15,14 +15,12 @@
 package main
 
 import (
-	"errors"
-
 	"github.com/google/gousb"
 	"github.com/jscherff/gocmdb/usbci"
 	"github.com/jscherff/gocmdb/usbci/magtek"
 )
 
-func handleMagtek(d *gousb.Device) (e error) {
+func magtekHandler(d *gousb.Device) (e error) {
 
 	var md *magtek.Device
 	var mdi *magtek.DeviceInfo
@@ -36,31 +34,31 @@ func handleMagtek(d *gousb.Device) (e error) {
 	if e == nil {
 		switch {
 
-		case *fActionReport:
-			e = reportAction(mdi)
-
-		case *fActionSerial:
-			e = serialAction(md, mdi)
-			defer resetAction(md)
-
-		case *fActionReset:
-			e = resetAction(md)
-
 		case *fActionAudit:
 			e = auditRequest(mdi)
 
 		case *fActionCheckin:
 			e = checkinRequest(mdi)
 
-		default:
-			e = errors.New("action not supported")
+		case *fActionLegacy:
+			e = legacyAction(mdi)
+
+		case *fActionReport:
+			e = reportAction(mdi)
+
+		case *fActionReset:
+			e = resetAction(md)
+
+		case *fActionSerial:
+			e = serialAction(md, mdi)
+			if e == nil {defer resetAction(md)}
 		}
 	}
 
 	return e
 }
 
-func handleGeneric(d *gousb.Device) (e error) {
+func genericHandler(d *gousb.Device) (e error) {
 
 	var gd *usbci.Device
 	var gdi *usbci.DeviceInfo
@@ -74,20 +72,20 @@ func handleGeneric(d *gousb.Device) (e error) {
 	if e == nil {
 		switch {
 
-		case *fActionReport:
-			e = reportAction(gdi)
-
-		case *fActionReset:
-			e = resetAction(gd)
-
 		case *fActionAudit:
 			e = auditRequest(gdi)
 
 		case *fActionCheckin:
 			e = checkinRequest(gdi)
 
-		default:
-			e = errors.New("action not supported")
+		case *fActionLegacy:
+			e = legacyAction(gdi)
+
+		case *fActionReport:
+			e = reportAction(gdi)
+
+		case *fActionReset:
+			e = resetAction(gd)
 		}
 	}
 

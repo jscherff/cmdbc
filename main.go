@@ -15,8 +15,8 @@
 package main
 
 import (
-	"log"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jscherff/gocmdb/usbci/magtek"
@@ -108,10 +108,10 @@ func main() {
 		switch uint16(device.Desc.Vendor) {
 
 		case magtek.MagtekVendorID:
-			e = handleMagtek(device)
+			e = magtekHandler(device)
 
 		default:
-			e = handleGeneric(device)
+			e = genericHandler(device)
 		}
 
 		if e != nil {

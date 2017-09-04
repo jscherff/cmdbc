@@ -50,8 +50,6 @@ func serialRequest(o gocmdb.Registerable) (s string, e error) {
 		e = json.Unmarshal(j, &wd)
 	}
 
-	fmt.Println(wd) //TODO: remove
-
 	return wd.ID(), e
 }
 
