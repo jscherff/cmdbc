@@ -1,1 +1,1 @@
-# gousbinv
+# gocmdbcli

@@ -5,7 +5,7 @@
 	"audit_dir":		"audit",
 	"report_dir":		"report",
 
-	"app_log":		"gousbinv.log",
+	"app_log":		"gocmdbcli.log",
 	"change_log":		"change.log",
 	"legacy_log":		"usb_log.txt",
 	"legacy_report":	"usb_serial.txt",
