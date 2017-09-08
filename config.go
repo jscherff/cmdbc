@@ -52,26 +52,26 @@ type Config struct {
 // GetConfig retrieves the settings in the JSON configuration file and
 // populates the fields in the runtime configuration. It also creates
 // subdirectories in the application path if they do not exist.
-func getConfig() (c *Config, e error) {
+func getConfig() (c *Config, err error) {
 
 	c = new(Config)
 
 	ep := filepath.Dir(os.Args[0])
 	fp := filepath.Join(ep, configFile)
 
-	fh, e := os.Open(fp)
+	fh, err := os.Open(fp)
 	defer fh.Close()
 
 	// Decode JSON from configuration file.
 
-	if e == nil {
+	if err == nil {
 		jd := json.NewDecoder(fh)
-		e = jd.Decode(&c)
+		err = jd.Decode(&c)
 	}
 
 	// If app path is empty, set it to executable path.
 
-	if e == nil {
+	if err == nil {
 		if len(c.AppPath) == 0 {
 			c.AppPath = ep
 		}
@@ -79,7 +79,7 @@ func getConfig() (c *Config, e error) {
 
 	// Configure and create log directory.
 
-	if e == nil {
+	if err == nil {
 
 		d, sd := filepath.Split(c.LogDir)
 
@@ -87,12 +87,12 @@ func getConfig() (c *Config, e error) {
 			c.LogDir = filepath.Join(c.AppPath, sd)
 		}
 
-		e = os.MkdirAll(c.LogDir, 0755)
+		err = os.MkdirAll(c.LogDir, 0755)
 	}
 
 	// Configure and create audit directory.
 
-	if e == nil {
+	if err == nil {
 
 		d, sd := filepath.Split(c.AuditDir)
 
@@ -100,12 +100,12 @@ func getConfig() (c *Config, e error) {
 			c.LogDir = filepath.Join(c.AppPath, sd)
 		}
 
-		e = os.MkdirAll(c.AuditDir, 0755)
+		err = os.MkdirAll(c.AuditDir, 0755)
 	}
 
 	// Configure and create report directory.
 
-	if e == nil {
+	if err == nil {
 
 		d, sd := filepath.Split(c.ReportDir)
 
@@ -113,8 +113,8 @@ func getConfig() (c *Config, e error) {
 			c.LogDir = filepath.Join(c.AppPath, sd)
 		}
 
-		e = os.MkdirAll(c.ReportDir, 0755)
+		err = os.MkdirAll(c.ReportDir, 0755)
 	}
 
-	return c, e
+	return c, err
 }

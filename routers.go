@@ -15,79 +15,43 @@
 package main
 
 import (
-	"github.com/google/gousb"
-	"github.com/jscherff/gocmdb/usbci"
-	"github.com/jscherff/gocmdb/usbci/magtek"
+	"github.com/jscherff/gocmdb"
 )
 
-func magtekHandler(d *gousb.Device) (e error) {
+func magtekRouter(musb gocmdb.MagtekUSB) (err error) {
 
-	var md *magtek.Device
-	var mdi *magtek.DeviceInfo
+	switch {
 
-	md, e = magtek.NewDevice(d)
+	case *fActionSerial:
+		err = serialAction(musb)
+		if err == nil {defer musb.Reset()}
 
-	if e == nil {
-		mdi, e = magtek.NewDeviceInfo(md)
+	default:
+		err = genericRouter(musb)
 	}
 
-	if e == nil {
-		switch {
-
-		case *fActionAudit:
-			e = auditRequest(mdi)
-
-		case *fActionCheckin:
-			e = checkinRequest(mdi)
-
-		case *fActionLegacy:
-			e = legacyAction(mdi)
-
-		case *fActionReport:
-			e = reportAction(mdi)
-
-		case *fActionReset:
-			e = resetAction(md)
-
-		case *fActionSerial:
-			e = serialAction(md, mdi)
-			if e == nil {defer resetAction(md)}
-		}
-	}
-
-	return e
+	return err
 }
 
-func genericHandler(d *gousb.Device) (e error) {
+func genericRouter(gusb gocmdb.GenericUSB) (err error) {
 
-	var gd *usbci.Device
-	var gdi *usbci.DeviceInfo
+	switch {
 
-	gd, e = usbci.NewDevice(d)
+	case *fActionAudit:
+		err = auditRequest(gusb)
 
-	if e == nil {
-		gdi, e = usbci.NewDeviceInfo(gd)
+	case *fActionCheckin:
+		err = checkinRequest(gusb)
+
+	case *fActionLegacy:
+		err = legacyAction(gusb)
+
+	case *fActionReport:
+		err = reportAction(gusb)
+
+	case *fActionReset:
+		defer gusb.Reset()
 	}
 
-	if e == nil {
-		switch {
-
-		case *fActionAudit:
-			e = auditRequest(gdi)
-
-		case *fActionCheckin:
-			e = checkinRequest(gdi)
-
-		case *fActionLegacy:
-			e = legacyAction(gdi)
-
-		case *fActionReport:
-			e = reportAction(gdi)
-
-		case *fActionReset:
-			e = resetAction(gd)
-		}
-	}
-
-	return e
+	return err
 }

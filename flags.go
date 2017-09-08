@@ -37,8 +37,8 @@ var (
 	fActionSerial = fsAction.Bool("serial", false, "Set serial number")
 
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
-	fReportFile = fsReport.String("file", "", "Write report to `<file>`")
-	fReportStdout = fsReport.Bool("stdout", false, "Write output to stdout")
+	fReportFolder = fsReport.String("folder", "", "Write reports to `<path>`")
+	fReportConsole = fsReport.Bool("console", false, "Write reports to console")
 	fReportFormat *string
 
 	fsSerial = flag.NewFlagSet("serial", flag.ExitOnError)
@@ -46,7 +46,7 @@ var (
 	fSerialErase = fsSerial.Bool("erase", false, "Erase current serial number")
 	fSerialForce = fsSerial.Bool("force", false, "Force serial number change")
 	fSerialServer = fsSerial.Bool("server", false, "Set serial number from server")
-	fSerialConfig = fsSerial.String("config", "", "Set serial number to `<string>`")
+	fSerialSet = fsSerial.String("set", "", "Set serial number to `<string>`")
 )
 
 func init() {

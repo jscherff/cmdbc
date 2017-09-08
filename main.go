@@ -15,30 +15,31 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/jscherff/gocmdb/usbci/magtek"
 	"github.com/google/gousb"
+	"github.com/jscherff/gocmdb"
+	"github.com/jscherff/gocmdb/usbci"
 )
 
-// The config variable holds the runtime configuration.
 var config *Config
 
 func init() {
 
-	var e error
-	config, e = getConfig()
+	var err error
+	config, err = getConfig()
 
-	if e != nil {
-		log.Fatalf("error processing config: %v", e)
+	if err != nil {
+		log.Fatalf("%v", gocmdb.ErrorDecorator(err))
 	}
 }
 
 func main() {
 
-	var e error
+	var err error
 
 	// Process command-line actions and options.
 
@@ -83,12 +84,8 @@ func main() {
 
 		vid, pid := desc.Vendor.String(), desc.Product.String()
 
-		if val, ok := config.IncludePID[vid][pid]; ok {
-			return val
-		}
-		if val, ok := config.IncludeVID[vid]; ok {
-			return val
-		}
+		if val, ok := config.IncludePID[vid][pid]; ok {return val}
+		if val, ok := config.IncludeVID[vid]; ok {return val}
 
 		return config.DefaultInclude
 	})
@@ -96,7 +93,7 @@ func main() {
 	// Log and exit if no relevant devices found.
 
 	if len(devices) == 0 {
-		log.Fatalf("no devices found")
+		log.Fatalf("%v", gocmdb.ErrorDecorator(errors.New("no devices found")))
 	}
 
 	// Pass devices to relevant device handlers.
@@ -105,17 +102,24 @@ func main() {
 
 		defer device.Close()
 
+		var gusb *usbci.Generic
+		var musb *usbci.Magtek
+
 		switch uint16(device.Desc.Vendor) {
 
-		case magtek.MagtekVendorID:
-			e = magtekHandler(device)
+		case usbci.MagtekVendorID:
+			if musb, err = usbci.NewMagtek(device); musb != nil {
+				err = magtekRouter(musb)
+			}
 
 		default:
-			e = genericHandler(device)
+			if gusb, err = usbci.NewGeneric(device); gusb != nil {
+				err = genericRouter(gusb)
+			}
 		}
 
-		if e != nil {
-			log.Printf("%v", e)
+		if err != nil {
+			log.Printf("%v", err)
 		}
 	}
 }

@@ -22,102 +22,111 @@ import (
 	"github.com/jscherff/gocmdb"
 )
 
-// Write legacy report to application directory.
-func legacyAction(o gocmdb.Reportable) (e error) {
+// legacyAction writes legacy report to application directory.
+func legacyAction(o gocmdb.Reportable) (err error) {
 
-	f := filepath.Join(config.AppPath, config.LegacyReport)
-	e = writeFile(o.Bare(), f)
+	err = writeFile(o.Legacy(), filepath.Join(config.AppPath, config.LegacyReport))
 
-	return e
+	if err != nil {
+		err = gocmdb.ErrorDecorator(err)
+	}
+
+	return err
 }
 
-// Process report action and options.
-func reportAction(o gocmdb.Reportable) (e error) {
+// reportAction processes report options and writes report to the
+// selected destination.
+func reportAction(o gocmdb.Reportable) (err error) {
 
 	var b []byte
 
 	switch *fReportFormat {
 
 	case "csv":
-		b, e = o.CSV()
+		b, err = o.CSV()
 
 	case "nvp":
-		b, e = o.NVP()
+		b, err = o.NVP()
 
 	case "xml":
-		b, e = o.XML()
+		b, err = o.PrettyXML()
 
 	case "json":
-		b, e = o.JSON()
+		b, err = o.PrettyJSON()
 
 	default:
-		e = fmt.Errorf("report: invalid format %q", *fReportFormat)
+		err = fmt.Errorf("invalid format %q", *fReportFormat)
 	}
 
-	if e == nil {
+	if err == nil {
 
 		switch {
 
-		case len(*fReportFile) > 0:
-			d, f := filepath.Split(*fReportFile)
-			if len(d) == 0 {d = config.ReportDir}
-			e = writeFile(b, filepath.Join(d, f))
-
-		case *fReportStdout:
+		case *fReportConsole:
 			fmt.Fprintf(os.Stdout, string(b))
 
+		case len(*fReportFolder) > 0:
+			err = writeFile(b, filepath.Join(*fReportFolder, o.Filename()))
+
 		default:
-			e = fmt.Errorf("no report destintion selected")
+			f := fmt.Sprintf("%s.%s", o.Filename(), *fReportFormat)
+			err = writeFile(b, filepath.Join(config.ReportDir, f))
 		}
 
 	}
 
-	return e
+	if err != nil {
+		err = gocmdb.ErrorDecorator(err)
+	}
+
+	return err
 }
 
-// Process reset action.
-func resetAction(o gocmdb.Resettable) (error) {
-	return o.Reset()
-}
+// serialAction processes the serial number options and configures the
+// the serial number.
+func serialAction(o gocmdb.Configurable) (err error) {
 
-// Process serial number action and options.
-func serialAction(o gocmdb.Configurable, i gocmdb.Registerable) (e error) {
+	var s string
 
 	if *fSerialErase {
-		e = o.EraseDeviceSN()
+		err = o.EraseDeviceSN()
 	}
 
-	s, e := o.DeviceSN()
+	if err == nil {
+		s = o.ID()
 
-	if len(s) != 0 && !*fSerialForce {
-		e = fmt.Errorf("serial number already configured")
+		if len(s) > 0 && !*fSerialForce {
+			err = fmt.Errorf("serial number already set to %q", s)
+		}
 	}
 
-	if e == nil {
+	if err == nil {
 
 		switch {
 
-		case len(*fSerialConfig) > 0:
-			e = o.SetDeviceSN(*fSerialConfig)
+		case len(*fSerialSet) > 0:
+			err = o.SetDeviceSN(*fSerialSet)
 
 		case *fSerialCopy:
-			e = o.CopyFactorySN(7)
+			err = o.CopyFactorySN(7)
 
 		case *fSerialServer:
-			var s string
-
-			if s, e = serialRequest(i); e != nil {
+			if s, err = serialRequest(o); err != nil {
 				break
 			}
-
 			if len(s) == 0 {
-				e = fmt.Errorf("empty serial number from server")
+				err = fmt.Errorf("empty serial number from server")
 				break
 			}
-
-			e = o.SetDeviceSN(s)
+			if err = o.SetDeviceSN(s); err != nil {
+				err = checkinRequest(o)
+			}
 		}
 	}
 
-	return e
+	if err != nil {
+		err = gocmdb.ErrorDecorator(err)
+	}
+
+	return err
 }

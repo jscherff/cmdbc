@@ -15,110 +15,111 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"path/filepath"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-	"bytes"
-	"fmt"
+	"os"
+	"path/filepath"
 
-	"github.com/jscherff/gocmdb/webapi"
 	"github.com/jscherff/gocmdb"
 )
 
-// Process checkin action.
-func serialRequest(o gocmdb.Registerable) (s string, e error) {
+// serialRequest obtains a serial number from the gocmdbd server.
+func serialRequest(o gocmdb.Registerable) (s string, err error) {
 
 	var j []byte
+	url := fmt.Sprintf("%s/%s", config.ServerURL, config.SerialPath)
 
-	if j, e = o.JSON(); e != nil {
-		return s, e
+	if j, err = o.JSON(); err == nil {
+		j, err = httpRequest(url, j)
+	}
+	if err == nil {
+		err = json.Unmarshal(j, &s)
+	}
+	if err != nil {
+		err = gocmdb.ErrorDecorator(err)
 	}
 
-	wd, e := webapi.NewDevice(j)
-
-	if e != nil {
-		return s, e
-	}
-
-	if j, e = wd.JSON(); e == nil {
-		url := fmt.Sprintf("%s/%s/%s", config.ServerURL, config.SerialPath, o.Type())
-		j, e = httpRequest(url, j)
-	}
-
-	if e == nil {
-		e = json.Unmarshal(j, &wd)
-	}
-
-	return wd.ID(), e
+	return s, err
 }
 
-// Process checkin action.
-func checkinRequest(o gocmdb.Registerable) (e error) {
+// checkinRequest checks a device in with the gocmdbd server.
+func checkinRequest(o gocmdb.Registerable) (err error) {
 
 	var j []byte
+	url := fmt.Sprintf("%s/%s", config.ServerURL, config.CheckinPath)
 
-	if j, e = o.JSON(); e != nil {
-		return e
+	if j, err = o.JSON(); err == nil {
+		_, err = httpRequest(url, j)
+	}
+	if err != nil {
+		err = gocmdb.ErrorDecorator(err)
 	}
 
-	wd, e := webapi.NewDevice(j)
-
-	if e != nil {
-		return e
-	}
-
-	if j, e = wd.JSON(); e == nil {
-		url := fmt.Sprintf("%s/%s/%s", config.ServerURL, config.CheckinPath, o.Type())
-		_, e = httpRequest(url, j)
-	}
-
-	return e
+	return err
 }
 
-// Process audit action.
-func auditRequest(o gocmdb.Auditable) (e error) {
+// auditRequest performs an audit and sends the results to the gocmdbd server.
+func auditRequest(o gocmdb.Auditable) (err error) {
 
 	var j []byte
+	url := fmt.Sprintf("%s/%s", config.ServerURL, config.AuditPath)
 
-	id, e := o.ID()
-
-	if e != nil {
-		return e
+	if len(o.ID()) == 0 {
+		return gocmdb.ErrorDecorator(errors.New("no unique ID"))
+	}
+	if _, err = os.Stat(config.AuditDir); os.IsNotExist(err) {
+		return gocmdb.ErrorDecorator(err)
 	}
 
-	c, e := o.Compare(filepath.Join(config.AuditDir, id + ".json"))
+	f := filepath.Join(config.AuditDir, o.ID() + ".json")
 
-	if e == nil && len(c) != 0 {
+	// If the audit file doesn't exist, create a change record indicating
+	// a change from no serial number to a serial number, then create the
+	// audit file. Otherwise, audit against the previous audit file.
 
-		wc := webapi.NewChanges(c)
-		j, e = wc.JSON()
-
-		if e == nil {
-			url := fmt.Sprintf("%s/%s/%s", config.ServerURL, config.AuditPath, id)
-			_, e = httpRequest(url, j)
-		}
+	if _, err = os.Stat(f); os.IsNotExist(err) {
+		o.AddChange("SerialNum", "", o.ID())
+		err = o.Save(f)
+	} else {
+		err = o.AuditFile(f)
 	}
 
-	_ = o.Save(filepath.Join(config.AuditDir, id + ".json"))
+	if err == nil {
+		j, err = o.JSON()
+	}
+	if err == nil {
+		_, err = httpRequest(url, j)
+	}
+	if err != nil {
+		err = gocmdb.ErrorDecorator(err)
+	}
 
-	return e
+	return err
 }
 
-func httpRequest(url string, jreq []byte ) (jresp []byte, e error) {
+// httpRequest sends JSON requests to the gocmdbd server for other functions.
+// Error decoration will be handled by caller functions.
+func httpRequest(url string, jreq []byte ) (jresp []byte, err error) {
 
 	client := &http.Client{}
 
-	req, e := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jreq))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jreq))
+
+	if err != nil {
+		return jresp, gocmdb.ErrorDecorator(err)
+	}
 
 	req.Header.Add("Content-Type", "application/json; charset=UTF8")
 	req.Header.Add("Accept", "application/json; charset=UTF8")
 	req.Header.Add("X-Custom-Header", "gocmdb")
+	resp, err := client.Do(req)
 
-	resp, e := client.Do(req)
-
-	if e != nil {
-		return jresp, e
+	if err != nil {
+		return jresp, gocmdb.ErrorDecorator(err)
 	}
 
 	defer resp.Body.Close()
@@ -128,12 +129,15 @@ func httpRequest(url string, jreq []byte ) (jresp []byte, e error) {
 	case http.StatusCreated:
 	case http.StatusAccepted:
 	default:
-		e = fmt.Errorf("http response status %s", resp.Status)
+		err = fmt.Errorf("http response status %s", resp.Status)
 	}
 
-	if e == nil {
-		jresp, e = ioutil.ReadAll(resp.Body)
+	if err == nil {
+		jresp, err = ioutil.ReadAll(resp.Body)
+	}
+	if err != nil {
+		return jresp, gocmdb.ErrorDecorator(err)
 	}
 
-	return jresp, e
+	return jresp, err
 }

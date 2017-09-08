@@ -10,7 +10,7 @@
 	"legacy_log":		"usb_log.txt",
 	"legacy_report":	"usb_serial.txt",
 
-	"server_url":		"http://sysadm-dev-01.24hourfit.com:8080",
+	"server_url":		"http://localhost:8080",
 	"serial_path":		"serial",
 	"checkin_path":		"checkin",
 	"audit_path":		"audit",
