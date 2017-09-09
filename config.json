@@ -27,6 +27,6 @@
 		"045e":		false
 	},
 
-	"default_include":	false,
+	"default_include":	true,
 	"default_format":	"csv"
 }
