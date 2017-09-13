@@ -26,10 +26,12 @@ const configFile string = "config.json"
 // Config holds the application configuration settings. The struct tags
 // must match the field names in the JSON configuration file.
 type Config struct {
+
 	AppPath		string
 
 	LogDir		string
 	AuditDir	string
+	StateDir	string
 	ReportDir	string
 
 	AppLog		string

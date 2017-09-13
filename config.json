@@ -3,6 +3,7 @@
 
 	"LogDir":		"log",
 	"AuditDir":		"audit",
+	"StateDir":		"state",
 	"ReportDir":		"report",
 
 	"AppLog":		"gocmdbcli.log",
