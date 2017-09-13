@@ -1,32 +1,32 @@
 {
-	"app_path":		"",
+	"AppPath":		"",
 
-	"log_dir":		"log",
-	"audit_dir":		"audit",
-	"report_dir":		"report",
+	"LogDir":		"log",
+	"AuditDir":		"audit",
+	"ReportDir":		"report",
 
-	"app_log":		"gocmdbcli.log",
-	"change_log":		"change.log",
-	"legacy_log":		"usb_log.txt",
-	"legacy_report":	"usb_serial.txt",
+	"AppLog":		"gocmdbcli.log",
+	"ChangeLog":		"change.log",
+	"LegacyReport":		"usb_serial.txt",
 
-	"server_url":		"http://localhost:8080/device/usb",
-	"serial_path":		"serial",
-	"checkin_path":		"checkin",
-	"audit_path":		"audit",
+	"ServerURL":		"http://localhost:8080/usbci",
+	"AuditPath":		"audit",
+	"ChangesPath":		"changes",
+	"CheckinPath":		"checkin",
+	"FetchSnPath":		"fetchsn",
 
-	"include_pid": {
-		"0801": {
-			"0001":	true
-		}
-	},
-
-	"include_vid": {
+	"IncludeVID": {
 		"0801":		true,
 		"043d":		false,
 		"045e":		false
 	},
 
-	"default_include":	true,
-	"default_format":	"csv"
+	"IncludePID": {
+		"0801": {
+			"0001":	true
+		}
+	},
+
+	"DefaultInclude":	false,
+	"DefaultFormat":	"csv"
 }

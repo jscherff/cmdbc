@@ -26,27 +26,27 @@ const configFile string = "config.json"
 // Config holds the application configuration settings. The struct tags
 // must match the field names in the JSON configuration file.
 type Config struct {
-	AppPath		string				`json:"app_path"`
+	AppPath		string
 
-	LogDir		string				`json:"log_dir"`
-	AuditDir	string				`json:"audit_dir"`
-	ReportDir	string				`json:"report_dir"`
+	LogDir		string
+	AuditDir	string
+	ReportDir	string
 
-	AppLog		string				`json:"app_log"`
-	AuditLog	string				`json:"audit_log"`
-	LegacyLog	string				`json:"legacy_log"`
-	LegacyReport	string				`json:"legacy_report"`
+	AppLog		string
+	ChangeLog	string
+	LegacyReport	string
 
-	ServerURL	string				`json:"server_url"`
-	SerialPath	string				`json:"serial_path"`
-	CheckinPath	string				`json:"checkin_path"`
-	AuditPath	string				`json:"audit_path"`
+	ServerURL	string
+	AuditPath	string
+	ChangesPath	string
+	CheckinPath	string
+	FetchSnPath	string
 
-	IncludeVID	map[string]bool			`json:"include_vid"`
-	IncludePID	map[string]map[string]bool	`json:"include_pid"`
+	IncludeVID	map[string]bool
+	IncludePID	map[string]map[string]bool
 
-	DefaultInclude	bool				`json:"default_include"`
-	DefaultFormat	string				`json:"default_format"`
+	DefaultInclude	bool
+	DefaultFormat	string
 }
 
 // GetConfig retrieves the settings in the JSON configuration file and

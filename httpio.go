@@ -21,17 +21,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
-
+	//TODO: cleanup
+	//"os"
+	//"path/filepath"
 	"github.com/jscherff/gocmdb"
 )
 
-// serialRequest obtains a serial number from the gocmdbd server.
-func serialRequest(o gocmdb.Registerable) (s string, err error) {
+// fetchSnRequest obtains a serial number from the gocmdbd server.
+func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s", config.ServerURL, config.SerialPath)
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", config.ServerURL, config.FetchSnPath, o.Host(), o.VID, o.PID())
 
 	if j, err = o.JSON(); err == nil {
 		j, err = httpRequest(url, j)
@@ -50,7 +50,7 @@ func serialRequest(o gocmdb.Registerable) (s string, err error) {
 func checkinRequest(o gocmdb.Registerable) (err error) {
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s", config.ServerURL, config.CheckinPath)
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", config.ServerURL, config.FetchSnPath, o.Host(), o.VID, o.PID())
 
 	if j, err = o.JSON(); err == nil {
 		_, err = httpRequest(url, j)
@@ -65,8 +65,11 @@ func checkinRequest(o gocmdb.Registerable) (err error) {
 // auditRequest performs an audit and sends the results to the gocmdbd server.
 func auditRequest(o gocmdb.Auditable) (err error) {
 
+/*
+	TODO: cleanup
+
 	var j []byte
-	url := fmt.Sprintf("%s/%s", config.ServerURL, config.AuditPath)
+	url := fmt.Sprintf("%s/%s", config.ServerURL, config.ChangesPath)
 
 	if len(o.ID()) == 0 {
 		return gocmdb.ErrorDecorator(errors.New("no unique ID"))
@@ -91,6 +94,22 @@ func auditRequest(o gocmdb.Auditable) (err error) {
 	if err == nil {
 		j, err = o.JSON()
 	}
+	if err == nil {
+		_, err = httpRequest(url, j)
+	}
+	if err != nil {
+		err = gocmdb.ErrorDecorator(err)
+	}
+*/
+	if len(o.ID()) == 0 || len(o.VID()) == 0 || len(o.PID()) == 0 {
+		return gocmdb.ErrorDecorator(errors.New("no unique ID"))
+	}
+
+	var j []byte
+	url := fmt.Sprintf("%s/%s/%s/%s/%s/%s", config.ServerURL, config.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
+
+	j, err = o.JSON()
+
 	if err == nil {
 		_, err = httpRequest(url, j)
 	}

@@ -110,8 +110,8 @@ func serialAction(o gocmdb.Configurable) (err error) {
 		case *fSerialCopy:
 			err = o.CopyFactorySN(7)
 
-		case *fSerialServer:
-			if s, err = serialRequest(o); err != nil {
+		case *fSerialFetch:
+			if s, err = fetchSnRequest(o); err != nil {
 				break
 			}
 			if len(s) == 0 {

@@ -45,7 +45,7 @@ var (
 	fSerialCopy = fsSerial.Bool("copy", false, "Copy factory serial number")
 	fSerialErase = fsSerial.Bool("erase", false, "Erase current serial number")
 	fSerialForce = fsSerial.Bool("force", false, "Force serial number change")
-	fSerialServer = fsSerial.Bool("server", false, "Set serial number from server")
+	fSerialFetch = fsSerial.Bool("fetch", false, "Fetch serial number from server")
 	fSerialSet = fsSerial.String("set", "", "Set serial number to `<string>`")
 )
 
