@@ -16,6 +16,7 @@ package main
 
 import (
 	`encoding/json`
+	`fmt`
 	`path/filepath`
 	`os`
 	`github.com/jscherff/goutils`
@@ -105,17 +106,15 @@ func NewConfig(cf string) (this *Config, err error) {
 	// Helpers to prepend and/or create paths as necessary.
 
 	var mkd = func(pd, d string) (string, error) {
-
-		if dn := filepath.Dir(d); len(dn) == 0 {
+		if dn := filepath.Dir(d); dn == `.` {
 			d = filepath.Join(pd, d)
 		}
-
 		return d, os.MkdirAll(d, DirMode)
 	}
 
 	var mkf = func(pd, f string) (string, error) {
 
-		if dn := filepath.Dir(f); len(dn) == 0 {
+		if dn := filepath.Dir(f); dn == `.` {
 			f = filepath.Join(pd, f)
 			return f, os.MkdirAll(pd, DirMode)
 		} else {
