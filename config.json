@@ -1,33 +1,57 @@
 {
-	"AppPath":		"",
-
-	"LogDir":		"log",
-	"AuditDir":		"audit",
-	"StateDir":		"state",
-	"ReportDir":		"report",
-
-	"AppLog":		"gocmdbcli.log",
-	"ChangeLog":		"change.log",
-	"LegacyReport":		"usb_serial.txt",
-
-	"ServerURL":		"http://localhost:8080/usbci",
-	"AuditPath":		"audit",
-	"ChangesPath":		"changes",
-	"CheckinPath":		"checkin",
-	"FetchSnPath":		"fetchsn",
-
-	"IncludeVID": {
-		"0801":		true,
-		"043d":		false,
-		"045e":		false
+	"Paths": {
+		"AppDir":		"",
+		"LogDir":		"log",
+		"ReportDir":		"report"
 	},
 
-	"IncludePID": {
-		"0801": {
-			"0001":	true
-		}
+	"Files": {
+		"SystemLog":		"system.log",
+		"ChangeLog":		"change.log",
+		"ErrorLog":		"error.log",
+		"Legacy":		"usb_serial.txt"
 	},
 
-	"DefaultInclude":	false,
-	"DefaultFormat":	"csv"
+	"Server": {
+		"URL":			"http://localhost:8080/usbci",
+		"AuditPath":		"audit",
+		"ChangesPath":		"changes",
+		"CheckinPath":		"checkin",
+		"FetchSnPath":		"fetchsn"
+	},
+
+	"Logging": {
+		"LogFiles":		true,
+		"Console":		false,
+		"Syslog":		false
+	},
+
+	"Syslog": {
+		"Port":			"",
+		"Protocol":		"",
+		"Address":		""
+	},
+
+	"Include": {
+
+		"VendorID": {
+			"0801":		true,
+			"043d":		false,
+			"045e":		false
+		},
+
+		"ProductID": {
+			"0801": {
+				"0001":	true
+			}
+		},
+
+		"Default":		true
+	},
+
+	"Format": {
+		"Report": "csv",
+		"object": "json",
+		"Legacy": "csv"
+	}
 }

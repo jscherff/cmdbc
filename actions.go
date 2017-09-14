@@ -25,7 +25,7 @@ import (
 // legacyAction writes legacy report to application directory.
 func legacyAction(o gocmdb.Reportable) (err error) {
 
-	err = writeFile(o.Legacy(), filepath.Join(config.AppPath, config.LegacyReport))
+	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
 
 	if err != nil {
 		err = gocmdb.ErrorDecorator(err)
@@ -70,7 +70,7 @@ func reportAction(o gocmdb.Reportable) (err error) {
 
 		default:
 			f := fmt.Sprintf("%s.%s", o.Filename(), *fReportFormat)
-			err = writeFile(b, filepath.Join(config.ReportDir, f))
+			err = writeFile(b, filepath.Join(conf.Paths.ReportDir, f))
 		}
 
 	}

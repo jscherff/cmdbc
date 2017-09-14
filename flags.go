@@ -15,16 +15,10 @@
 package main
 
 import (
-	"strings"
 	"flag"
 	"fmt"
 
 	"github.com/jscherff/gocmdb"
-)
-
-const (
-	nameIndex int = 0
-	valueIndex int = 1
 )
 
 var (
@@ -39,7 +33,7 @@ var (
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFolder = fsReport.String("folder", "", "Write reports to `<path>`")
 	fReportConsole = fsReport.Bool("console", false, "Write reports to console")
-	fReportFormat *string
+	fReportFormat = fsReportString("format", "csv", "Report format `{csv|nvp|xml|json}`")
 
 	fsSerial = flag.NewFlagSet("serial", flag.ExitOnError)
 	fSerialCopy = fsSerial.Bool("copy", false, "Copy factory serial number")
@@ -48,10 +42,3 @@ var (
 	fSerialFetch = fsSerial.Bool("fetch", false, "Fetch serial number from server")
 	fSerialSet = fsSerial.String("set", "", "Set serial number to `<string>`")
 )
-
-func init() {
-	var formats []string
-	for _, f := range gocmdb.ReportFormats {formats = append(formats, f[nameIndex])}
-	usage := fmt.Sprintf("`<fmt>` = {%s}", strings.Join(formats, "|"))
-	fReportFormat = fsReport.String("format", "csv", usage)
-}

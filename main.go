@@ -77,17 +77,17 @@ func main() {
 	context := gousb.NewContext()
 	defer context.Close()
 
-	// Open devices that match selection criteria in the IncludePID
-	// and IncludeVID maps from the configuration file.
+	// Open devices that match selection criteria in the Include.ProductID
+	// and Include.VendorID maps from the configuration file.
 
 	devices, _ := context.OpenDevices(func(desc *gousb.DeviceDesc) bool {
 
 		vid, pid := desc.Vendor.String(), desc.Product.String()
 
-		if val, ok := config.IncludePID[vid][pid]; ok {return val}
-		if val, ok := config.IncludeVID[vid]; ok {return val}
+		if val, ok := conf.Include.ProductID[vid][pid]; ok {return val}
+		if val, ok := conf.Include.VendorID[vid]; ok {return val}
 
-		return config.DefaultInclude
+		return conf.Include.Default
 	})
 
 	// Log and exit if no relevant devices found.

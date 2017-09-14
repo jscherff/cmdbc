@@ -31,7 +31,7 @@ import (
 func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", config.ServerURL, config.FetchSnPath, o.Host(), o.VID, o.PID())
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", conf.Server.URL, conf.Server.FetchSnPath, o.Host(), o.VID, o.PID())
 
 	if j, err = o.JSON(); err == nil {
 		j, err = httpRequest(url, j)
@@ -50,7 +50,7 @@ func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 func checkinRequest(o gocmdb.Registerable) (err error) {
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", config.ServerURL, config.FetchSnPath, o.Host(), o.VID, o.PID())
+	url := fmt.Sprintf("%s/%s/%s/%s/%s", conf.Server.URL, conf.Server.FetchSnPath, o.Host(), o.VID, o.PID())
 
 	if j, err = o.JSON(); err == nil {
 		_, err = httpRequest(url, j)
@@ -69,16 +69,16 @@ func auditRequest(o gocmdb.Auditable) (err error) {
 	TODO: cleanup
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s", config.ServerURL, config.ChangesPath)
+	url := fmt.Sprintf("%s/%s", conf.Server.URL, conf.Server.ChangesPath)
 
 	if len(o.ID()) == 0 {
 		return gocmdb.ErrorDecorator(errors.New("no unique ID"))
 	}
-	if _, err = os.Stat(config.AuditDir); os.IsNotExist(err) {
+	if _, err = os.Stat(conf.Paths.AuditDir); os.IsNotExist(err) {
 		return gocmdb.ErrorDecorator(err)
 	}
 
-	f := filepath.Join(config.AuditDir, o.ID() + ".json")
+	f := filepath.Join(conf.Paths.AuditDir, o.ID() + ".json")
 
 	// If the audit file doesn't exist, create a change record indicating
 	// a change from no serial number to a serial number, then create the
@@ -106,7 +106,7 @@ func auditRequest(o gocmdb.Auditable) (err error) {
 	}
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s/%s/%s/%s/%s", config.ServerURL, config.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
+	url := fmt.Sprintf("%s/%s/%s/%s/%s/%s", conf.Server.URL, conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
 
 	j, err = o.JSON()
 

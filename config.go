@@ -15,108 +15,138 @@
 package main
 
 import (
-	"encoding/json"
-	"path/filepath"
-	"os"
+	`encoding/json`
+	`path/filepath`
+	`os`
 )
 
-// The filename of the JSON configuration file.
-const configFile string = "config.json"
+const DirMode = 0750
 
 // Config holds the application configuration settings. The struct tags
 // must match the field names in the JSON configuration file.
 type Config struct {
 
-	AppPath		string
+	Paths struct {
+		AppDir		string
+		LogDir		string
+		ReportDir	string
+	}
 
-	LogDir		string
-	AuditDir	string
-	StateDir	string
-	ReportDir	string
+	Files struct {
+		SystemLog	string
+		ChangeLog	string
+		ErrorLog	string
+		Legacy		string
+	}
 
-	AppLog		string
-	ChangeLog	string
-	LegacyReport	string
+	Server struct {
+		URL		string
+		ChangesPath	string
+		CheckinPath	string
+		FetchSnPath	string
+		AuditPath	string
+	}
 
-	ServerURL	string
-	AuditPath	string
-	ChangesPath	string
-	CheckinPath	string
-	FetchSnPath	string
+	Logging struct {
+		LogFiles	bool
+		Console		bool
+		Syslog		bool
+	}
 
-	IncludeVID	map[string]bool
-	IncludePID	map[string]map[string]bool
+	Syslog struct {
+		Port		string
+		Protocol	string
+		Address		string
+	}
 
-	DefaultInclude	bool
-	DefaultFormat	string
+	Include struct {
+		VendorID	map[string]bool
+		ProductID	map[string]map[string]bool
+		Defaulti	bool
+	}
+
+	Format struct {
+		Report		string
+		Object		string
+		Default		string
+	}
 }
 
-// GetConfig retrieves the settings in the JSON configuration file and
+// NewConfig retrieves the settings in the JSON configuration file and
 // populates the fields in the runtime configuration. It also creates
-// subdirectories in the application path if they do not exist.
-func getConfig() (c *Config, err error) {
+// directories if they do not already exist.
+func NewConfig(cf string) (this *Config, err error) {
 
-	c = new(Config)
+	ad := filepath.Dir(os.Args[0])
 
-	ep := filepath.Dir(os.Args[0])
-	fp := filepath.Join(ep, configFile)
+	// Decode JSON from configuration file into config object.
+
+	if dn := filepath.Dir(cf); len(dn) == 0 {
+		cf = filepath.Join(ad, cf)
+	}
 
 	fh, err := os.Open(fp)
+
+	if err != nil {
+		return goutils.ErrorDecorator(err)
+	}
+
 	defer fh.Close()
+	this = &Config{}
+	jd := json.NewDecoder(fh)
 
-	// Decode JSON from configuration file.
-
-	if err == nil {
-		jd := json.NewDecoder(fh)
-		err = jd.Decode(&c)
+	if err = jd.Decode(&this); err != nil {
+		return goutils.ErrorDecorator(err)
 	}
 
-	// If app path is empty, set it to executable path.
+	this.Paths.AppDir = ad
 
-	if err == nil {
-		if len(c.AppPath) == 0 {
-			c.AppPath = ep
+	// Helpers to prepend and/or create paths as necessary.
+
+	var mkd = func(pd, d string) (d string, err error) {
+
+		if dn := filepath.Dir(d); len(dn) == 0 {
+			d = filepath.Join(pd, d)
+		}
+
+		return d, os.MkdirAll(d, DirMode)
+	}
+
+	var mkf = func(pd, f string) (f string, err error) {
+
+		if dn := filepath.Dir(f); len(dn) == 0 {
+			f = filepath.Join(pd, f)
+			return f, os.MkdirAll(pd, DirMode)
+		} else {
+			return f, os.MkdirAll(dn, DirMode)
 		}
 	}
 
-	// Configure and create log directory.
+	// Build directory names and create paths as necessary. If a directory
+	// is relative, prepend the application directory.
 
-	if err == nil {
-
-		d, sd := filepath.Split(c.LogDir)
-
-		if len(d) == 0 {
-			c.LogDir = filepath.Join(c.AppPath, sd)
-		}
-
-		err = os.MkdirAll(c.LogDir, 0755)
+	if this.Paths.LogDir, err = mkd(this.Paths.AppDir, this.Paths.LogDir); err != nil {
+		return goutils.ErrorDecorator(err)
+	}
+	if this.Paths.ReportDir, err = mkd(this.Paths.AppDir, this.Paths.ReportDir); err != nil {
+		return goutils.ErrorDecorator(err)
 	}
 
-	// Configure and create audit directory.
+	// Build file names and create paths as necessary. If a filename is 
+	// relative, prepend the appropriate application directory.
 
-	if err == nil {
-
-		d, sd := filepath.Split(c.AuditDir)
-
-		if len(d) == 0 {
-			c.LogDir = filepath.Join(c.AppPath, sd)
-		}
-
-		err = os.MkdirAll(c.AuditDir, 0755)
+	if this.Files.SystemLog, err = mkf(this.Paths.LogDir, this.Files.SystemLog); err != nil {
+		return goutils.ErrorDecorator(err)
+	}
+	if this.Files.ChangeLog, err = mkf(this.Paths.LogDir, this.Files.ChangeLog); err != nil {
+		return goutils.ErrorDecorator(err)
+	}
+	if this.Files.ErrorLog, err = mkf(this.Paths.LogDir, this.Files.ErrorLog); err != nil {
+		return goutils.ErrorDecorator(err)
+	}
+	if this.Files.Legacy, err = mkf(this.Paths.AppDir, this.Files.Legacy); err != nil {
+		return goutils.ErrorDecorator(err)
 	}
 
-	// Configure and create report directory.
-
-	if err == nil {
-
-		d, sd := filepath.Split(c.ReportDir)
-
-		if len(d) == 0 {
-			c.LogDir = filepath.Join(c.AppPath, sd)
-		}
-
-		err = os.MkdirAll(c.ReportDir, 0755)
-	}
-
-	return c, err
+	return this, err
 }
