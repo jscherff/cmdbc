@@ -63,7 +63,7 @@ type Config struct {
 	Include struct {
 		VendorID	map[string]bool
 		ProductID	map[string]map[string]bool
-		Defaulti	bool
+		Default		bool
 	}
 
 	Format struct {
@@ -89,7 +89,7 @@ func NewConfig(cf string) (this *Config, err error) {
 	fh, err := os.Open(cf)
 
 	if err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 
 	defer fh.Close()
@@ -97,14 +97,14 @@ func NewConfig(cf string) (this *Config, err error) {
 	jd := json.NewDecoder(fh)
 
 	if err = jd.Decode(&this); err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 
 	this.Paths.AppDir = ad
 
 	// Helpers to prepend and/or create paths as necessary.
 
-	var mkd = func(pd, d string) (d string, err error) {
+	var mkd = func(pd, d string) (string, error) {
 
 		if dn := filepath.Dir(d); len(dn) == 0 {
 			d = filepath.Join(pd, d)
@@ -113,7 +113,7 @@ func NewConfig(cf string) (this *Config, err error) {
 		return d, os.MkdirAll(d, DirMode)
 	}
 
-	var mkf = func(pd, f string) (f string, err error) {
+	var mkf = func(pd, f string) (string, error) {
 
 		if dn := filepath.Dir(f); len(dn) == 0 {
 			f = filepath.Join(pd, f)
@@ -127,26 +127,26 @@ func NewConfig(cf string) (this *Config, err error) {
 	// is relative, prepend the application directory.
 
 	if this.Paths.LogDir, err = mkd(this.Paths.AppDir, this.Paths.LogDir); err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 	if this.Paths.ReportDir, err = mkd(this.Paths.AppDir, this.Paths.ReportDir); err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 
 	// Build file names and create paths as necessary. If a filename is 
 	// relative, prepend the appropriate application directory.
 
 	if this.Files.SystemLog, err = mkf(this.Paths.LogDir, this.Files.SystemLog); err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 	if this.Files.ChangeLog, err = mkf(this.Paths.LogDir, this.Files.ChangeLog); err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 	if this.Files.ErrorLog, err = mkf(this.Paths.LogDir, this.Files.ErrorLog); err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 	if this.Files.Legacy, err = mkf(this.Paths.AppDir, this.Files.Legacy); err != nil {
-		return goutils.ErrorDecorator(err)
+		return nil, goutils.ErrorDecorator(err)
 	}
 
 	return this, err

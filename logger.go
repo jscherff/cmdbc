@@ -44,9 +44,9 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 		return h, err
 	}
 
-	var newsl = func(pri srslog.Priority, arg ...string) (s *srslog.Writer, err error) {
+	var newsl = func(prot, raddr, tag string, pri srslog.Priority) (s *srslog.Writer, err error) {
 
-		if s, err = srslog.Dial(arg[1], arg[2], pri, arg[3]); err != nil {
+		if s, err = srslog.Dial(prot, raddr, pri, tag); err != nil {
 			log.Printf(`%v`, goutils.ErrorDecorator(err))
 		}
 
@@ -77,13 +77,13 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 		port, prot, addr := conf.Syslog.Port, conf.Syslog.Protocol, conf.Syslog.Address
 		raddr := strings.Join([]string{addr, port}, `:`)
 
-		if s, err := newsl(PriInfo, port, prot, addr, `gocmdbcli`); err == nil {
+		if s, err := newsl(prot, raddr, `gocmdbcli`, PriInfo); err == nil {
 			sw = append(sw, s)
 		}
-		if s, err := newsl(PriInfo, port, prot, addr, `gocmdbcli`); err == nil {
+		if s, err := newsl(prot, raddr, `gocmdbcli`, PriInfo); err == nil {
 			cw = append(cw, s)
 		}
-		if s, err := newsl(PriErr, port, prot, addr, `gocmdbcli`); err == nil {
+		if s, err := newsl(prot, raddr, `gocmdbcli`, PriErr); err == nil {
 			ew = append(ew, s)
 		}
 	}
@@ -98,9 +98,9 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 		ew = append(ew, ioutil.Discard)
 	}
 
-	sl = log.New(io.MultiWriter(sw...), `system: `, log.LstdFlags)
-	cl = log.New(io.MultiWriter(cw...), `change: `, log.LstdFlags)
-	el = log.New(io.MultiWriter(ew...), `error: `,  log.LstdFlags)
+	sl = log.New(io.MultiWriter(sw...), `sys: `, log.LstdFlags)
+	cl = log.New(io.MultiWriter(cw...), `chg: `, log.LstdFlags)
+	el = log.New(io.MultiWriter(ew...), `err: `, log.LstdFlags)
 
 	return sl, cl, el
 }

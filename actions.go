@@ -28,7 +28,7 @@ func legacyAction(o gocmdb.Reportable) (err error) {
 	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
 
 	if err != nil {
-		err = gocmdb.ErrorDecorator(err)
+		err = goutils.ErrorDecorator(err)
 	}
 
 	return err
@@ -76,7 +76,7 @@ func reportAction(o gocmdb.Reportable) (err error) {
 	}
 
 	if err != nil {
-		err = gocmdb.ErrorDecorator(err)
+		err = goutils.ErrorDecorator(err)
 	}
 
 	return err
@@ -125,7 +125,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 	}
 
 	if err != nil {
-		err = gocmdb.ErrorDecorator(err)
+		err = goutils.ErrorDecorator(err)
 	}
 
 	return err

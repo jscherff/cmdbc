@@ -14,10 +14,7 @@
 
 package main
 
-import (
-	"flag"
-	"fmt"
-)
+import "flag"
 
 var (
 	fsAction = flag.NewFlagSet("action", flag.ExitOnError)
@@ -31,7 +28,7 @@ var (
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFolder = fsReport.String("folder", "", "Write reports to `<path>`")
 	fReportConsole = fsReport.Bool("console", false, "Write reports to console")
-	fReportFormat = fsReport.String("format", "csv", "Report format `{csv|nvp|xml|json}`")
+	fReportFormat = fsReport.String("format", "csv", "Report `<format>` {csv|nvp|xml|json}")
 
 	fsSerial = flag.NewFlagSet("serial", flag.ExitOnError)
 	fSerialCopy = fsSerial.Bool("copy", false, "Copy factory serial number")

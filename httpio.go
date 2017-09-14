@@ -25,6 +25,7 @@ import (
 	//"os"
 	//"path/filepath"
 	"github.com/jscherff/gocmdb"
+	`github.com/jscherff/goutils`
 )
 
 // fetchSnRequest obtains a serial number from the gocmdbd server.
@@ -40,7 +41,7 @@ func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 		err = json.Unmarshal(j, &s)
 	}
 	if err != nil {
-		err = gocmdb.ErrorDecorator(err)
+		err = goutils.ErrorDecorator(err)
 	}
 
 	return s, err
@@ -56,7 +57,7 @@ func checkinRequest(o gocmdb.Registerable) (err error) {
 		_, err = httpRequest(url, j)
 	}
 	if err != nil {
-		err = gocmdb.ErrorDecorator(err)
+		err = goutils.ErrorDecorator(err)
 	}
 
 	return err
@@ -72,10 +73,10 @@ func auditRequest(o gocmdb.Auditable) (err error) {
 	url := fmt.Sprintf("%s/%s", conf.Server.URL, conf.Server.ChangesPath)
 
 	if len(o.ID()) == 0 {
-		return gocmdb.ErrorDecorator(errors.New("no unique ID"))
+		return goutils.ErrorDecorator(errors.New("no unique ID"))
 	}
 	if _, err = os.Stat(conf.Paths.AuditDir); os.IsNotExist(err) {
-		return gocmdb.ErrorDecorator(err)
+		return goutils.ErrorDecorator(err)
 	}
 
 	f := filepath.Join(conf.Paths.AuditDir, o.ID() + ".json")
@@ -98,11 +99,11 @@ func auditRequest(o gocmdb.Auditable) (err error) {
 		_, err = httpRequest(url, j)
 	}
 	if err != nil {
-		err = gocmdb.ErrorDecorator(err)
+		err = goutils.ErrorDecorator(err)
 	}
 */
 	if len(o.ID()) == 0 || len(o.VID()) == 0 || len(o.PID()) == 0 {
-		return gocmdb.ErrorDecorator(errors.New("no unique ID"))
+		return goutils.ErrorDecorator(errors.New("no unique ID"))
 	}
 
 	var j []byte
@@ -114,7 +115,7 @@ func auditRequest(o gocmdb.Auditable) (err error) {
 		_, err = httpRequest(url, j)
 	}
 	if err != nil {
-		err = gocmdb.ErrorDecorator(err)
+		err = goutils.ErrorDecorator(err)
 	}
 
 	return err
@@ -129,7 +130,7 @@ func httpRequest(url string, jreq []byte ) (jresp []byte, err error) {
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jreq))
 
 	if err != nil {
-		return jresp, gocmdb.ErrorDecorator(err)
+		return jresp, goutils.ErrorDecorator(err)
 	}
 
 	req.Header.Add("Content-Type", "application/json; charset=UTF8")
@@ -138,7 +139,7 @@ func httpRequest(url string, jreq []byte ) (jresp []byte, err error) {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		return jresp, gocmdb.ErrorDecorator(err)
+		return jresp, goutils.ErrorDecorator(err)
 	}
 
 	defer resp.Body.Close()
@@ -155,7 +156,7 @@ func httpRequest(url string, jreq []byte ) (jresp []byte, err error) {
 		jresp, err = ioutil.ReadAll(resp.Body)
 	}
 	if err != nil {
-		return jresp, gocmdb.ErrorDecorator(err)
+		return jresp, goutils.ErrorDecorator(err)
 	}
 
 	return jresp, err

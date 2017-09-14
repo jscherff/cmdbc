@@ -22,7 +22,7 @@
 
 	"Logging": {
 		"LogFiles":		true,
-		"Console":		false,
+		"Console":		true,
 		"Syslog":		false
 	},
 
