@@ -16,10 +16,10 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
 	"os"
-
+	"path/filepath"
 	"github.com/jscherff/gocmdb"
+	`github.com/jscherff/goutils`
 )
 
 // legacyAction writes legacy report to application directory.

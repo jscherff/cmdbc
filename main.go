@@ -1,13 +1,13 @@
 // Copyright 2017 John Scherff
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
+// Licensed under the Apache License, Version 2.0 (the `License`);
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
+// distributed under the License is distributed on an `AS IS` BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -15,39 +15,42 @@
 package main
 
 import (
-	"errors"
-	"fmt"
-	"log"
-	"os"
+	`errors`
+	`fmt`
+	`log`
+	`os`
 
-	"github.com/google/gousb"
-	"github.com/jscherff/gocmdb"
-	"github.com/jscherff/gocmdb/usbci"
+	`github.com/google/gousb`
+	`github.com/jscherff/gocmdb`
+	`github.com/jscherff/gocmdb/usbci`
 )
 
-var config *Config
+var (
+	conf *Config
+	slog, clog, elog *log.Logger
+)
 
 func init() {
 
 	var err error
-	config, err = getConfig()
 
-	if err != nil {
-		log.Fatalf("%v", gocmdb.ErrorDecorator(err))
+	// Build systemwide configuration from config file.
+
+	if conf, err = NewConfig(`config.json`); err != nil {
+		log.Fatalf(`%v`, gocmdb.ErrorDecorator(err))
 	}
-}
-
-func main() {
-
-	var err error
 
 	// Process command-line actions and options.
 
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "You must specify an action.\n")
+		fmt.Fprintln(os.Stderr, `You must specify an action.`)
 		fsAction.Usage()
 		os.Exit(1)
 	}
+
+	// Initialized loggers.
+
+	slog, clog, elog = NewLoggers()
 
 	// Parse action flag.
 
@@ -59,18 +62,23 @@ func main() {
 
 	case *fActionReport:
 		if fsReport.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
-			fmt.Fprintf(os.Stderr, "You must specify an option.\n")
+			fmt.Fprintln(os.Stderr, `You must specify an option.`)
 			fsReport.Usage()
 			os.Exit(1)
 		}
 
 	case *fActionSerial:
 		if fsSerial.Parse(os.Args[2:]); fsSerial.NFlag() == 0 {
-			fmt.Fprintf(os.Stderr, "You must specify an option.\n")
+			fmt.Fprintln(os.Stderr, `You must specify an option.`)
 			fsSerial.Usage()
 			os.Exit(1)
 		}
 	}
+}
+
+func main() {
+
+	var err error
 
 	// Instantiate context to enumerate attached USB devices.
 
@@ -93,7 +101,7 @@ func main() {
 	// Log and exit if no relevant devices found.
 
 	if len(devices) == 0 {
-		log.Fatalf("%v", gocmdb.ErrorDecorator(errors.New("no devices found")))
+		elog.Fatalf(`%v`, gocmdb.ErrorDecorator(errors.New(`no devices found`)))
 	}
 
 	// Pass devices to relevant device handlers.
@@ -102,24 +110,30 @@ func main() {
 
 		defer device.Close()
 
-		var gusb *usbci.Generic
-		var musb *usbci.Magtek
+		slog.Printf(`found USB device, VID %s, VID %s`,
+			device.desc.Vendor.String(),
+			device.desc.Product.String(),
+		)
 
 		switch uint16(device.Desc.Vendor) {
 
 		case usbci.MagtekVendorID:
-			if musb, err = usbci.NewMagtek(device); musb != nil {
-				err = magtekRouter(musb)
+
+			if d, err := usbci.NewMagtek(device); d!= nil {
+				elog.Printf(gocmdb.ErrorDecorator(err))
+			} else {
+				slog.Printf(`identified USB device as %s`, d.Type())
+				magtekRouter(d)
 			}
 
 		default:
-			if gusb, err = usbci.NewGeneric(device); gusb != nil {
-				err = genericRouter(gusb)
-			}
-		}
 
-		if err != nil {
-			log.Printf("%v", err)
+			if d, err := usbci.NewGeneric(device); d!= nil {
+				elog.Printf(gocmdb.ErrorDecorator(err))
+			} else {
+				slog.Printf(`identified USB device as %s`, d.Type())
+				genericRouter(d)
+			}
 		}
 	}
 }

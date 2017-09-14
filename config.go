@@ -18,6 +18,7 @@ import (
 	`encoding/json`
 	`path/filepath`
 	`os`
+	`github.com/jscherff/goutils`
 )
 
 const DirMode = 0750
@@ -85,7 +86,7 @@ func NewConfig(cf string) (this *Config, err error) {
 		cf = filepath.Join(ad, cf)
 	}
 
-	fh, err := os.Open(fp)
+	fh, err := os.Open(cf)
 
 	if err != nil {
 		return goutils.ErrorDecorator(err)

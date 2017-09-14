@@ -17,8 +17,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
-	"github.com/jscherff/gocmdb"
 )
 
 var (
@@ -33,7 +31,7 @@ var (
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFolder = fsReport.String("folder", "", "Write reports to `<path>`")
 	fReportConsole = fsReport.Bool("console", false, "Write reports to console")
-	fReportFormat = fsReportString("format", "csv", "Report format `{csv|nvp|xml|json}`")
+	fReportFormat = fsReport.String("format", "csv", "Report format `{csv|nvp|xml|json}`")
 
 	fsSerial = flag.NewFlagSet("serial", flag.ExitOnError)
 	fSerialCopy = fsSerial.Bool("copy", false, "Copy factory serial number")
