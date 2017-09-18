@@ -15,43 +15,15 @@
 package main
 
 import (
-	`github.com/jscherff/gocmdb`
+	`os`
+	`github.com/RackSec/srslog`
 )
 
-func magtekRouter(musb gocmdb.MagtekUSB) (err error) {
+const (
+	PriInfo = srslog.LOG_LOCAL7|srslog.LOG_INFO
+	PriErr = srslog.LOG_LOCAL7|srslog.LOG_ERR
+	FileFlags = os.O_APPEND|os.O_CREATE|os.O_WRONLY
+	FileMode = 0640
+	DirMode = 0750
+)
 
-	switch {
-
-	case *fActionSerial:
-		err = serialAction(musb)
-		if err == nil {defer musb.Reset()}
-
-	default:
-		err = genericRouter(musb)
-	}
-
-	return err
-}
-
-func genericRouter(gusb gocmdb.GenericUSB) (err error) {
-
-	switch {
-
-	case *fActionAudit:
-		err = auditAction(gusb)
-
-	case *fActionCheckin:
-		err = checkinRequest(gusb)
-
-	case *fActionLegacy:
-		err = legacyAction(gusb)
-
-	case *fActionReport:
-		err = reportAction(gusb)
-
-	case *fActionReset:
-		defer gusb.Reset()
-	}
-
-	return err
-}

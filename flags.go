@@ -14,7 +14,7 @@
 
 package main
 
-import "flag"
+import `flag`
 
 var (
 	fsAction = flag.NewFlagSet("action", flag.ExitOnError)

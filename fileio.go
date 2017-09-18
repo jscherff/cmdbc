@@ -15,12 +15,13 @@
 package main
 
 import (
-	"path/filepath"
-	"io/ioutil"
-	"os"
+	`path/filepath`
+	`io/ioutil`
+	`os`
+	`github.com/jscherff/goutil`
 )
 
-func writeFile(b []byte, p string) (e error) {
+func writeFile(b []byte, p string) (err error) {
 
 	d, f := filepath.Split(p)
 
@@ -29,14 +30,18 @@ func writeFile(b []byte, p string) (e error) {
 		p = filepath.Join(d, f)
 	}
 
-	if e = os.MkdirAll(d, 0755); e == nil {
-		e = ioutil.WriteFile(p, b, 0644)
+	if err = os.MkdirAll(d, DirMode); err == nil {
+		err = ioutil.WriteFile(p, b, FileMode)
 	}
 
-	return e
+	if err != nil {
+		elog.Println(goutil.ErrorDecorator(err))
+	}
+
+	return err
 }
 
-func readFile(p string, b []byte) (e error) {
+func readFile(p string, b []byte) (err error) {
 
 	d, f := filepath.Split(p)
 
@@ -45,7 +50,9 @@ func readFile(p string, b []byte) (e error) {
 		p = filepath.Join(d, f)
 	}
 
-	b, e = ioutil.ReadFile(p)
+	if b, err = ioutil.ReadFile(p); err != nil {
+		elog.Println(goutil.ErrorDecorator(err))
+	}
 
-	return e
+	return err
 }

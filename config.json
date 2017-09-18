@@ -2,6 +2,7 @@
 	"Paths": {
 		"AppDir":		"",
 		"LogDir":		"log",
+		"StateDir":		"state",
 		"ReportDir":		"report"
 	},
 

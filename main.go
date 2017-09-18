@@ -1,13 +1,13 @@
 // Copyright 2017 John Scherff
 //
-// Licensed under the Apache License, Version 2.0 (the `License`);
+// Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 //     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an `AS IS` BASIS,
+// distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -22,7 +22,7 @@ import (
 
 	`github.com/google/gousb`
 	`github.com/jscherff/gocmdb/usbci`
-	`github.com/jscherff/goutils`
+	`github.com/jscherff/goutil`
 )
 
 var (
@@ -37,7 +37,7 @@ func init() {
 	// Build systemwide configuration from config file.
 
 	if conf, err = NewConfig(`config.json`); err != nil {
-		log.Fatalf(`%v`, goutils.ErrorDecorator(err))
+		log.Fatalf(`%v`, goutil.ErrorDecorator(err))
 	}
 
 	// Process command-line actions and options.
@@ -99,7 +99,7 @@ func main() {
 	// Log and exit if no relevant devices found.
 
 	if len(devices) == 0 {
-		elog.Fatalf(`%v`, goutils.ErrorDecorator(errors.New(`no devices found`)))
+		elog.Fatalf(`%v`, goutil.ErrorDecorator(errors.New(`no devices found`)))
 	}
 
 	// Pass devices to relevant device handlers.
@@ -118,7 +118,7 @@ func main() {
 		case usbci.MagtekVendorID:
 
 			if d, err := usbci.NewMagtek(device); err != nil {
-				elog.Printf("%v", goutils.ErrorDecorator(err))
+				elog.Printf("%v", goutil.ErrorDecorator(err))
 			} else {
 				slog.Printf(`identified USB device as %s`, d.Type())
 				magtekRouter(d)
@@ -127,7 +127,7 @@ func main() {
 		default:
 
 			if d, err := usbci.NewGeneric(device); err != nil {
-				elog.Printf("%v", goutils.ErrorDecorator(err))
+				elog.Printf("%v", goutil.ErrorDecorator(err))
 			} else {
 				slog.Printf(`identified USB device as %s`, d.Type())
 				genericRouter(d)

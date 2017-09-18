@@ -1,0 +1,86 @@
+sys: 2017/09/14 12:59:44 found USB device, VID 0801, VID 0001
+sys: 2017/09/14 12:59:44 identified USB device as *usbci.Magtek
+sys: 2017/09/14 13:00:38 found USB device, VID 0801, VID 0001
+sys: 2017/09/14 13:00:38 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:13:56 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:13:56 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:14:46 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:14:47 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:16:17 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:16:17 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:17:20 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:17:20 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:17:48 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:17:49 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:21:43 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:21:44 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:23:38 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:23:38 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:25:01 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:25:01 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:25:40 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:25:41 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:26:22 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:26:23 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:26:52 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:26:52 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:27:19 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:27:19 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:27:29 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:27:29 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:27:29 http status "404 Not Found": unable to find or retrieve object
+system: 2017/09/14 16:27:50 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:27:50 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:27:50 http status "404 Not Found": unable to find or retrieve object
+system: 2017/09/14 16:29:11 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:29:11 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:29:11 http status "404 Not Found": unable to find or retrieve object
+system: 2017/09/14 16:34:12 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:34:12 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:34:18 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:34:18 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:37:43 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:37:43 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:39:53 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:39:53 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:39:53 http status "304 Not Modified": request processed and no changes found
+system: 2017/09/14 16:43:49 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:43:50 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:43:50 http status "304 Not Modified": request processed and no changes found
+system: 2017/09/14 16:45:21 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:45:22 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:45:22 http status "304 Not Modified": request processed and no changes found
+system: 2017/09/14 16:46:14 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:46:14 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:46:14 http status "200 OK": request processed with no errors
+system: 2017/09/14 16:46:44 found USB device, VID 0801, VID 0001
+system: 2017/09/14 16:46:44 identified USB device as *usbci.Magtek
+system: 2017/09/14 16:46:44 http status "304 Not Modified": request processed and no changes found
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek

@@ -15,33 +15,54 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	//TODO: cleanup
-	//"os"
-	//"path/filepath"
-	"github.com/jscherff/gocmdb"
-	`github.com/jscherff/goutils`
+	`bytes`
+	`encoding/json`
+	`errors`
+	`fmt`
+	`io/ioutil`
+	`net/http`
+	`github.com/jscherff/gocmdb`
+	`github.com/jscherff/goutil`
 )
+
+var HttpStatusMap = map[int]string {
+
+	http.StatusOK:			`request processed with no errors`,		// 200
+	http.StatusCreated:		`request processed and object created`,		// 201
+	http.StatusAccepted:		`request processed and data accepted`,		// 202
+	http.StatusNoContent:		`request processed and no action taken`,	// 204
+
+	http.StatusNotModified:		`request processed and no changes found`,	// 302
+
+	http.StatusBadRequest:		`request unsupported or malformed`,		// 400
+	http.StatusNotFound:		`unable to find or retrieve object`,		// 404
+	http.StatusNotAcceptable:	`insufficient or incorrect data`,		// 406
+	http.StatusUnprocessableEntity:	`unable to decode request`,			// 422
+	http.StatusFailedDependency:	`request condition not satisified`,		// 424
+
+	http.StatusInternalServerError:	`unable to process request`,			// 500
+}
 
 // fetchSnRequest obtains a serial number from the gocmdbd server.
 func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", conf.Server.URL, conf.Server.FetchSnPath, o.Host(), o.VID, o.PID())
 
-	if j, err = o.JSON(); err == nil {
-		j, err = httpRequest(url, j)
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.FetchSnPath, o.Host(), o.VID, o.PID())
+
+	if j, err = o.JSON(); err != nil {
+		elog.Println(goutil.ErrorDecorator(err))
+		return s, err
 	}
-	if err == nil {
-		err = json.Unmarshal(j, &s)
+
+	if j, err = httpRequest(url, j); err != nil {
+		// Error already decorated and logged.
+		return s, err
 	}
-	if err != nil {
-		err = goutils.ErrorDecorator(err)
+
+	if err = json.Unmarshal(j, &s); err != nil {
+		elog.Println(goutil.ErrorDecorator(err))
 	}
 
 	return s, err
@@ -51,113 +72,98 @@ func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 func checkinRequest(o gocmdb.Registerable) (err error) {
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s/%s/%s/%s", conf.Server.URL, conf.Server.FetchSnPath, o.Host(), o.VID, o.PID())
 
-	if j, err = o.JSON(); err == nil {
-		_, err = httpRequest(url, j)
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.CheckinPath, o.Host(), o.VID(), o.PID())
+
+	if j, err = o.JSON(); err != nil {
+		elog.Println(goutil.ErrorDecorator(err))
+		return err
 	}
-	if err != nil {
-		err = goutils.ErrorDecorator(err)
-	}
+
+	_, err = httpRequest(url, j)
+	// Error already decorated and logged.
 
 	return err
 }
 
-// auditRequest performs an audit and sends the results to the gocmdbd server.
-func auditRequest(o gocmdb.Auditable) (err error) {
+// auditRequest requests a server-side audit against the previous checkin.
+func auditRequest(o gocmdb.Auditable) (ss [][]string, err error) {
 
-/*
-	TODO: cleanup
-
-	var j []byte
-	url := fmt.Sprintf("%s/%s", conf.Server.URL, conf.Server.ChangesPath)
-
-	if len(o.ID()) == 0 {
-		return goutils.ErrorDecorator(errors.New("no unique ID"))
-	}
-	if _, err = os.Stat(conf.Paths.AuditDir); os.IsNotExist(err) {
-		return goutils.ErrorDecorator(err)
-	}
-
-	f := filepath.Join(conf.Paths.AuditDir, o.ID() + ".json")
-
-	// If the audit file doesn't exist, create a change record indicating
-	// a change from no serial number to a serial number, then create the
-	// audit file. Otherwise, audit against the previous audit file.
-
-	if _, err = os.Stat(f); os.IsNotExist(err) {
-		o.AddChange("SerialNum", "", o.ID())
-		err = o.Save(f)
-	} else {
-		err = o.AuditFile(f)
-	}
-
-	if err == nil {
-		j, err = o.JSON()
-	}
-	if err == nil {
-		_, err = httpRequest(url, j)
-	}
-	if err != nil {
-		err = goutils.ErrorDecorator(err)
-	}
-*/
 	if len(o.ID()) == 0 || len(o.VID()) == 0 || len(o.PID()) == 0 {
-		return goutils.ErrorDecorator(errors.New("no unique ID"))
+		err = fmt.Errorf(`no unique ID`)
+		elog.Println(goutil.ErrorDecorator(err))
+		return ss, err
 	}
 
 	var j []byte
-	url := fmt.Sprintf("%s/%s/%s/%s/%s/%s", conf.Server.URL, conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
 
-	j, err = o.JSON()
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
 
-	if err == nil {
-		_, err = httpRequest(url, j)
-	}
-	if err != nil {
-		err = goutils.ErrorDecorator(err)
+	if j, err = o.JSON(); err != nil {
+		elog.Println(goutil.ErrorDecorator(err))
+		return ss, err
 	}
 
-	return err
+	if j, err = httpRequest(url, j); err != nil {
+		// Error already decorated and logged.
+		return ss, err
+	}
+
+	if len(j) == 0 {
+		return ss, err
+	}
+
+	if err = json.Unmarshal(j, &ss); err != nil {
+		elog.Println(goutil.ErrorDecorator(err))
+	}
+
+	return ss, err
 }
 
 // httpRequest sends JSON requests to the gocmdbd server for other functions.
 // Error decoration will be handled by caller functions.
-func httpRequest(url string, jreq []byte ) (jresp []byte, err error) {
+func httpRequest(url string, jreq []byte ) (jrsp []byte, err error) {
 
 	client := &http.Client{}
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jreq))
 
 	if err != nil {
-		return jresp, goutils.ErrorDecorator(err)
+		elog.Println(goutil.ErrorDecorator(err))
+		return jrsp, err
 	}
 
-	req.Header.Add("Content-Type", "application/json; charset=UTF8")
-	req.Header.Add("Accept", "application/json; charset=UTF8")
-	req.Header.Add("X-Custom-Header", "gocmdb")
-	resp, err := client.Do(req)
+	req.Header.Add(`Content-Type`, `application/json; charset=UTF8`)
+	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
+	req.Header.Add(`X-Custom-Header`, `gocmdb`)
+
+	rsp, err := client.Do(req)
 
 	if err != nil {
-		return jresp, goutils.ErrorDecorator(err)
+		elog.Println(goutil.ErrorDecorator(err))
+		return jrsp, err
 	}
 
-	defer resp.Body.Close()
+	defer rsp.Body.Close()
 
-	switch resp.StatusCode {
-	case http.StatusOK:
-	case http.StatusCreated:
-	case http.StatusAccepted:
-	default:
-		err = fmt.Errorf("http response status %s", resp.Status)
+	msg := fmt.Sprintf(`http status %q: %s`,
+		rsp.Status, HttpStatusMap[rsp.StatusCode])
+
+	if rsp.StatusCode < 400 {
+		slog.Println(msg)
+	} else {
+		elog.Println(goutil.ErrorDecorator(errors.New(msg)))
 	}
 
-	if err == nil {
-		jresp, err = ioutil.ReadAll(resp.Body)
-	}
+	jrsp, err = ioutil.ReadAll(rsp.Body)
+
 	if err != nil {
-		return jresp, goutils.ErrorDecorator(err)
+		elog.Println(goutil.ErrorDecorator(err))
 	}
 
-	return jresp, err
+	// TODO: return status code so callers can decide what to do.
+
+	return jrsp, err
 }

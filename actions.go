@@ -15,11 +15,12 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"github.com/jscherff/gocmdb"
-	`github.com/jscherff/goutils`
+	//`encoding/json`
+	`fmt`
+	`os`
+	`path/filepath`
+	`github.com/jscherff/gocmdb`
+	`github.com/jscherff/goutil`
 )
 
 // legacyAction writes legacy report to application directory.
@@ -28,7 +29,7 @@ func legacyAction(o gocmdb.Reportable) (err error) {
 	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
 
 	if err != nil {
-		err = goutils.ErrorDecorator(err)
+		elog.Println(goutil.ErrorDecorator(err))
 	}
 
 	return err
@@ -42,43 +43,41 @@ func reportAction(o gocmdb.Reportable) (err error) {
 
 	switch *fReportFormat {
 
-	case "csv":
+	case `csv`:
 		b, err = o.CSV()
 
-	case "nvp":
+	case `nvp`:
 		b, err = o.NVP()
 
-	case "xml":
+	case `xml`:
 		b, err = o.PrettyXML()
 
-	case "json":
+	case `json`:
 		b, err = o.PrettyJSON()
 
 	default:
-		err = fmt.Errorf("invalid format %q", *fReportFormat)
-	}
-
-	if err == nil {
-
-		switch {
-
-		case *fReportConsole:
-			fmt.Fprintf(os.Stdout, string(b))
-
-		case len(*fReportFolder) > 0:
-			err = writeFile(b, filepath.Join(*fReportFolder, o.Filename()))
-
-		default:
-			f := fmt.Sprintf("%s.%s", o.Filename(), *fReportFormat)
-			err = writeFile(b, filepath.Join(conf.Paths.ReportDir, f))
-		}
-
+		err = fmt.Errorf(`invalid format %q`, *fReportFormat)
 	}
 
 	if err != nil {
-		err = goutils.ErrorDecorator(err)
+		elog.Println(goutil.ErrorDecorator(err))
+		return err
 	}
 
+	switch {
+
+	case *fReportConsole:
+		fmt.Fprintf(os.Stdout, string(b))
+
+	case len(*fReportFolder) > 0:
+		err = writeFile(b, filepath.Join(*fReportFolder, o.Filename()))
+
+	default:
+		f := fmt.Sprintf(`%s.%s`, o.Filename(), *fReportFormat)
+		err = writeFile(b, filepath.Join(conf.Paths.ReportDir, f))
+	}
+
+	// Error already decorated and logged.
 	return err
 }
 
@@ -89,44 +88,122 @@ func serialAction(o gocmdb.Configurable) (err error) {
 	var s string
 
 	if *fSerialErase {
-		err = o.EraseDeviceSN()
-	}
-
-	if err == nil {
-		s = o.ID()
-
-		if len(s) > 0 && !*fSerialForce {
-			err = fmt.Errorf("serial number already set to %q", s)
+		if err = o.EraseDeviceSN(); err != nil {
+			elog.Println(goutil.ErrorDecorator(err))
+			return err
 		}
 	}
 
-	if err == nil {
-
-		switch {
-
-		case len(*fSerialSet) > 0:
-			err = o.SetDeviceSN(*fSerialSet)
-
-		case *fSerialCopy:
-			err = o.CopyFactorySN(7)
-
-		case *fSerialFetch:
-			if s, err = fetchSnRequest(o); err != nil {
-				break
-			}
-			if len(s) == 0 {
-				err = fmt.Errorf("empty serial number from server")
-				break
-			}
-			if err = o.SetDeviceSN(s); err != nil {
-				err = checkinRequest(o)
-			}
-		}
+	if len(o.ID()) > 0 && !*fSerialForce {
+		err = fmt.Errorf(`serial number already set to %q`, s)
+		elog.Println(goutil.ErrorDecorator(err))
+		return err
 	}
 
-	if err != nil {
-		err = goutils.ErrorDecorator(err)
+	switch {
+
+	case len(*fSerialSet) > 0:
+		err = o.SetDeviceSN(*fSerialSet)
+		elog.Println(goutil.ErrorDecorator(err))
+
+	case *fSerialCopy:
+		err = o.CopyFactorySN(7)
+		elog.Println(goutil.ErrorDecorator(err))
+
+	case *fSerialFetch:
+
+		if s, err = fetchSnRequest(o); err != nil {
+			// Error already decorated and logged.
+			break
+		}
+
+		if len(s) == 0 {
+			err = fmt.Errorf(`empty serial number from server`)
+			elog.Println(goutil.ErrorDecorator(err))
+			break
+		}
+
+		if err = o.SetDeviceSN(s); err != nil {
+			elog.Println(goutil.ErrorDecorator(err))
+			break
+		}
+
+		if err = checkinRequest(o); err != nil {
+			elog.Println(goutil.ErrorDecorator(err))
+		}
 	}
 
 	return err
 }
+
+// auditAdtion requests a server-side audit against the previous checkin.
+func auditAction(o gocmdb.Auditable) (err error) {
+
+	//var j []byte
+
+	if o.ID() == `` {
+		err = fmt.Errorf(`device with VID %q PID %q has no serial number`, o.VID(), o.PID())
+		elog.Println(err.Error())
+		return err
+	}
+
+	f := filepath.Join(conf.Paths.StateDir, fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()))
+	fi, err := os.Stat(f)
+
+	if err != nil {
+		elog.Println(err.Error())
+		return err
+	} else {
+		slog.Printf(`found state file %q size %d last modified %s`, fi.Name(), fi.Size(), fi.ModTime())
+	}
+
+	chgs, err := o.CompareFile(f)
+
+	if err != nil {
+		elog.Println(err.Error())
+		return err
+	}
+
+	if len(chgs) > 0 {
+		for _, chg := range chgs {
+			clog.Printf(`device %s-%s-%s since %s, property %q was %q, now %q`,
+				o.VID(), o.PID(), o.ID(), fi.ModTime(), chg[0], chg[1], chg[2])
+		}
+	}
+
+	// TODO: report to server
+	// o.Changes = chgs
+
+	if err = o.Save(f); err != nil {
+		elog.Println(err.Error())
+	}
+
+	return err
+}
+
+/*
+	fmt.Println("\nSaving 'test2.json'")
+	o.Save("test2.json")
+
+	fmt.Println("\no.CSV()")
+	b, err := o.CSV()
+	fmt.Println(string(b), err)
+
+	fmt.Println("\no.JSON()")
+	b, err = o.JSON()
+	fmt.Println(string(b), err)
+
+	fmt.Println("\no.XML()")
+	b, err = o.XML()
+	fmt.Println(string(b), err)
+
+	fmt.Println("\no.NVP()")
+	b, err = o.NVP()
+	fmt.Println(string(b), err)
+
+	fmt.Println("\nComparing to 'test.json'")
+	ss, err := o.CompareFile("test.json")
+	fmt.Println(ss)
+
+	return err
+*/

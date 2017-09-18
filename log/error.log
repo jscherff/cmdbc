@@ -1,0 +1,24 @@
+error:  2017/09/14 16:13:56 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/fetchsn/John-SurfacePro/%!s(func() string=0x5bc640)/0001: invalid URL escape "%!s"
+error:  2017/09/14 16:14:47 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/fetchsn/John-SurfacePro/%!s(func() string=0x5bc670)/0001: invalid URL escape "%!s"
+error:  2017/09/14 16:16:17 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc640)/0001: invalid URL escape "%!s"
+error:  2017/09/14 16:17:20 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc670)/0001: invalid URL escape "%!s"
+error:  2017/09/14 16:17:49 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc6c0)/0001: invalid URL escape "%!s"
+error:  2017/09/14 16:21:44 httpio.go:138: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc860)/0001: invalid URL escape "%!s"
+error:  2017/09/14 16:25:02 httpio.go:140: main.httpRequest(): Post http://localhost:8080/usbci/checkin/John-SurfacePro/0801/0001: dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refused it.
+error:  2017/09/14 16:25:41 httpio.go:150: main.httpRequest(): http status code 201 (201 Created): request processed and object created
+error:  2017/09/14 16:26:23 httpio.go:150: main.httpRequest(): http status 'É': 201 Created%!(EXTRA string=request processed and object created)
+error:  2017/09/14 16:26:52 httpio.go:150: main.httpRequest(): http status %!s(int=201): 201 Created%!(EXTRA string=request processed and object created)
+error:  2017/09/14 16:27:19 httpio.go:150: main.httpRequest(): http status "201 Created": request processed and object created
+error:  2017/09/14 16:27:29 httpio.go:114: main.auditRequest(): unexpected end of JSON input
+error:  2017/09/14 16:27:50 httpio.go:114: main.auditRequest(): unexpected end of JSON input
+error:  2017/09/14 16:29:11 httpio.go:114: main.auditRequest(): unexpected end of JSON input
+error:  2017/09/14 16:34:12 httpio.go:150: main.httpRequest(): http status "201 Created": request processed and object created
+error:  2017/09/14 16:34:18 httpio.go:150: main.httpRequest(): http status "304 Not Modified": request processed and no changes found
+error:  2017/09/14 16:34:18 httpio.go:114: main.auditRequest(): unexpected end of JSON input
+error:  2017/09/14 16:37:43 httpio.go:151: main.httpRequest(): http status "304 Not Modified": request processed and no changes found
+error:  2017/09/14 16:37:43 httpio.go:115: main.auditRequest(): unexpected end of JSON input
+error:  2017/09/14 16:39:53 httpio.go:115: main.auditRequest(): unexpected end of JSON input
+error:  2017/09/14 16:43:50 httpio.go:115: main.auditRequest(): unexpected end of JSON input
+httpio.go:145: main.httpRequest(): Post http://localhost:8080/usbci/audit/John-SurfacePro/0801/0001/24F0002: dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refused it.
+main.go:102: main.main(): no devices found
+GetFileAttributesEx C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0003.json: The system cannot find the file specified.
