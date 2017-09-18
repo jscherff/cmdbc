@@ -21,7 +21,6 @@ import (
 	`os`
 	`strings`
 	`github.com/RackSec/srslog`
-	`github.com/jscherff/goutil`
 )
 
 func NewLoggers() (sl, cl, el *log.Logger) {
@@ -31,7 +30,7 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 	var newfl = func(f string) (h *os.File, err error) {
 
 		if h, err = os.OpenFile(f, FileFlags, FileMode); err != nil {
-			log.Printf(`%v`, goutil.ErrorDecorator(err))
+			log.Println(err.Error())
 		}
 
 		return h, err
@@ -40,7 +39,7 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 	var newsl = func(prot, raddr, tag string, pri srslog.Priority) (s *srslog.Writer, err error) {
 
 		if s, err = srslog.Dial(prot, raddr, pri, tag); err != nil {
-			log.Printf(`%v`, goutil.ErrorDecorator(err))
+			log.Println(err.Error())
 		}
 
 		return s, err
@@ -91,12 +90,9 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 		ew = append(ew, ioutil.Discard)
 	}
 
-	//sl = log.New(io.MultiWriter(sw...), `system: `, log.LstdFlags)
-	//cl = log.New(io.MultiWriter(cw...), `change: `, log.LstdFlags)
-	//el = log.New(io.MultiWriter(ew...), `error:  `, log.LstdFlags)
-	sl = log.New(io.MultiWriter(sw...), ``, 0)
-	cl = log.New(io.MultiWriter(cw...), ``, 0)
-	el = log.New(io.MultiWriter(ew...), ``, 0)
+	sl = log.New(io.MultiWriter(sw...), `system `, log.LstdFlags|log.Lshortfile)
+	cl = log.New(io.MultiWriter(cw...), `change `, log.LstdFlags|log.Lshortfile)
+	el = log.New(io.MultiWriter(ew...), `error `, log.LstdFlags|log.Lshortfile)
 
 	return sl, cl, el
 }

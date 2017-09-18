@@ -18,7 +18,6 @@ import (
 	`encoding/json`
 	`path/filepath`
 	`os`
-	`github.com/jscherff/goutil`
 )
 
 // Config holds the application configuration settings. The struct tags
@@ -88,7 +87,7 @@ func NewConfig(cf string) (this *Config, err error) {
 	fh, err := os.Open(cf)
 
 	if err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 
 	defer fh.Close()
@@ -96,7 +95,7 @@ func NewConfig(cf string) (this *Config, err error) {
 	jd := json.NewDecoder(fh)
 
 	if err = jd.Decode(&this); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 
 	this.Paths.AppDir = ad
@@ -124,29 +123,29 @@ func NewConfig(cf string) (this *Config, err error) {
 	// is relative, prepend the application directory.
 
 	if this.Paths.LogDir, err = mkd(this.Paths.AppDir, this.Paths.LogDir); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 	if this.Paths.StateDir, err = mkd(this.Paths.AppDir, this.Paths.StateDir); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 	if this.Paths.ReportDir, err = mkd(this.Paths.AppDir, this.Paths.ReportDir); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 
 	// Build file names and create paths as necessary. If a filename is 
 	// relative, prepend the appropriate application directory.
 
 	if this.Files.SystemLog, err = mkf(this.Paths.LogDir, this.Files.SystemLog); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 	if this.Files.ChangeLog, err = mkf(this.Paths.LogDir, this.Files.ChangeLog); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 	if this.Files.ErrorLog, err = mkf(this.Paths.LogDir, this.Files.ErrorLog); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 	if this.Files.Legacy, err = mkf(this.Paths.AppDir, this.Files.Legacy); err != nil {
-		return nil, goutil.ErrorDecorator(err)
+		return nil, err
 	}
 
 	return this, err

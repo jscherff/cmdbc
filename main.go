@@ -15,14 +15,12 @@
 package main
 
 import (
-	`errors`
 	`fmt`
 	`log`
 	`os`
 
 	`github.com/google/gousb`
 	`github.com/jscherff/gocmdb/usbci`
-	`github.com/jscherff/goutil`
 )
 
 var (
@@ -37,7 +35,7 @@ func init() {
 	// Build systemwide configuration from config file.
 
 	if conf, err = NewConfig(`config.json`); err != nil {
-		log.Fatalf(`%v`, goutil.ErrorDecorator(err))
+		log.Fatalf(err.Error())
 	}
 
 	// Process command-line actions and options.
@@ -99,7 +97,7 @@ func main() {
 	// Log and exit if no relevant devices found.
 
 	if len(devices) == 0 {
-		elog.Fatalf(`%v`, goutil.ErrorDecorator(errors.New(`no devices found`)))
+		elog.Fatalf(`no devices found`)
 	}
 
 	// Pass devices to relevant device handlers.
@@ -108,7 +106,7 @@ func main() {
 
 		defer device.Close()
 
-		slog.Printf(`found USB device, VID %s, VID %s`,
+		slog.Printf(`found USB device: VID %s PID %s`,
 			device.Desc.Vendor.String(),
 			device.Desc.Product.String(),
 		)
@@ -118,7 +116,7 @@ func main() {
 		case usbci.MagtekVendorID:
 
 			if d, err := usbci.NewMagtek(device); err != nil {
-				elog.Printf("%v", goutil.ErrorDecorator(err))
+				elog.Println(err.Error())
 			} else {
 				slog.Printf(`identified USB device as %s`, d.Type())
 				magtekRouter(d)
@@ -127,7 +125,7 @@ func main() {
 		default:
 
 			if d, err := usbci.NewGeneric(device); err != nil {
-				elog.Printf("%v", goutil.ErrorDecorator(err))
+				elog.Println(err.Error())
 			} else {
 				slog.Printf(`identified USB device as %s`, d.Type())
 				genericRouter(d)

@@ -18,7 +18,6 @@ import (
 	`path/filepath`
 	`io/ioutil`
 	`os`
-	`github.com/jscherff/goutil`
 )
 
 func writeFile(b []byte, p string) (err error) {
@@ -35,7 +34,7 @@ func writeFile(b []byte, p string) (err error) {
 	}
 
 	if err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 	}
 
 	return err
@@ -51,7 +50,7 @@ func readFile(p string, b []byte) (err error) {
 	}
 
 	if b, err = ioutil.ReadFile(p); err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 	}
 
 	return err

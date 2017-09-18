@@ -17,12 +17,10 @@ package main
 import (
 	`bytes`
 	`encoding/json`
-	`errors`
 	`fmt`
 	`io/ioutil`
 	`net/http`
 	`github.com/jscherff/gocmdb`
-	`github.com/jscherff/goutil`
 )
 
 var HttpStatusMap = map[int]string {
@@ -52,7 +50,7 @@ func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 		conf.Server.FetchSnPath, o.Host(), o.VID, o.PID())
 
 	if j, err = o.JSON(); err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return s, err
 	}
 
@@ -62,7 +60,7 @@ func fetchSnRequest(o gocmdb.Registerable) (s string, err error) {
 	}
 
 	if err = json.Unmarshal(j, &s); err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 	}
 
 	return s, err
@@ -77,7 +75,7 @@ func checkinRequest(o gocmdb.Registerable) (err error) {
 		conf.Server.CheckinPath, o.Host(), o.VID(), o.PID())
 
 	if j, err = o.JSON(); err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return err
 	}
 
@@ -92,7 +90,7 @@ func auditRequest(o gocmdb.Auditable) (ss [][]string, err error) {
 
 	if len(o.ID()) == 0 || len(o.VID()) == 0 || len(o.PID()) == 0 {
 		err = fmt.Errorf(`no unique ID`)
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return ss, err
 	}
 
@@ -102,7 +100,7 @@ func auditRequest(o gocmdb.Auditable) (ss [][]string, err error) {
 		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
 
 	if j, err = o.JSON(); err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return ss, err
 	}
 
@@ -116,7 +114,7 @@ func auditRequest(o gocmdb.Auditable) (ss [][]string, err error) {
 	}
 
 	if err = json.Unmarshal(j, &ss); err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 	}
 
 	return ss, err
@@ -131,7 +129,7 @@ func httpRequest(url string, jreq []byte ) (jrsp []byte, err error) {
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jreq))
 
 	if err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return jrsp, err
 	}
 
@@ -142,7 +140,7 @@ func httpRequest(url string, jreq []byte ) (jrsp []byte, err error) {
 	rsp, err := client.Do(req)
 
 	if err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return jrsp, err
 	}
 
@@ -154,13 +152,13 @@ func httpRequest(url string, jreq []byte ) (jrsp []byte, err error) {
 	if rsp.StatusCode < 400 {
 		slog.Println(msg)
 	} else {
-		elog.Println(goutil.ErrorDecorator(errors.New(msg)))
+		elog.Println(msg)
 	}
 
 	jrsp, err = ioutil.ReadAll(rsp.Body)
 
 	if err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 	}
 
 	// TODO: return status code so callers can decide what to do.

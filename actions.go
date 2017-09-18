@@ -20,7 +20,6 @@ import (
 	`os`
 	`path/filepath`
 	`github.com/jscherff/gocmdb`
-	`github.com/jscherff/goutil`
 )
 
 // legacyAction writes legacy report to application directory.
@@ -29,7 +28,7 @@ func legacyAction(o gocmdb.Reportable) (err error) {
 	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
 
 	if err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 	}
 
 	return err
@@ -60,7 +59,7 @@ func reportAction(o gocmdb.Reportable) (err error) {
 	}
 
 	if err != nil {
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return err
 	}
 
@@ -89,14 +88,14 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 	if *fSerialErase {
 		if err = o.EraseDeviceSN(); err != nil {
-			elog.Println(goutil.ErrorDecorator(err))
+			elog.Println(err.Error())
 			return err
 		}
 	}
 
 	if len(o.ID()) > 0 && !*fSerialForce {
 		err = fmt.Errorf(`serial number already set to %q`, s)
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 		return err
 	}
 
@@ -104,11 +103,11 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 	case len(*fSerialSet) > 0:
 		err = o.SetDeviceSN(*fSerialSet)
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 
 	case *fSerialCopy:
 		err = o.CopyFactorySN(7)
-		elog.Println(goutil.ErrorDecorator(err))
+		elog.Println(err.Error())
 
 	case *fSerialFetch:
 
@@ -119,17 +118,17 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 		if len(s) == 0 {
 			err = fmt.Errorf(`empty serial number from server`)
-			elog.Println(goutil.ErrorDecorator(err))
+			elog.Println(err.Error())
 			break
 		}
 
 		if err = o.SetDeviceSN(s); err != nil {
-			elog.Println(goutil.ErrorDecorator(err))
+			elog.Println(err.Error())
 			break
 		}
 
 		if err = checkinRequest(o); err != nil {
-			elog.Println(goutil.ErrorDecorator(err))
+			elog.Println(err.Error())
 		}
 	}
 
@@ -139,25 +138,24 @@ func serialAction(o gocmdb.Configurable) (err error) {
 // auditAdtion requests a server-side audit against the previous checkin.
 func auditAction(o gocmdb.Auditable) (err error) {
 
-	//var j []byte
+	var chgs [][]string
 
 	if o.ID() == `` {
-		err = fmt.Errorf(`device with VID %q PID %q has no serial number`, o.VID(), o.PID())
-		elog.Println(err.Error())
+		slog.Printf(`audit skipped for VID %q PID %q - no serial number`, o.VID(), o.PID())
 		return err
 	}
 
 	f := filepath.Join(conf.Paths.StateDir, fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()))
 	fi, err := os.Stat(f)
 
-	if err != nil {
-		elog.Println(err.Error())
-		return err
-	} else {
-		slog.Printf(`found state file %q size %d last modified %s`, fi.Name(), fi.Size(), fi.ModTime())
+	if err == nil {
+		slog.Printf(`found state file %q last modified %s`, fi.Name(), fi.ModTime())
+		chgs, err = o.CompareFile(f)
 	}
 
-	chgs, err := o.CompareFile(f)
+	if sverr := o.Save(f); sverr != nil {
+		elog.Println(sverr.Error())
+	}
 
 	if err != nil {
 		elog.Println(err.Error())
@@ -166,17 +164,13 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 	if len(chgs) > 0 {
 		for _, chg := range chgs {
-			clog.Printf(`device %s-%s-%s since %s, property %q was %q, now %q`,
+			clog.Printf(`device %s-%s-%s last audited %s: %q was %q, now %q`,
 				o.VID(), o.PID(), o.ID(), fi.ModTime(), chg[0], chg[1], chg[2])
 		}
 	}
 
 	// TODO: report to server
 	// o.Changes = chgs
-
-	if err = o.Save(f); err != nil {
-		elog.Println(err.Error())
-	}
 
 	return err
 }

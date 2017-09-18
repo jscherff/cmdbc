@@ -84,3 +84,26 @@ found USB device, VID 0801, VID 0001
 identified USB device as *usbci.Magtek
 found USB device, VID 0801, VID 0001
 identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:24:54.8099979 -0700 PDT
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:25:34.184627 -0700 PDT
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:32:33.9254882 -0700 PDT
+found USB device, VID 0801, VID 0001
+identified USB device as *usbci.Magtek
+found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:32:40.32999 -0700 PDT
+system 2017/09/18 15:34:20 main.go:114: found USB device, VID 0801, VID 0001
+system 2017/09/18 15:34:20 main.go:123: identified USB device as *usbci.Magtek
+system 2017/09/18 15:34:20 actions.go:153: found state file "0801-0001-24F0003.json" last modified 2017-09-18 15:33:58.1963718 -0700 PDT
+system 2017/09/18 15:35:30 main.go:114: found USB device, VID 0801, VID 0001
+system 2017/09/18 15:35:30 main.go:123: identified USB device as *usbci.Magtek
+system 2017/09/18 15:35:30 actions.go:153: found state file "0801-0001-24F0003.json" last modified 2017-09-18 15:35:12.7084172 -0700 PDT
+system 2017/09/18 15:46:59 main.go:112: found USB device, VID 0801, VID 0001
+system 2017/09/18 15:46:59 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 15:46:59 actions.go:152: found state file "0801-0001-24F0003.json" last modified 2017-09-18 15:35:30.6577613 -0700 PDT

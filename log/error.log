@@ -22,3 +22,5 @@ error:  2017/09/14 16:43:50 httpio.go:115: main.auditRequest(): unexpected end o
 httpio.go:145: main.httpRequest(): Post http://localhost:8080/usbci/audit/John-SurfacePro/0801/0001/24F0002: dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refused it.
 main.go:102: main.main(): no devices found
 GetFileAttributesEx C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0003.json: The system cannot find the file specified.
+GetFileAttributesEx C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0003.json: The system cannot find the file specified.
+main.go:102: main.main(): no devices found
