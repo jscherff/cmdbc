@@ -1,26 +1,41 @@
-error:  2017/09/14 16:13:56 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/fetchsn/John-SurfacePro/%!s(func() string=0x5bc640)/0001: invalid URL escape "%!s"
-error:  2017/09/14 16:14:47 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/fetchsn/John-SurfacePro/%!s(func() string=0x5bc670)/0001: invalid URL escape "%!s"
-error:  2017/09/14 16:16:17 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc640)/0001: invalid URL escape "%!s"
-error:  2017/09/14 16:17:20 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc670)/0001: invalid URL escape "%!s"
-error:  2017/09/14 16:17:49 httpio.go:129: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc6c0)/0001: invalid URL escape "%!s"
-error:  2017/09/14 16:21:44 httpio.go:138: main.httpRequest(): parse http://localhost:8080/usbci/checkin/John-SurfacePro/%!s(func() string=0x5bc860)/0001: invalid URL escape "%!s"
-error:  2017/09/14 16:25:02 httpio.go:140: main.httpRequest(): Post http://localhost:8080/usbci/checkin/John-SurfacePro/0801/0001: dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refused it.
-error:  2017/09/14 16:25:41 httpio.go:150: main.httpRequest(): http status code 201 (201 Created): request processed and object created
-error:  2017/09/14 16:26:23 httpio.go:150: main.httpRequest(): http status 'É': 201 Created%!(EXTRA string=request processed and object created)
-error:  2017/09/14 16:26:52 httpio.go:150: main.httpRequest(): http status %!s(int=201): 201 Created%!(EXTRA string=request processed and object created)
-error:  2017/09/14 16:27:19 httpio.go:150: main.httpRequest(): http status "201 Created": request processed and object created
-error:  2017/09/14 16:27:29 httpio.go:114: main.auditRequest(): unexpected end of JSON input
-error:  2017/09/14 16:27:50 httpio.go:114: main.auditRequest(): unexpected end of JSON input
-error:  2017/09/14 16:29:11 httpio.go:114: main.auditRequest(): unexpected end of JSON input
-error:  2017/09/14 16:34:12 httpio.go:150: main.httpRequest(): http status "201 Created": request processed and object created
-error:  2017/09/14 16:34:18 httpio.go:150: main.httpRequest(): http status "304 Not Modified": request processed and no changes found
-error:  2017/09/14 16:34:18 httpio.go:114: main.auditRequest(): unexpected end of JSON input
-error:  2017/09/14 16:37:43 httpio.go:151: main.httpRequest(): http status "304 Not Modified": request processed and no changes found
-error:  2017/09/14 16:37:43 httpio.go:115: main.auditRequest(): unexpected end of JSON input
-error:  2017/09/14 16:39:53 httpio.go:115: main.auditRequest(): unexpected end of JSON input
-error:  2017/09/14 16:43:50 httpio.go:115: main.auditRequest(): unexpected end of JSON input
-httpio.go:145: main.httpRequest(): Post http://localhost:8080/usbci/audit/John-SurfacePro/0801/0001/24F0002: dial tcp [::1]:8080: connectex: No connection could be made because the target machine actively refused it.
-main.go:102: main.main(): no devices found
-GetFileAttributesEx C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0003.json: The system cannot find the file specified.
-GetFileAttributesEx C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0003.json: The system cannot find the file specified.
-main.go:102: main.main(): no devices found
+error 2017/09/18 15:50:25 main.go:100: no devices found
+error 2017/09/18 18:22:40 httpio.go:132: parse http://localhost:8080/usbci/fetchsn/John-SurfacePro/%!s(func() string=0x5bb9a0)/0001: invalid URL escape "%!s"
+error 2017/09/18 21:10:50 actions.go:98: serial number already set to ""
+error 2017/09/19 06:30:48 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 06:30:48 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 06:33:47 httpio.go:143: Post http://localhost:8080/usbci/fetchsn/John-SurfacePro/0801/0001: read tcp [::1]:59217->[::1]:8080: wsarecv: An existing connection was forcibly closed by the remote host.
+error 2017/09/19 06:34:34 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 06:34:34 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 06:34:41 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 06:34:41 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 06:35:15 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 06:35:15 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 06:37:56 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 06:37:56 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:11:56 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 08:11:56 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:14:58 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 08:14:58 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:15:10 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 08:15:10 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:16:38 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 08:16:38 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:17:21 httpio.go:143: Post http://localhost:8080/usbci/fetchsn/John-SurfacePro/0801/0001: EOF
+error 2017/09/19 08:21:27 httpio.go:155: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 08:21:27 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:39:29 actions.go:98: serial number already set to ""
+error 2017/09/19 08:41:18 actions.go:98: serial number already set to "24F000E"
+error 2017/09/19 08:41:51 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:42:27 httpio.go:63: unexpected end of JSON input
+error 2017/09/19 08:43:34 httpio.go:155: http status "406 Not Acceptable": insufficient or incorrect data
+error 2017/09/19 08:43:34 httpio.go:63: invalid character 's' looking for beginning of value
+error 2017/09/19 09:05:12 httpio.go:159: http status "406 Not Acceptable": insufficient or incorrect data
+error 2017/09/19 09:05:12 httpio.go:67: invalid character 's' looking for beginning of value
+error 2017/09/19 09:18:41 httpio.go:163: http status "406 Not Acceptable": insufficient or incorrect data
+error 2017/09/19 09:18:41 httpio.go:70: invalid character 's' looking for beginning of value
+error 2017/09/19 09:19:09 actions.go:121: empty serial number from server
+error 2017/09/19 10:35:55 actions.go:121: empty serial number from server
+error 2017/09/19 12:02:53 httpio.go:159: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 12:04:45 httpio.go:159: http status "500 Internal Server Error": unable to process request
+error 2017/09/19 12:06:56 actions.go:98: serial number already set to "24F0011"
+error 2017/09/19 12:07:01 actions.go:121: empty serial number from server

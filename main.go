@@ -116,7 +116,7 @@ func main() {
 		case usbci.MagtekVendorID:
 
 			if d, err := usbci.NewMagtek(device); err != nil {
-				elog.Println(err.Error())
+				elog.Print(err)
 			} else {
 				slog.Printf(`identified USB device as %s`, d.Type())
 				magtekRouter(d)
@@ -125,7 +125,7 @@ func main() {
 		default:
 
 			if d, err := usbci.NewGeneric(device); err != nil {
-				elog.Println(err.Error())
+				elog.Print(err)
 			} else {
 				slog.Printf(`identified USB device as %s`, d.Type())
 				genericRouter(d)

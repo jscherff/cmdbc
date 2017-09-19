@@ -1,109 +1,134 @@
-sys: 2017/09/14 12:59:44 found USB device, VID 0801, VID 0001
-sys: 2017/09/14 12:59:44 identified USB device as *usbci.Magtek
-sys: 2017/09/14 13:00:38 found USB device, VID 0801, VID 0001
-sys: 2017/09/14 13:00:38 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:13:56 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:13:56 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:14:46 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:14:47 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:16:17 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:16:17 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:17:20 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:17:20 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:17:48 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:17:49 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:21:43 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:21:44 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:23:38 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:23:38 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:25:01 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:25:01 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:25:40 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:25:41 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:26:22 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:26:23 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:26:52 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:26:52 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:27:19 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:27:19 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:27:29 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:27:29 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:27:29 http status "404 Not Found": unable to find or retrieve object
-system: 2017/09/14 16:27:50 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:27:50 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:27:50 http status "404 Not Found": unable to find or retrieve object
-system: 2017/09/14 16:29:11 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:29:11 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:29:11 http status "404 Not Found": unable to find or retrieve object
-system: 2017/09/14 16:34:12 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:34:12 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:34:18 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:34:18 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:37:43 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:37:43 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:39:53 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:39:53 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:39:53 http status "304 Not Modified": request processed and no changes found
-system: 2017/09/14 16:43:49 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:43:50 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:43:50 http status "304 Not Modified": request processed and no changes found
-system: 2017/09/14 16:45:21 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:45:22 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:45:22 http status "304 Not Modified": request processed and no changes found
-system: 2017/09/14 16:46:14 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:46:14 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:46:14 http status "200 OK": request processed with no errors
-system: 2017/09/14 16:46:44 found USB device, VID 0801, VID 0001
-system: 2017/09/14 16:46:44 identified USB device as *usbci.Magtek
-system: 2017/09/14 16:46:44 http status "304 Not Modified": request processed and no changes found
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:24:54.8099979 -0700 PDT
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:25:34.184627 -0700 PDT
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:32:33.9254882 -0700 PDT
-found USB device, VID 0801, VID 0001
-identified USB device as *usbci.Magtek
-found state file "0801-0001-24F0003.json" last modified 2017-09-18 13:32:40.32999 -0700 PDT
-system 2017/09/18 15:34:20 main.go:114: found USB device, VID 0801, VID 0001
-system 2017/09/18 15:34:20 main.go:123: identified USB device as *usbci.Magtek
-system 2017/09/18 15:34:20 actions.go:153: found state file "0801-0001-24F0003.json" last modified 2017-09-18 15:33:58.1963718 -0700 PDT
-system 2017/09/18 15:35:30 main.go:114: found USB device, VID 0801, VID 0001
-system 2017/09/18 15:35:30 main.go:123: identified USB device as *usbci.Magtek
-system 2017/09/18 15:35:30 actions.go:153: found state file "0801-0001-24F0003.json" last modified 2017-09-18 15:35:12.7084172 -0700 PDT
-system 2017/09/18 15:46:59 main.go:112: found USB device, VID 0801, VID 0001
-system 2017/09/18 15:46:59 main.go:121: identified USB device as *usbci.Magtek
-system 2017/09/18 15:46:59 actions.go:152: found state file "0801-0001-24F0003.json" last modified 2017-09-18 15:35:30.6577613 -0700 PDT
+system 2017/09/18 18:21:59 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 18:21:59 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 18:21:59 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/18 18:22:30 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 18:22:30 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 18:22:40 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 18:22:40 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 19:32:27 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 19:32:27 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 19:32:27 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/18 19:32:27 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/18 21:10:30 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 21:10:30 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 21:10:30 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/18 21:10:50 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 21:10:50 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 21:21:53 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 21:21:53 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 21:21:53 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/18 21:21:53 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/18 21:30:23 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 21:30:23 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 21:30:23 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/18 21:30:23 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/18 21:33:39 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 21:33:40 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 21:33:40 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/18 21:33:40 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/18 21:41:40 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/18 21:41:40 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/18 21:41:40 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/18 21:41:40 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 06:23:32 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:23:32 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:23:33 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 06:23:33 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 06:27:27 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:27:27 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:27:27 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 06:27:27 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 06:29:24 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:29:24 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:29:24 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 06:29:24 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 06:30:48 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:30:48 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:33:47 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:33:47 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:34:34 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:34:34 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:34:41 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:34:41 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:35:15 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:35:15 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 06:37:56 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 06:37:56 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:11:55 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:11:56 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:14:58 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:14:58 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:15:09 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:15:10 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:16:38 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:16:38 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:17:21 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:17:21 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:21:27 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:21:27 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:26:49 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:26:49 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:26:50 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 08:26:50 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 08:36:26 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:36:27 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:36:27 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 08:36:27 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 08:37:59 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:37:59 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:37:59 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 08:37:59 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 08:38:46 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:38:46 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:38:46 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 08:39:29 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:39:29 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:41:18 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:41:18 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:41:51 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:41:51 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:41:51 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 08:42:27 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:42:27 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:42:27 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 08:43:34 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:43:34 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:51:25 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:51:25 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:51:26 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 08:51:26 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 08:52:33 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 08:52:33 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 08:52:33 httpio.go:153: http status "200 OK": request processed with no errors
+system 2017/09/19 09:00:35 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 09:00:35 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 09:00:36 httpio.go:153: http status "201 Created": request processed and object created
+system 2017/09/19 09:05:12 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 09:05:12 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 09:18:41 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 09:18:41 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 09:19:09 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 09:19:09 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 09:19:09 httpio.go:161: http status "204 No Content": request processed and no action taken
+system 2017/09/19 09:19:09 httpio.go:65: no content returned by server
+system 2017/09/19 10:35:55 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 10:35:55 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 10:35:55 httpio.go:161: http status "204 No Content": request processed and no action taken
+system 2017/09/19 10:35:55 httpio.go:65: no content returned by server
+system 2017/09/19 12:02:53 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 12:02:53 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 12:04:44 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 12:04:44 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 12:05:48 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 12:05:48 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 12:05:48 httpio.go:157: http status "201 Created": request processed, object created
+system 2017/09/19 12:06:56 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 12:06:56 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 12:07:01 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 12:07:01 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 12:07:01 httpio.go:157: http status "204 No Content": request processed, no action taken
+system 2017/09/19 12:07:01 httpio.go:61: empty content from server
+system 2017/09/19 12:07:18 main.go:112: found USB device: VID 0801 PID 0001
+system 2017/09/19 12:07:18 main.go:121: identified USB device as *usbci.Magtek
+system 2017/09/19 12:07:18 httpio.go:157: http status "201 Created": request processed, object created
+system 2017/09/19 12:07:18 httpio.go:157: http status "201 Created": request processed, object created

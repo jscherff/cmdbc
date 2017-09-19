@@ -28,7 +28,7 @@ func legacyAction(o gocmdb.Reportable) (err error) {
 	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
 
 	if err != nil {
-		elog.Println(err.Error())
+		elog.Print(err)
 	}
 
 	return err
@@ -59,7 +59,7 @@ func reportAction(o gocmdb.Reportable) (err error) {
 	}
 
 	if err != nil {
-		elog.Println(err.Error())
+		elog.Print(err)
 		return err
 	}
 
@@ -88,14 +88,14 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 	if *fSerialErase {
 		if err = o.EraseDeviceSN(); err != nil {
-			elog.Println(err.Error())
+			elog.Print(err)
 			return err
 		}
 	}
 
 	if len(o.ID()) > 0 && !*fSerialForce {
-		err = fmt.Errorf(`serial number already set to %q`, s)
-		elog.Println(err.Error())
+		err = fmt.Errorf(`serial number already set to %q`, o.ID())
+		elog.Print(err)
 		return err
 	}
 
@@ -103,32 +103,32 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 	case len(*fSerialSet) > 0:
 		err = o.SetDeviceSN(*fSerialSet)
-		elog.Println(err.Error())
+		elog.Print(err)
 
 	case *fSerialCopy:
 		err = o.CopyFactorySN(7)
-		elog.Println(err.Error())
+		elog.Print(err)
 
 	case *fSerialFetch:
 
-		if s, err = fetchSnRequest(o); err != nil {
+		if s, err = newSNRequest(o); err != nil {
 			// Error already decorated and logged.
 			break
 		}
 
 		if len(s) == 0 {
 			err = fmt.Errorf(`empty serial number from server`)
-			elog.Println(err.Error())
+			elog.Print(err)
 			break
 		}
 
 		if err = o.SetDeviceSN(s); err != nil {
-			elog.Println(err.Error())
+			elog.Print(err)
 			break
 		}
 
 		if err = checkinRequest(o); err != nil {
-			elog.Println(err.Error())
+			elog.Print(err)
 		}
 	}
 
@@ -139,9 +139,10 @@ func serialAction(o gocmdb.Configurable) (err error) {
 func auditAction(o gocmdb.Auditable) (err error) {
 
 	var chgs [][]string
+	b := 
 
 	if o.ID() == `` {
-		slog.Printf(`audit skipped for VID %q PID %q - no serial number`, o.VID(), o.PID())
+		slog.Print(`skipping audit for VID %q PID %q: no serial number`, o.VID(), o.PID())
 		return err
 	}
 
@@ -154,11 +155,11 @@ func auditAction(o gocmdb.Auditable) (err error) {
 	}
 
 	if sverr := o.Save(f); sverr != nil {
-		elog.Println(sverr.Error())
+		elog.Print(sverr)
 	}
 
 	if err != nil {
-		elog.Println(err.Error())
+		elog.Print(err)
 		return err
 	}
 
@@ -169,35 +170,10 @@ func auditAction(o gocmdb.Auditable) (err error) {
 		}
 	}
 
+	//if j, err := json.Marshal(chgs); err == nil {
+
 	// TODO: report to server
 	// o.Changes = chgs
 
 	return err
 }
-
-/*
-	fmt.Println("\nSaving 'test2.json'")
-	o.Save("test2.json")
-
-	fmt.Println("\no.CSV()")
-	b, err := o.CSV()
-	fmt.Println(string(b), err)
-
-	fmt.Println("\no.JSON()")
-	b, err = o.JSON()
-	fmt.Println(string(b), err)
-
-	fmt.Println("\no.XML()")
-	b, err = o.XML()
-	fmt.Println(string(b), err)
-
-	fmt.Println("\no.NVP()")
-	b, err = o.NVP()
-	fmt.Println(string(b), err)
-
-	fmt.Println("\nComparing to 'test.json'")
-	ss, err := o.CompareFile("test.json")
-	fmt.Println(ss)
-
-	return err
-*/

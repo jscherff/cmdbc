@@ -42,7 +42,7 @@ type Config struct {
 		URL		string
 		ChangesPath	string
 		CheckinPath	string
-		FetchSnPath	string
+		NewSNPath	string
 		AuditPath	string
 	}
 

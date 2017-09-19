@@ -15,10 +15,9 @@
 
 	"Server": {
 		"URL":			"http://localhost:8080/usbci",
-		"AuditPath":		"audit",
-		"ChangesPath":		"changes",
 		"CheckinPath":		"checkin",
-		"FetchSnPath":		"fetchsn"
+		"NewSNPath":		"newsn",
+		"AuditPath":		"audit"
 	},
 
 	"Logging": {

@@ -1,4 +1,0 @@
-device 0801-0001-24F0003 since 2017-09-18 13:25:34.184627 -0700 PDT, property "USBSpec" was "1.10", now "1.20"
-device 0801-0001-24F0003 last audited 2017-09-18 13:32:33.9254882 -0700 PDT: "MaxPktSize" was "8", now "7"
-device 0801-0001-24F0003 last audited 2017-09-18 13:32:33.9254882 -0700 PDT: "USBSpec" was "1.10", now "1.11"
-change 2017/09/18 15:35:30 actions.go:169: device 0801-0001-24F0003 last audited 2017-09-18 15:35:12.7084172 -0700 PDT: "MaxPktSize" was "8", now "7"

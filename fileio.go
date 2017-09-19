@@ -34,7 +34,7 @@ func writeFile(b []byte, p string) (err error) {
 	}
 
 	if err != nil {
-		elog.Println(err.Error())
+		elog.Print(err)
 	}
 
 	return err
@@ -50,7 +50,7 @@ func readFile(p string, b []byte) (err error) {
 	}
 
 	if b, err = ioutil.ReadFile(p); err != nil {
-		elog.Println(err.Error())
+		elog.Print(err)
 	}
 
 	return err
