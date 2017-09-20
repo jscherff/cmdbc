@@ -20,7 +20,7 @@ import (
 	`os`
 )
 
-func writeFile(b []byte, p string) (err error) {
+func WriteFile(b []byte, p string) (err error) {
 
 	d, f := filepath.Split(p)
 
@@ -40,7 +40,7 @@ func writeFile(b []byte, p string) (err error) {
 	return err
 }
 
-func readFile(p string, b []byte) (err error) {
+func ReadFile(p string, b []byte) (err error) {
 
 	d, f := filepath.Split(p)
 

@@ -71,6 +71,13 @@ func init() {
 			fsSerial.Usage()
 			os.Exit(1)
 		}
+
+	case *fActionAudit:
+		if fsAudit.Parse(os.Args[2:]); fsAudit.NFlag() == 0 {
+			fmt.Fprintln(os.Stderr, `You must specify an option.`)
+			fsAudit.Usage()
+			os.Exit(1)
+		}
 	}
 }
 

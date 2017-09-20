@@ -39,3 +39,6 @@ error 2017/09/19 12:02:53 httpio.go:159: http status "500 Internal Server Error"
 error 2017/09/19 12:04:45 httpio.go:159: http status "500 Internal Server Error": unable to process request
 error 2017/09/19 12:06:56 actions.go:98: serial number already set to "24F0011"
 error 2017/09/19 12:07:01 actions.go:121: empty serial number from server
+error 2017/09/19 21:58:24 actions.go:161: GetFileAttributesEx C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0012.json: The system cannot find the file specified.
+error 2017/09/19 22:14:04 actions.go:98: serial number already set to "24F0013"
+error 2017/09/19 22:14:09 actions.go:121: empty serial number from server

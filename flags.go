@@ -36,4 +36,8 @@ var (
 	fSerialForce = fsSerial.Bool("force", false, "Force serial number change")
 	fSerialFetch = fsSerial.Bool("fetch", false, "Fetch serial number from server")
 	fSerialSet = fsSerial.String("set", "", "Set serial number to `<string>`")
+
+	fsAudit = flag.NewFlagSet("audit", flag.ExitOnError)
+	fAuditLocal = fsAudit.Bool("local", true, "Audit against local state")
+	fAuditServer = fsAudit.Bool("server", false, "Audit against server state")
 )

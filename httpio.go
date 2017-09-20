@@ -23,21 +23,25 @@ import (
 	`github.com/jscherff/gocmdb`
 )
 
-var HttpStatusMap = map[int]string {
-	http.StatusOK:			`request processed, no errors`,		// 200
-	http.StatusCreated:		`request processed, object created`,	// 201
-	http.StatusAccepted:		`request processed, data accepted`,	// 202
-	http.StatusNoContent:		`request processed, no action taken`,	// 204
-	http.StatusNotModified:		`request processed, no changes found`,	// 302
-	http.StatusBadRequest:		`unsupported or malformed request`,	// 400
-	http.StatusNotAcceptable:	`insufficient or incorrect data`,	// 406
-	http.StatusUnprocessableEntity:	`unable to decode request`,		// 422
-	http.StatusFailedDependency:	`request condition not satisified`,	// 424
-	http.StatusInternalServerError:	`unable to process request`,		// 500
-}
+var (
+	client = &http.Client{}
 
-// newSNRequest obtains a serial number from the gocmdbd server.
-func newSNRequest(o gocmdb.Registerable) (s string, err error) {
+	HttpStatusMap = map[int]string {
+		http.StatusOK:			`request processed, no errors`,		// 200
+		http.StatusCreated:		`request processed, object created`,	// 201
+		http.StatusAccepted:		`request processed, data accepted`,	// 202
+		http.StatusNoContent:		`request processed, no action taken`,	// 204
+		http.StatusNotModified:		`request processed, no changes found`,	// 302
+		http.StatusBadRequest:		`unsupported or malformed request`,	// 400
+		http.StatusNotAcceptable:	`insufficient or incorrect data`,	// 406
+		http.StatusUnprocessableEntity:	`unable to decode request`,		// 422
+		http.StatusFailedDependency:	`unsatisfied prerequisite`,		// 424
+		http.StatusInternalServerError:	`unable to process request`,		// 500
+	}
+)
+
+// GetNewSN obtains a serial number from the gocmdbd server.
+func GetNewSN(o gocmdb.Registerable) (s string, err error) {
 
 	var (
 		j []byte
@@ -52,7 +56,7 @@ func newSNRequest(o gocmdb.Registerable) (s string, err error) {
 		return s, err
 	}
 
-	if j, sc, err = httpRequest(url, j); err != nil {
+	if j, sc, err = httpPost(url, j); err != nil {
 		return s, err
 	}
 
@@ -68,8 +72,8 @@ func newSNRequest(o gocmdb.Registerable) (s string, err error) {
 	return s, err
 }
 
-// checkinRequest checks a device in with the gocmdbd server.
-func checkinRequest(o gocmdb.Registerable) (err error) {
+// SubmitCheckin checks a device in with the gocmdbd server.
+func SubmitCheckin(o gocmdb.Registerable) (err error) {
 
 	var j []byte
 
@@ -81,88 +85,94 @@ func checkinRequest(o gocmdb.Registerable) (err error) {
 		return err
 	}
 
-	_, _, err = httpRequest(url, j)
+	_, _, err = httpPost(url, j)
 
 	return err
 }
 
-// auditRequest requests a server-side audit against the previous checkin.
-func auditRequest(o gocmdb.Auditable) (ss [][]string, err error) {
+// GetDevice obtains the JSON representation of a serialized device object
+// from the server using the unique key combination VID+PID+SN.
+func GetDevice(o gocmdb.Registerable) (j []byte, err error) {
 
 	if o.ID() == `` {
-		slog.Print(`skipping audit for VID %q PID %q: no serial number`, o.VID(), o.PID())
-		return ss, err
+		slog.Print(`skipping fetch for VID %q PID %q: no serial number`, o.VID(), o.PID())
+		return j, err
 	}
 
-	var (
-		j []byte
-		sc int
-	)
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.FetchPath, o.Host(), o.VID(), o.PID(), o.ID())
+
+	j, _, err = httpGet(url)
+
+	return j, err
+}
+
+// SubmitAudit submits changes from audit to the server in JSON format.
+func SubmitAudit(o gocmdb.Auditable) (err error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
 		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
 
-	if j, err = o.JSON(); err != nil {
-		elog.Print(err)
-		return ss, err
+	j, err := json.Marshal(o.GetChanges())
+
+	if err == nil {
+		_, _, err = httpPost(url, j)
 	}
-
-	if j, sc, err = httpRequest(url, j); err != nil {
-		return ss, err
-	}
-
-	if sc == http.StatusNoContent {
-		slog.Print(`empty content from server`)
-		return ss, err
-	}
-
-	if err = json.Unmarshal(j, &ss); err != nil {
-		elog.Print(err)
-	}
-
-	return ss, err
-}
-
-// httpRequest sends JSON requests to the gocmdbd server for other functions.
-// Error decoration will be handled by caller functions.
-func httpRequest(url string, jreq []byte ) (jrsp []byte, sc int, err error) {
-
-	client := &http.Client{}
-
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jreq))
 
 	if err != nil {
 		elog.Print(err)
-		return jrsp, sc, err
 	}
 
-	req.Header.Add(`Content-Type`, `application/json; charset=UTF8`)
+	return err
+}
+
+// httpPost sends http POST requests to gocmdbd server endpoints for other functions.
+func httpPost(url string, j []byte ) (b []byte, sc int, err error) {
+
+	if req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(j)); err != nil {
+		return b, sc, err
+	} else {
+		req.Header.Add(`Content-Type`, `application/json; charset=UTF8`)
+		return httpRequest(req)
+	}
+}
+
+// httpGet sends http GET requests to gocmdbd server endpoints for other functions.
+func httpGet(url string) (b []byte, sc int, err error) {
+
+	if req, err := http.NewRequest(http.MethodGet, url, nil); err != nil {
+		return b, sc, err
+	} else {
+		return httpRequest(req)
+	}
+}
+
+// httpRequest sends http requests to gocmdbd server endpoints for other functions.
+func httpRequest(req *http.Request) (b []byte, sc int, err error) {
+
 	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
 	req.Header.Add(`X-Custom-Header`, `gocmdb`)
 
-	rsp, err := client.Do(req)
+	resp, err := client.Do(req)
 
-	if err != nil {
-		elog.Print(err)
-		return jrsp, sc, err
+	if err == nil {
+
+		defer resp.Body.Close()
+
+		sc = resp.StatusCode
+		msg := fmt.Sprintf(`%s - %s`, resp.Status, HttpStatusMap[sc])
+
+		if sc < 400 {
+			slog.Print(msg)
+			b, err = ioutil.ReadAll(resp.Body)
+		} else {
+			elog.Print(msg)
+		}
 	}
-
-	defer rsp.Body.Close()
-
-	msg := fmt.Sprintf(`http status %q: %s`,
-		rsp.Status, HttpStatusMap[rsp.StatusCode])
-
-	if rsp.StatusCode < 400 {
-		slog.Print(msg)
-	} else {
-		elog.Print(msg)
-	}
-
-	jrsp, err = ioutil.ReadAll(rsp.Body)
 
 	if err != nil {
 		elog.Print(err)
 	}
 
-	return jrsp, rsp.StatusCode, err
+	return b, sc, err
 }

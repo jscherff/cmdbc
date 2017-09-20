@@ -15,7 +15,7 @@
 package main
 
 import (
-	//`encoding/json`
+	`errors`
 	`fmt`
 	`os`
 	`path/filepath`
@@ -25,7 +25,7 @@ import (
 // legacyAction writes legacy report to application directory.
 func legacyAction(o gocmdb.Reportable) (err error) {
 
-	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
+	err = WriteFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
 
 	if err != nil {
 		elog.Print(err)
@@ -69,11 +69,11 @@ func reportAction(o gocmdb.Reportable) (err error) {
 		fmt.Fprintf(os.Stdout, string(b))
 
 	case len(*fReportFolder) > 0:
-		err = writeFile(b, filepath.Join(*fReportFolder, o.Filename()))
+		err = WriteFile(b, filepath.Join(*fReportFolder, o.Filename()))
 
 	default:
 		f := fmt.Sprintf(`%s.%s`, o.Filename(), *fReportFormat)
-		err = writeFile(b, filepath.Join(conf.Paths.ReportDir, f))
+		err = WriteFile(b, filepath.Join(conf.Paths.ReportDir, f))
 	}
 
 	// Error already decorated and logged.
@@ -111,7 +111,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 	case *fSerialFetch:
 
-		if s, err = newSNRequest(o); err != nil {
+		if s, err = GetNewSN(o); err != nil {
 			// Error already decorated and logged.
 			break
 		}
@@ -127,7 +127,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 			break
 		}
 
-		if err = checkinRequest(o); err != nil {
+		if err = SubmitCheckin(o); err != nil {
 			elog.Print(err)
 		}
 	}
@@ -139,23 +139,39 @@ func serialAction(o gocmdb.Configurable) (err error) {
 func auditAction(o gocmdb.Auditable) (err error) {
 
 	var chgs [][]string
-	b := 
 
 	if o.ID() == `` {
-		slog.Print(`skipping audit for VID %q PID %q: no serial number`, o.VID(), o.PID())
+		slog.Printf(`skipping audit for VID %q PID %q: no serial number`, o.VID(), o.PID())
 		return err
 	}
 
-	f := filepath.Join(conf.Paths.StateDir, fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()))
-	fi, err := os.Stat(f)
+	switch true {
 
-	if err == nil {
-		slog.Printf(`found state file %q last modified %s`, fi.Name(), fi.ModTime())
-		chgs, err = o.CompareFile(f)
-	}
+	case *fAuditLocal:
 
-	if sverr := o.Save(f); sverr != nil {
-		elog.Print(sverr)
+		f := filepath.Join(conf.Paths.StateDir, fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()))
+		fi, err := os.Stat(f)
+
+		if err == nil {
+			slog.Printf(`found state file %q last modified %s`, fi.Name(), fi.ModTime())
+			chgs, err = o.CompareFile(f)
+		}
+
+		if sErr := o.Save(f); sErr != nil {
+			elog.Print(sErr)
+		}
+
+	case *fAuditServer:
+
+		c, err := GetDevice(o)
+
+		if err == nil {
+			chgs, err = o.CompareJSON(c)
+		}
+
+	default:
+
+		err = errors.New(`invalid audit option`)
 	}
 
 	if err != nil {
@@ -163,17 +179,28 @@ func auditAction(o gocmdb.Auditable) (err error) {
 		return err
 	}
 
-	if len(chgs) > 0 {
+	if len(chgs) == 0 {
+
+		slog.Printf(`device %s-%s-%s audited: no changes`, o.VID(), o.PID(), o.ID())
+
+	} else {
+
+		slog.Printf(`device %s-%s-%s audited: changes recorded in change log`,
+			o.VID(), o.PID(), o.ID(),
+		)
+
 		for _, chg := range chgs {
-			clog.Printf(`device %s-%s-%s last audited %s: %q was %q, now %q`,
-				o.VID(), o.PID(), o.ID(), fi.ModTime(), chg[0], chg[1], chg[2])
+			clog.Printf(`device %s-%s-%s changed: %q was %q, now %q`,
+				o.VID(), o.PID(), o.ID(), chg[0], chg[1], chg[2],
+			)
+		}
+
+		o.SetChanges(chgs)
+
+		if err = SubmitAudit(o); err != nil {
+			elog.Print(err)
 		}
 	}
-
-	//if j, err := json.Marshal(chgs); err == nil {
-
-	// TODO: report to server
-	// o.Changes = chgs
 
 	return err
 }

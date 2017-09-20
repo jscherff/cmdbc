@@ -40,10 +40,10 @@ type Config struct {
 
 	Server struct {
 		URL		string
-		ChangesPath	string
 		CheckinPath	string
 		NewSNPath	string
 		AuditPath	string
+		FetchPath	string
 	}
 
 	Logging struct {
