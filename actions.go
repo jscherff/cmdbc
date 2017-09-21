@@ -15,7 +15,6 @@
 package main
 
 import (
-	`errors`
 	`fmt`
 	`os`
 	`path/filepath`
@@ -87,6 +86,11 @@ func serialAction(o gocmdb.Configurable) (err error) {
 	var s string
 
 	if *fSerialErase {
+
+		slog.Printf(`device %s-%s serial: erasing SN %q`,
+			o.VID(), o.PID(), o.ID(),
+		)
+
 		if err = o.EraseDeviceSN(); err != nil {
 			elog.Print(err)
 			return err
@@ -94,7 +98,11 @@ func serialAction(o gocmdb.Configurable) (err error) {
 	}
 
 	if len(o.ID()) > 0 && !*fSerialForce {
-		err = fmt.Errorf(`serial number already set to %q`, o.ID())
+
+		err = fmt.Errorf(`device %s-%s serial: SN already set to %q`,
+			o.VID(), o.PID(), o.ID(),
+		)
+
 		elog.Print(err)
 		return err
 	}
@@ -102,18 +110,29 @@ func serialAction(o gocmdb.Configurable) (err error) {
 	switch {
 
 	case len(*fSerialSet) > 0:
-		err = o.SetDeviceSN(*fSerialSet)
-		elog.Print(err)
+
+		slog.Printf(`device %s-%s serial: setting SN to %q`,
+			o.VID(), o.PID(), *fSerialSet,
+		)
+
+		if err = o.SetDeviceSN(*fSerialSet); err != nil {
+			elog.Print(err)
+		}
 
 	case *fSerialCopy:
-		err = o.CopyFactorySN(7)
-		elog.Print(err)
+
+		slog.Printf(`device %s-%s serial: copying factory SN`,
+			o.VID(), o.PID(),
+		)
+
+		if err = o.CopyFactorySN(7); err != nil {
+			elog.Print(err)
+		}
 
 	case *fSerialFetch:
 
 		if s, err = GetNewSN(o); err != nil {
-			// Error already decorated and logged.
-			break
+			break // errors already logged.
 		}
 
 		if len(s) == 0 {
@@ -122,10 +141,18 @@ func serialAction(o gocmdb.Configurable) (err error) {
 			break
 		}
 
+		slog.Printf(`device %s-%s serial: setting SN %q from server`,
+			o.VID(), o.PID(), s,
+		)
+
 		if err = o.SetDeviceSN(s); err != nil {
 			elog.Print(err)
 			break
 		}
+
+		slog.Printf(`device %s-%s-%s serial: checking in with server`,
+			o.VID(), o.PID(), o.ID(),
+		)
 
 		if err = SubmitCheckin(o); err != nil {
 			elog.Print(err)
@@ -135,13 +162,16 @@ func serialAction(o gocmdb.Configurable) (err error) {
 	return err
 }
 
-// auditAdtion requests a server-side audit against the previous checkin.
+// auditAdtion performs a change audit against a previously-safed local
+// state file (-local) or against properties from the last server checkin.
+// It then logs the changes to the local change log and reports changes
+// back to the server.
 func auditAction(o gocmdb.Auditable) (err error) {
 
 	var chgs [][]string
 
 	if o.ID() == `` {
-		slog.Printf(`skipping audit for VID %q PID %q: no serial number`, o.VID(), o.PID())
+		slog.Printf(`device %s-%s audit: skipping, no SN`, o.VID(), o.PID())
 		return err
 	}
 
@@ -149,19 +179,34 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 	case *fAuditLocal:
 
-		f := filepath.Join(conf.Paths.StateDir, fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()))
+		f := filepath.Join(
+			conf.Paths.StateDir,
+			fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()),
+		)
+
 		fi, err := os.Stat(f)
 
 		if err == nil {
-			slog.Printf(`found state file %q last modified %s`, fi.Name(), fi.ModTime())
+			slog.Printf(`device %s-%s-%s audit: found state file %q dated %s`,
+				o.VID(), o.PID(), o.ID(),
+				fi.Name(), fi.ModTime(),
+			)
 			chgs, err = o.CompareFile(f)
 		}
+
+		slog.Printf(`device %s-%s-%s audit: saving current state to %q`,
+			o.VID(), o.PID(), o.ID(), f,
+		)
 
 		if sErr := o.Save(f); sErr != nil {
 			elog.Print(sErr)
 		}
 
 	case *fAuditServer:
+
+		slog.Printf(`device %s-%s-%s audit: fetching previous state from server`,
+			o.VID(), o.PID(), o.ID(),
+		)
 
 		c, err := GetDevice(o)
 
@@ -171,7 +216,9 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 	default:
 
-		err = errors.New(`invalid audit option`)
+		err = fmt.Errorf(`device %s-%s-%s audit: invalid audit option`,
+			o.VID(), o.PID(), o.ID(),
+		)
 	}
 
 	if err != nil {
@@ -181,25 +228,38 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 	if len(chgs) == 0 {
 
-		slog.Printf(`device %s-%s-%s audited: no changes`, o.VID(), o.PID(), o.ID())
+		slog.Printf(`device %s-%s-%s audit: no changes`, o.VID(), o.PID(), o.ID())
 
 	} else {
 
-		slog.Printf(`device %s-%s-%s audited: changes recorded in change log`,
+		slog.Printf(`device %s-%s-%s audit: recording changes in change log`,
 			o.VID(), o.PID(), o.ID(),
 		)
 
 		for _, chg := range chgs {
 			clog.Printf(`device %s-%s-%s changed: %q was %q, now %q`,
-				o.VID(), o.PID(), o.ID(), chg[0], chg[1], chg[2],
+				o.VID(), o.PID(), o.ID(),
+				chg[0], chg[1], chg[2],
 			)
 		}
+
+		slog.Printf(`device %s-%s-%s audit: reporting changes to server`,
+			o.VID(), o.PID(), o.ID(),
+		)
 
 		o.SetChanges(chgs)
 
 		if err = SubmitAudit(o); err != nil {
 			elog.Print(err)
 		}
+	}
+
+	slog.Printf(`device %s-%s-%s audit: saving current state to server`,
+		o.VID(), o.PID(), o.ID(),
+	)
+
+	if err = SubmitCheckin(o); err != nil {
+		elog.Print(err)
 	}
 
 	return err

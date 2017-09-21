@@ -247,3 +247,271 @@ system 2017/09/20 13:57:17 actions.go:184: device 0801-0001-24F0014 audited: no 
 system 2017/09/20 13:57:17 main.go:119: found USB device: VID 046d PID c52b
 system 2017/09/20 13:57:17 main.go:137: identified USB device as *usbci.Generic
 system 2017/09/20 13:57:17 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 15:17:12 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:17:12 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:17:12 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:17:12 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:18:14 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:18:14 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:18:14 main.go:119: found USB device: VID 0acd PID 2030
+system 2017/09/20 15:18:14 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:18:14 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:18:14 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:18:42 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:18:42 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:18:42 actions.go:156: found state file "0801-0001-24F0014.json" last modified 2017-09-20 13:57:17.9559006 -0700 PDT
+system 2017/09/20 15:18:42 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 15:18:42 main.go:119: found USB device: VID 0acd PID 2030
+system 2017/09/20 15:18:43 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:18:43 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 15:18:43 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:18:43 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:18:43 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 15:19:00 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:19:00 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:19:00 actions.go:156: found state file "0801-0001-24F0014.json" last modified 2017-09-20 15:18:42.9981715 -0700 PDT
+system 2017/09/20 15:19:00 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 15:19:00 main.go:119: found USB device: VID 0acd PID 2030
+system 2017/09/20 15:19:00 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:19:00 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 15:19:00 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:19:00 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:19:00 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 15:19:55 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:19:55 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:19:55 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 15:19:55 main.go:119: found USB device: VID 0acd PID 2030
+system 2017/09/20 15:19:55 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:19:55 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 15:19:55 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:19:55 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:19:55 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 15:20:55 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:20:56 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:20:56 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 15:20:56 main.go:119: found USB device: VID 0acd PID 2030
+system 2017/09/20 15:20:56 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:20:56 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 15:20:56 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:20:56 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:20:56 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 15:21:53 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:21:53 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:21:53 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 15:21:53 main.go:119: found USB device: VID 0acd PID 2030
+system 2017/09/20 15:21:53 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:21:53 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 15:21:53 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:21:53 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:21:53 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 15:22:32 main.go:119: found USB device: VID 0801 PID 0001
+system 2017/09/20 15:22:32 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 15:22:32 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 15:22:32 main.go:119: found USB device: VID 0acd PID 2030
+system 2017/09/20 15:22:32 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:22:32 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 15:22:32 main.go:119: found USB device: VID 046d PID c52b
+system 2017/09/20 15:22:32 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 15:22:32 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 17:12:14 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:12:15 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:12:15 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:12:15 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:12:15 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:12:15 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:12:15 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:12:15 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:12:15 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:23:11 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:23:11 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:23:11 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:23:11 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:23:11 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:23:11 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:23:11 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:23:11 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:23:11 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:24:06 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:24:06 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:24:06 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:24:06 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:24:06 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:24:06 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:24:06 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:24:06 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:24:06 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:25:27 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:25:27 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:25:27 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:25:27 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:25:27 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:25:27 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:25:27 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:25:27 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:25:27 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:28:19 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:28:19 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:28:19 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:28:19 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:28:19 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:28:19 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:28:19 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:28:19 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:28:19 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:28:54 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:28:54 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:28:54 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:28:54 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:28:54 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:28:54 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:28:54 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:28:54 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:28:54 httpio.go:166: 201 Created - request processed, object created
+system 2017/09/20 17:52:06 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:52:07 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:52:07 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:52:07 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:52:07 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:52:07 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:53:20 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:53:20 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:53:20 httpio.go:168: 201 Created - request processed, object created
+system 2017/09/20 17:53:20 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:53:20 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:53:20 httpio.go:168: 201 Created - request processed, object created
+system 2017/09/20 17:53:20 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:53:20 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:53:20 httpio.go:168: 201 Created - request processed, object created
+system 2017/09/20 17:55:23 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:55:23 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:55:23 httpio.go:168: 201 Created - request processed, object created
+system 2017/09/20 17:55:23 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:55:23 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:55:23 httpio.go:168: 201 Created - request processed, object created
+system 2017/09/20 17:55:23 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:55:23 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:55:23 httpio.go:168: 201 Created - request processed, object created
+system 2017/09/20 17:58:34 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:58:35 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:58:35 actions.go:156: found state file "0801-0001-24F0014.json" last modified 2017-09-20 15:19:00.4251071 -0700 PDT
+system 2017/09/20 17:58:35 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 17:58:35 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:58:35 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:58:35 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 17:58:35 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:58:35 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:58:35 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 17:59:06 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:59:06 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:59:06 actions.go:156: found state file "0801-0001-24F0014.json" last modified 2017-09-20 17:59:04.1734282 -0700 PDT
+system 2017/09/20 17:59:06 actions.go:188: device 0801-0001-24F0014 audited: changes recorded in change log
+system 2017/09/20 17:59:06 httpio.go:168: 201 Created - request processed, object created
+system 2017/09/20 17:59:06 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:59:06 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:59:06 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 17:59:06 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:59:06 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:59:06 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 17:59:41 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 17:59:41 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 17:59:41 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 17:59:41 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 17:59:41 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:59:41 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 17:59:41 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 17:59:41 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 17:59:41 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 18:01:26 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:01:26 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:01:26 httpio.go:168: 200 OK - request processed, no errors
+system 2017/09/20 18:01:26 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 18:01:26 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:01:26 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:01:26 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 18:01:26 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:01:26 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:01:26 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 18:01:52 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:01:52 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:01:52 httpio.go:168: 200 OK - request processed, no errors
+system 2017/09/20 18:01:52 actions.go:184: device 0801-0001-24F0014 audited: no changes
+system 2017/09/20 18:01:52 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:01:52 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:01:52 actions.go:144: skipping audit for VID "0acd" PID "2030": no serial number
+system 2017/09/20 18:01:52 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:01:52 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:01:52 actions.go:144: skipping audit for VID "046d" PID "c52b": no serial number
+system 2017/09/20 18:36:22 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:36:22 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:36:22 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:36:22 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:36:22 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:36:22 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:38:36 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:38:36 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:38:36 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:38:36 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:38:36 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:38:36 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:38:54 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:38:54 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:38:54 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:38:54 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:38:54 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:38:54 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:38:54 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:38:54 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:38:54 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:40:13 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:40:13 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:40:13 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:40:13 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:40:13 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:40:13 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:40:13 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:40:13 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:40:13 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:40:32 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:40:32 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:40:32 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:40:32 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:40:32 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:40:32 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:40:32 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:40:32 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:40:32 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:41:37 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:41:37 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:41:37 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:41:37 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:41:37 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:41:37 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:41:37 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:41:37 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:41:37 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:42:05 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:42:05 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:42:05 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:42:05 httpio.go:170: 200 OK - request processed, no errors
+system 2017/09/20 18:42:05 actions.go:231: device 0801-0001-24F0014 audit: no changes
+system 2017/09/20 18:42:05 actions.go:257: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/20 18:42:05 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:42:05 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:42:05 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:42:05 actions.go:174: device 0acd-2030 audit: skipping, no SN
+system 2017/09/20 18:42:05 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:42:05 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:42:05 actions.go:174: device 046d-c52b audit: skipping, no SN
+system 2017/09/20 18:43:50 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:43:50 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:43:50 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:43:50 httpio.go:170: 200 OK - request processed, no errors
+system 2017/09/20 18:43:50 actions.go:231: device 0801-0001-24F0014 audit: no changes
+system 2017/09/20 18:43:50 actions.go:257: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/20 18:43:50 httpio.go:170: 201 Created - request processed, object created
+system 2017/09/20 18:43:50 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:43:50 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:43:50 actions.go:174: device 0acd-2030 audit: skipping, no SN
+system 2017/09/20 18:43:50 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:43:50 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:43:50 actions.go:174: device 046d-c52b audit: skipping, no SN

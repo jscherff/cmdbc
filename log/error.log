@@ -42,3 +42,11 @@ error 2017/09/19 12:07:01 actions.go:121: empty serial number from server
 error 2017/09/19 21:58:24 actions.go:161: GetFileAttributesEx C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0012.json: The system cannot find the file specified.
 error 2017/09/19 22:14:04 actions.go:98: serial number already set to "24F0013"
 error 2017/09/19 22:14:09 actions.go:121: empty serial number from server
+error 2017/09/20 15:19:55 httpio.go:169: 404 Not Found - 
+error 2017/09/20 15:20:56 httpio.go:169: 404 Not Found - 
+error 2017/09/20 15:21:53 httpio.go:169: 404 Not Found - 
+error 2017/09/20 15:22:32 httpio.go:169: 404 Not Found - 
+error 2017/09/20 17:52:07 httpio.go:176: Post http://localhost:8080/usbci/checkin/John-SurfacePro/0801/0001: EOF
+error 2017/09/20 17:52:07 httpio.go:176: Post http://localhost:8080/usbci/checkin/John-SurfacePro/0acd/2030: EOF
+error 2017/09/20 17:52:07 httpio.go:176: Post http://localhost:8080/usbci/checkin/John-SurfacePro/046d/c52b: EOF
+error 2017/09/20 17:59:41 httpio.go:171: 404 Not Found - 

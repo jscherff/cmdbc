@@ -66,8 +66,8 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 
 	if conf.Logging.Syslog {
 
-		port, prot, addr := conf.Syslog.Port, conf.Syslog.Protocol, conf.Syslog.Address
-		raddr := strings.Join([]string{addr, port}, `:`)
+		prot, port, host := conf.Syslog.Protocol, conf.Syslog.Port, conf.Syslog.Host
+		raddr := strings.Join([]string{host, port}, `:`)
 
 		if s, err := newsl(prot, raddr, `gocmdbcli`, PriInfo); err == nil {
 			sw = append(sw, s)

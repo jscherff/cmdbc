@@ -53,9 +53,9 @@ type Config struct {
 	}
 
 	Syslog struct {
-		Port		string
 		Protocol	string
-		Address		string
+		Port		string
+		Host		string
 	}
 
 	Include struct {

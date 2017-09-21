@@ -20,11 +20,13 @@ import (
 	`fmt`
 	`io/ioutil`
 	`net/http`
+	`time`
 	`github.com/jscherff/gocmdb`
 )
 
 var (
-	client = &http.Client{}
+	transport = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
+	client = &http.Client{Transport: transport}
 
 	HttpStatusMap = map[int]string {
 		http.StatusOK:			`request processed, no errors`,		// 200
@@ -95,7 +97,9 @@ func SubmitCheckin(o gocmdb.Registerable) (err error) {
 func GetDevice(o gocmdb.Registerable) (j []byte, err error) {
 
 	if o.ID() == `` {
-		slog.Print(`skipping fetch for VID %q PID %q: no serial number`, o.VID(), o.PID())
+		slog.Print(`device %s-%s fetch: skipping, no serial number`,
+			o.VID(), o.PID(),
+		)
 		return j, err
 	}
 
