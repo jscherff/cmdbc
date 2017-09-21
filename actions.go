@@ -184,9 +184,9 @@ func auditAction(o gocmdb.Auditable) (err error) {
 			fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()),
 		)
 
-		fi, err := os.Stat(f)
+		var fi os.FileInfo
 
-		if err == nil {
+		if fi, err = os.Stat(f); err == nil {
 			slog.Printf(`device %s-%s-%s audit: found state file %q dated %s`,
 				o.VID(), o.PID(), o.ID(),
 				fi.Name(), fi.ModTime(),
@@ -208,9 +208,9 @@ func auditAction(o gocmdb.Auditable) (err error) {
 			o.VID(), o.PID(), o.ID(),
 		)
 
-		c, err := GetDevice(o)
+		var c []byte
 
-		if err == nil {
+		if c, err = GetDevice(o.Host(), o.VID(), o.PID(), o.ID()); err == nil {
 			chgs, err = o.CompareJSON(c)
 		}
 

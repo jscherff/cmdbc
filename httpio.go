@@ -51,7 +51,8 @@ func GetNewSN(o gocmdb.Registerable) (s string, err error) {
 	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.NewSNPath, o.Host(), o.VID(), o.PID())
+		conf.Server.NewSNPath, o.Host(), o.VID(), o.PID(),
+	)
 
 	if j, err = o.JSON(); err != nil {
 		elog.Print(err)
@@ -80,7 +81,8 @@ func SubmitCheckin(o gocmdb.Registerable) (err error) {
 	var j []byte
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.CheckinPath, o.Host(), o.VID(), o.PID())
+		conf.Server.CheckinPath, o.Host(), o.VID(), o.PID(),
+	)
 
 	if j, err = o.JSON(); err != nil {
 		elog.Print(err)
@@ -94,17 +96,16 @@ func SubmitCheckin(o gocmdb.Registerable) (err error) {
 
 // GetDevice obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
-func GetDevice(o gocmdb.Registerable) (j []byte, err error) {
+func GetDevice(host, vid, pid, sn string) (j []byte, err error) {
 
-	if o.ID() == `` {
-		slog.Print(`device %s-%s fetch: skipping, no serial number`,
-			o.VID(), o.PID(),
-		)
+	if sn == `` {
+		slog.Print(`device %s-%s fetch: skipping, no SN`, vid, pid)
 		return j, err
 	}
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.FetchPath, o.Host(), o.VID(), o.PID(), o.ID())
+		conf.Server.FetchPath, host, vid, pid, sn,
+	)
 
 	j, _, err = httpGet(url)
 
@@ -115,7 +116,8 @@ func GetDevice(o gocmdb.Registerable) (j []byte, err error) {
 func SubmitAudit(o gocmdb.Auditable) (err error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID())
+		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID(),
+	)
 
 	j, err := json.Marshal(o.GetChanges())
 

@@ -515,3 +515,51 @@ system 2017/09/20 18:43:50 actions.go:174: device 0acd-2030 audit: skipping, no 
 system 2017/09/20 18:43:50 main.go:116: found USB device: VID 046d PID c52b
 system 2017/09/20 18:43:50 main.go:137: identified USB device as *usbci.Generic
 system 2017/09/20 18:43:50 actions.go:174: device 046d-c52b audit: skipping, no SN
+system 2017/09/20 18:50:37 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:50:37 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:50:37 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:50:39 actions.go:232: device 0801-0001-24F0014 audit: no changes
+system 2017/09/20 18:50:39 actions.go:258: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/20 18:50:41 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 18:50:41 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:50:41 actions.go:174: device 0acd-2030 audit: skipping, no SN
+system 2017/09/20 18:50:41 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 18:50:41 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 18:50:41 actions.go:174: device 046d-c52b audit: skipping, no SN
+system 2017/09/20 18:53:50 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:53:50 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:53:50 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:55:15 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:55:15 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:55:15 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:56:06 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:56:06 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:56:06 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:56:56 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:56:56 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:56:56 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:57:38 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:57:39 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:57:39 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 18:58:31 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 18:58:31 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 18:58:31 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 19:02:51 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 19:02:51 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 19:02:51 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 19:02:53 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 19:02:53 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 19:02:53 actions.go:174: device 0acd-2030 audit: skipping, no SN
+system 2017/09/20 19:02:53 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 19:02:53 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 19:02:53 actions.go:174: device 046d-c52b audit: skipping, no SN
+system 2017/09/20 19:05:27 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/20 19:05:27 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/20 19:05:27 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/20 19:05:27 httpio.go:172: 200 OK - request processed, no errors
+system 2017/09/20 19:05:27 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/20 19:05:27 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 19:05:27 actions.go:174: device 0acd-2030 audit: skipping, no SN
+system 2017/09/20 19:05:27 main.go:116: found USB device: VID 046d PID c52b
+system 2017/09/20 19:05:27 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/20 19:05:27 actions.go:174: device 046d-c52b audit: skipping, no SN
