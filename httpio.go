@@ -63,22 +63,27 @@ func GetNewSN(o gocmdb.Registerable) (s string, err error) {
 		return s, err
 	}
 
-	if sc == http.StatusNoContent {
-		slog.Print(`empty content from server`)
-		return s, err
+	switch sc {
+	case http.StatusCreated:
+		err = json.Unmarshal(j, &s)
+	default:
+		err = fmt.Errorf(`serial number not generated - %s`, http.StatusText(sc))
 	}
 
-	if err = json.Unmarshal(j, &s); err != nil {
+	if err != nil {
 		elog.Print(err)
 	}
 
 	return s, err
 }
 
-// SubmitCheckin checks a device in with the gocmdbd server.
-func SubmitCheckin(o gocmdb.Registerable) (err error) {
+// CheckinDevice checks a device in with the gocmdbd server.
+func CheckinDevice(o gocmdb.Registerable) (err error) {
 
-	var j []byte
+	var (
+		j []byte
+		sc int
+	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
 		conf.Server.CheckinPath, o.Host(), o.VID(), o.PID(),
@@ -89,25 +94,65 @@ func SubmitCheckin(o gocmdb.Registerable) (err error) {
 		return err
 	}
 
-	_, _, err = httpPost(url, j)
+	if _, sc, err = httpPost(url, j); err != nil {
+		elog.Print(err)
+		return err
+	}
+
+	switch sc {
+	case http.StatusOK:
+	case http.StatusCreated:
+	case http.StatusAccepted:
+	case http.StatusNoContent:
+	case http.StatusNotModified:
+	default:
+		err = fmt.Errorf(`checkin not accepted - %s`, http.StatusText(sc))
+	}
+
+	if err != nil {
+		elog.Print(err)
+	}
 
 	return err
 }
 
-// GetDevice obtains the JSON representation of a serialized device object
+// CheckoutDevice obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
-func GetDevice(host, vid, pid, sn string) (j []byte, err error) {
+func CheckoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 
-	if sn == `` {
-		slog.Print(`device %s-%s fetch: skipping, no SN`, vid, pid)
+	var (
+		sc int
+	)
+
+	if o.ID() == `` {
+		slog.Print(`device %s-%s fetch: skipping, no SN`,
+			o.VID(), o.PID(),
+		)
 		return j, err
 	}
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.FetchPath, host, vid, pid, sn,
+		conf.Server.CheckoutPath, o.Host(), o.VID(), o.PID(), o.ID(),
 	)
 
-	j, _, err = httpGet(url)
+	if j, sc, err = httpGet(url); err != nil {
+		elog.Print(err)
+		return j, err
+	}
+
+	switch sc {
+	case http.StatusOK:
+	case http.StatusCreated:
+	case http.StatusAccepted:
+	case http.StatusNoContent:
+	case http.StatusNotModified:
+	default:
+		err = fmt.Errorf(`device not returned - %s`, http.StatusText(sc))
+	}
+
+	if err != nil {
+		elog.Print(err)
+	}
 
 	return j, err
 }
@@ -115,14 +160,33 @@ func GetDevice(host, vid, pid, sn string) (j []byte, err error) {
 // SubmitAudit submits changes from audit to the server in JSON format.
 func SubmitAudit(o gocmdb.Auditable) (err error) {
 
+	var (
+		j []byte
+		sc int
+	)
+
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
 		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID(),
 	)
 
-	j, err := json.Marshal(o.GetChanges())
+	if j, err = json.Marshal(o.GetChanges()); err != nil {
+		elog.Print(err)
+		return err
+	}
 
-	if err == nil {
-		_, _, err = httpPost(url, j)
+	if _, sc, err = httpPost(url, j); err != nil {
+		elog.Print(err)
+		return err
+	}
+
+	switch sc {
+	case http.StatusOK:
+	case http.StatusCreated:
+	case http.StatusAccepted:
+	case http.StatusNoContent:
+	case http.StatusNotModified:
+	default:
+		err = fmt.Errorf(`audit not accepted - %s`, http.StatusText(sc))
 	}
 
 	if err != nil {
@@ -162,18 +226,9 @@ func httpRequest(req *http.Request) (b []byte, sc int, err error) {
 	resp, err := client.Do(req)
 
 	if err == nil {
-
 		defer resp.Body.Close()
-
 		sc = resp.StatusCode
-		msg := fmt.Sprintf(`%s - %s`, resp.Status, HttpStatusMap[sc])
-
-		if sc < 400 {
-			slog.Print(msg)
-			b, err = ioutil.ReadAll(resp.Body)
-		} else {
-			elog.Print(msg)
-		}
+		b, err = ioutil.ReadAll(resp.Body)
 	}
 
 	if err != nil {

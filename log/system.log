@@ -563,3 +563,130 @@ system 2017/09/20 19:05:27 actions.go:174: device 0acd-2030 audit: skipping, no 
 system 2017/09/20 19:05:27 main.go:116: found USB device: VID 046d PID c52b
 system 2017/09/20 19:05:27 main.go:137: identified USB device as *usbci.Generic
 system 2017/09/20 19:05:27 actions.go:174: device 046d-c52b audit: skipping, no SN
+system 2017/09/21 06:10:54 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:10:54 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:10:54 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:11:24 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:11:24 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:11:24 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:11:24 httpio.go:172: 200 OK - request processed, no errors
+system 2017/09/21 06:13:08 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:13:09 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:13:09 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:13:09 httpio.go:172: 200 OK - request processed, no errors
+system 2017/09/21 06:14:50 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:14:50 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:14:50 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:14:50 httpio.go:172: 200 OK - request processed, no errors
+system 2017/09/21 06:19:27 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:19:27 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:19:27 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:19:27 httpio.go:172: 200 OK - request processed, no errors
+system 2017/09/21 06:22:55 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:22:55 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:22:55 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:22:55 httpio.go:172: 200 OK - request processed, no errors
+system 2017/09/21 06:22:55 actions.go:236: device 0801-0001-24F0014 audit: recording changes in change log
+system 2017/09/21 06:22:55 actions.go:247: device 0801-0001-24F0014 audit: reporting changes to server
+system 2017/09/21 06:22:55 httpio.go:172: 201 Created - request processed, object created
+system 2017/09/21 06:22:55 actions.go:258: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/21 06:22:55 httpio.go:172: 201 Created - request processed, object created
+system 2017/09/21 06:23:24 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:23:24 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:23:24 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:23:24 httpio.go:172: 200 OK - request processed, no errors
+system 2017/09/21 06:23:24 actions.go:232: device 0801-0001-24F0014 audit: no changes
+system 2017/09/21 06:23:24 actions.go:258: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/21 06:23:24 httpio.go:172: 201 Created - request processed, object created
+system 2017/09/21 06:26:27 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:26:27 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:26:27 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:26:52 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:26:52 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:26:52 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:28:46 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:28:46 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:28:58 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:28:58 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:28:58 httpio.go:172: 201 Created - request processed, object created
+system 2017/09/21 06:29:06 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:29:07 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:29:07 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:34:04 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:34:04 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:34:04 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:34:04 httpio.go:174: 200 OK - request processed, no errors
+system 2017/09/21 06:34:04 actions.go:235: device 0801-0001-24F0014 audit: recording changes in change log
+system 2017/09/21 06:34:04 actions.go:246: device 0801-0001-24F0014 audit: reporting changes to server
+system 2017/09/21 06:34:04 httpio.go:174: 201 Created - request processed, object created
+system 2017/09/21 06:34:04 actions.go:257: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/21 06:34:04 httpio.go:174: 201 Created - request processed, object created
+system 2017/09/21 06:36:31 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:36:31 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:36:31 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 06:41:06 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 06:41:07 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 06:41:07 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 08:19:16 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 08:19:16 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 08:19:16 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 08:20:00 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 08:20:00 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 08:20:00 actions.go:207: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 08:20:00 httpio.go:170: 500 Internal Server Error
+system 2017/09/21 11:08:09 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:08:09 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:08:09 actions.go:204: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 11:09:29 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:09:29 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:09:29 actions.go:204: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 11:10:58 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:10:58 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:10:58 actions.go:204: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 11:11:10 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:11:10 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:11:10 actions.go:182: device 0801-0001-24F0014 audit: found state file "0801-0001-24F0014.json" dated 2017-09-20 17:59:06.2893915 -0700 PDT
+system 2017/09/21 11:11:10 actions.go:194: device 0801-0001-24F0014 audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:11:10 actions.go:233: device 0801-0001-24F0014 audit: no changes
+system 2017/09/21 11:11:10 actions.go:257: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/21 11:11:28 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:11:28 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:11:28 actions.go:194: device 0801-0001-24F0014 audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:33:03 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:33:03 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:33:03 actions.go:178: device 0801-0001-24F0014 audit: fetching previous state from "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:33:03 actions.go:190: device 0801-0001-24F0014 audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:33:03 actions.go:233: device 0801-0001-24F0014 audit: no changes
+system 2017/09/21 11:33:27 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:33:27 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:33:27 actions.go:178: device 0801-0001-24F0014 audit: fetching previous state from "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:33:27 actions.go:190: device 0801-0001-24F0014 audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:35:16 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:35:16 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:35:16 actions.go:178: device 0801-0001-24F0014 audit: fetching previous state from "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:35:16 actions.go:186: device 0801-0001-24F0014 audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:35:29 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:35:30 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:35:30 actions.go:178: device 0801-0001-24F0014 audit: fetching previous state from "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:35:30 actions.go:186: device 0801-0001-24F0014 audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 11:35:30 actions.go:229: device 0801-0001-24F0014 audit: no changes
+system 2017/09/21 11:35:37 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:35:37 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:35:37 actions.go:196: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 11:35:37 actions.go:208: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/21 11:44:47 main.go:116: found USB device: VID 0801 PID 0001
+system 2017/09/21 11:44:47 main.go:128: identified USB device as *usbci.Magtek
+system 2017/09/21 11:45:27 main.go:116: found USB device: VID 0acd PID 2030
+system 2017/09/21 11:45:27 main.go:137: identified USB device as *usbci.Generic
+system 2017/09/21 16:50:18 main.go:128: found USB device: VID 0801 PID 0001
+system 2017/09/21 16:50:18 main.go:140: identified USB device as *usbci.Magtek
+system 2017/09/21 16:51:03 main.go:128: found USB device: VID 0801 PID 0001
+system 2017/09/21 16:51:03 main.go:140: identified USB device as *usbci.Magtek
+system 2017/09/21 16:51:03 actions.go:178: device 0801-0001-24F0014 audit: fetching previous state from "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 16:51:03 actions.go:186: device 0801-0001-24F0014 audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-24F0014.json"
+system 2017/09/21 16:51:03 actions.go:229: device 0801-0001-24F0014 audit: no changes
+system 2017/09/21 16:51:18 main.go:128: found USB device: VID 0801 PID 0001
+system 2017/09/21 16:51:18 main.go:140: identified USB device as *usbci.Magtek
+system 2017/09/21 16:51:18 actions.go:196: device 0801-0001-24F0014 audit: fetching previous state from server
+system 2017/09/21 16:51:18 actions.go:208: device 0801-0001-24F0014 audit: saving current state to server
+system 2017/09/21 16:51:18 actions.go:229: device 0801-0001-24F0014 audit: no changes

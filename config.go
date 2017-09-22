@@ -41,9 +41,9 @@ type Config struct {
 	Server struct {
 		URL		string
 		CheckinPath	string
+		CheckoutPath	string
 		NewSNPath	string
 		AuditPath	string
-		FetchPath	string
 	}
 
 	Logging struct {
@@ -69,6 +69,8 @@ type Config struct {
 		Object		string
 		Default		string
 	}
+
+	Testing			bool
 }
 
 // NewConfig retrieves the settings in the JSON configuration file and

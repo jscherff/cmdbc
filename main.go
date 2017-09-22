@@ -38,6 +38,12 @@ func init() {
 		log.Fatalf(err.Error())
 	}
 
+	// Stop if in testing mode.
+
+	if conf.Testing {
+		return
+	}
+
 	// Process command-line actions and options.
 
 	if len(os.Args) < 2 {
@@ -82,6 +88,12 @@ func init() {
 }
 
 func main() {
+
+	// Stop if in testing mode.
+
+	if conf.Testing {
+		return
+	}
 
 	// Instantiate context to enumerate attached USB devices.
 

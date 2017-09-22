@@ -16,9 +16,9 @@
 	"Server": {
 		"URL":			"http://localhost:8080/usbci",
 		"CheckinPath":		"checkin",
+		"CheckoutPath":		"checkout",
 		"NewSNPath":		"newsn",
-		"AuditPath":		"audit",
-		"FetchPath":		"fetch"
+		"AuditPath":		"audit"
 	},
 
 	"Logging": {
@@ -51,8 +51,10 @@
 	},
 
 	"Format": {
-		"Report": "csv",
-		"object": "json",
-		"Legacy": "csv"
-	}
+		"Report":		"csv",
+		"object":		"json",
+		"Legacy":		"csv"
+	},
+
+	"Testing":			true
 }

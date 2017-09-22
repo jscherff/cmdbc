@@ -30,7 +30,7 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 	var newfl = func(f string) (h *os.File, err error) {
 
 		if h, err = os.OpenFile(f, FileFlags, FileMode); err != nil {
-			log.Println(err.Error())
+			log.Println(err)
 		}
 
 		return h, err
@@ -39,7 +39,7 @@ func NewLoggers() (sl, cl, el *log.Logger) {
 	var newsl = func(prot, raddr, tag string, pri srslog.Priority) (s *srslog.Writer, err error) {
 
 		if s, err = srslog.Dial(prot, raddr, pri, tag); err != nil {
-			log.Println(err.Error())
+			log.Println(err)
 		}
 
 		return s, err

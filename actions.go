@@ -75,8 +75,7 @@ func reportAction(o gocmdb.Reportable) (err error) {
 		err = WriteFile(b, filepath.Join(conf.Paths.ReportDir, f))
 	}
 
-	// Error already decorated and logged.
-	return err
+	return err // Errors already logged.
 }
 
 // serialAction processes the serial number options and configures the
@@ -132,13 +131,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 	case *fSerialFetch:
 
 		if s, err = GetNewSN(o); err != nil {
-			break // errors already logged.
-		}
-
-		if len(s) == 0 {
-			err = fmt.Errorf(`empty serial number from server`)
-			elog.Print(err)
-			break
+			break // Errors already logged.
 		}
 
 		slog.Printf(`device %s-%s serial: setting SN %q from server`,
@@ -154,9 +147,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 			o.VID(), o.PID(), o.ID(),
 		)
 
-		if err = SubmitCheckin(o); err != nil {
-			elog.Print(err)
-		}
+		err = CheckinDevice(o) // Errors already logged.
 	}
 
 	return err
@@ -184,22 +175,20 @@ func auditAction(o gocmdb.Auditable) (err error) {
 			fmt.Sprintf(`%s-%s-%s.json`, o.VID(), o.PID(), o.ID()),
 		)
 
-		var fi os.FileInfo
+		slog.Printf(`device %s-%s-%s audit: fetching previous state from %q`,
+			o.VID(), o.PID(), o.ID(), f,
+		)
 
-		if fi, err = os.Stat(f); err == nil {
-			slog.Printf(`device %s-%s-%s audit: found state file %q dated %s`,
-				o.VID(), o.PID(), o.ID(),
-				fi.Name(), fi.ModTime(),
-			)
-			chgs, err = o.CompareFile(f)
+		if chgs, err = o.CompareFile(f); err != nil {
+			elog.Print(err)
 		}
 
 		slog.Printf(`device %s-%s-%s audit: saving current state to %q`,
 			o.VID(), o.PID(), o.ID(), f,
 		)
 
-		if sErr := o.Save(f); sErr != nil {
-			elog.Print(sErr)
+		if errSave := o.Save(f); errSave != nil {
+			elog.Print(errSave)
 		}
 
 	case *fAuditServer:
@@ -210,19 +199,28 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 		var c []byte
 
-		if c, err = GetDevice(o.Host(), o.VID(), o.PID(), o.ID()); err == nil {
-			chgs, err = o.CompareJSON(c)
+		if c, err = CheckoutDevice(o); err == nil {
+			if chgs, err = o.CompareJSON(c); err != nil {
+				elog.Print(err)
+			}
 		}
+
+		slog.Printf(`device %s-%s-%s audit: saving current state to server`,
+			o.VID(), o.PID(), o.ID(),
+		)
+
+		CheckinDevice(o) // Errors already logged.
 
 	default:
 
 		err = fmt.Errorf(`device %s-%s-%s audit: invalid audit option`,
 			o.VID(), o.PID(), o.ID(),
 		)
+
+		elog.Print(err)
 	}
 
 	if err != nil {
-		elog.Print(err)
 		return err
 	}
 
@@ -249,17 +247,7 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 		o.SetChanges(chgs)
 
-		if err = SubmitAudit(o); err != nil {
-			elog.Print(err)
-		}
-	}
-
-	slog.Printf(`device %s-%s-%s audit: saving current state to server`,
-		o.VID(), o.PID(), o.ID(),
-	)
-
-	if err = SubmitCheckin(o); err != nil {
-		elog.Print(err)
+		err = SubmitAudit(o) // Errors already logged.
 	}
 
 	return err
