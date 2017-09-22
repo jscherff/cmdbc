@@ -44,6 +44,10 @@ func init() {
 		return
 	}
 
+	// Initialized loggers.
+
+	slog, clog, elog = NewLoggers()
+
 	// Process command-line actions and options.
 
 	if len(os.Args) < 2 {
@@ -51,10 +55,6 @@ func init() {
 		fsAction.Usage()
 		os.Exit(1)
 	}
-
-	// Initialized loggers.
-
-	slog, clog, elog = NewLoggers()
 
 	// Parse action flag.
 

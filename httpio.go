@@ -67,7 +67,7 @@ func GetNewSN(o gocmdb.Registerable) (s string, err error) {
 	case http.StatusCreated:
 		err = json.Unmarshal(j, &s)
 	default:
-		err = fmt.Errorf(`serial number not generated - %s`, http.StatusText(sc))
+		err = fmt.Errorf(`serial number not generated - %q`, http.StatusText(sc))
 	}
 
 	if err != nil {
@@ -106,7 +106,7 @@ func CheckinDevice(o gocmdb.Registerable) (err error) {
 	case http.StatusNoContent:
 	case http.StatusNotModified:
 	default:
-		err = fmt.Errorf(`checkin not accepted - %s`, http.StatusText(sc))
+		err = fmt.Errorf(`checkin not accepted - %q`, http.StatusText(sc))
 	}
 
 	if err != nil {
@@ -147,7 +147,7 @@ func CheckoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 	case http.StatusNoContent:
 	case http.StatusNotModified:
 	default:
-		err = fmt.Errorf(`device not returned - %s`, http.StatusText(sc))
+		err = fmt.Errorf(`device not returned - %q`, http.StatusText(sc))
 	}
 
 	if err != nil {
@@ -186,7 +186,7 @@ func SubmitAudit(o gocmdb.Auditable) (err error) {
 	case http.StatusNoContent:
 	case http.StatusNotModified:
 	default:
-		err = fmt.Errorf(`audit not accepted - %s`, http.StatusText(sc))
+		err = fmt.Errorf(`audit not accepted - %q`, http.StatusText(sc))
 	}
 
 	if err != nil {
