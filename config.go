@@ -73,10 +73,10 @@ type Config struct {
 	Testing			bool
 }
 
-// NewConfig retrieves the settings in the JSON configuration file and
+// newConfig retrieves the settings in the JSON configuration file and
 // populates the fields in the runtime configuration. It also creates
 // directories if they do not already exist.
-func NewConfig(cf string) (this *Config, err error) {
+func newConfig(cf string) (this *Config, err error) {
 
 	ad := filepath.Dir(os.Args[0])
 

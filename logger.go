@@ -23,7 +23,7 @@ import (
 	`github.com/RackSec/srslog`
 )
 
-func NewLoggers() (sl, cl, el *log.Logger) {
+func newLoggers() (sl, cl, el *log.Logger) {
 
 	var sw, cw, ew []io.Writer
 

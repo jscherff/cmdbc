@@ -41,7 +41,7 @@ func genericRouter(gusb gocmdb.GenericUSB) (err error) {
 		err = auditAction(gusb)
 
 	case *fActionCheckin:
-		err = CheckinDevice(gusb)
+		err = checkinDevice(gusb)
 
 	case *fActionLegacy:
 		err = legacyAction(gusb)

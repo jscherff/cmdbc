@@ -42,8 +42,8 @@ var (
 	}
 )
 
-// GetNewSN obtains a serial number from the gocmdbd server.
-func GetNewSN(o gocmdb.Registerable) (s string, err error) {
+// getNewSN obtains a serial number from the gocmdbd server.
+func getNewSN(o gocmdb.Registerable) (s string, err error) {
 
 	var (
 		j []byte
@@ -77,8 +77,8 @@ func GetNewSN(o gocmdb.Registerable) (s string, err error) {
 	return s, err
 }
 
-// CheckinDevice checks a device in with the gocmdbd server.
-func CheckinDevice(o gocmdb.Registerable) (err error) {
+// checkinDevice checks a device in with the gocmdbd server.
+func checkinDevice(o gocmdb.Registerable) (err error) {
 
 	var (
 		j []byte
@@ -116,9 +116,9 @@ func CheckinDevice(o gocmdb.Registerable) (err error) {
 	return err
 }
 
-// CheckoutDevice obtains the JSON representation of a serialized device object
+// checkoutDevice obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
-func CheckoutDevice(o gocmdb.Auditable) (j []byte, err error) {
+func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 
 	var (
 		sc int
@@ -157,8 +157,8 @@ func CheckoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 	return j, err
 }
 
-// SubmitAudit submits changes from audit to the server in JSON format.
-func SubmitAudit(o gocmdb.Auditable) (err error) {
+// submitAudit submits changes from audit to the server in JSON format.
+func submitAudit(o gocmdb.Auditable) (err error) {
 
 	var (
 		j []byte

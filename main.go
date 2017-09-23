@@ -34,7 +34,7 @@ func init() {
 
 	// Build systemwide configuration from config file.
 
-	if conf, err = NewConfig(`config.json`); err != nil {
+	if conf, err = newConfig(`config.json`); err != nil {
 		log.Fatalf(err.Error())
 	}
 
@@ -46,7 +46,7 @@ func init() {
 
 	// Initialized loggers.
 
-	slog, clog, elog = NewLoggers()
+	slog, clog, elog = newLoggers()
 
 	// Process command-line actions and options.
 

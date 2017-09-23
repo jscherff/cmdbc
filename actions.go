@@ -24,7 +24,7 @@ import (
 // legacyAction writes legacy report to application directory.
 func legacyAction(o gocmdb.Reportable) (err error) {
 
-	err = WriteFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
+	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
 
 	if err != nil {
 		elog.Print(err)
@@ -68,11 +68,11 @@ func reportAction(o gocmdb.Reportable) (err error) {
 		fmt.Fprintf(os.Stdout, string(b))
 
 	case len(*fReportFolder) > 0:
-		err = WriteFile(b, filepath.Join(*fReportFolder, o.Filename()))
+		err = writeFile(b, filepath.Join(*fReportFolder, o.Filename()))
 
 	default:
 		f := fmt.Sprintf(`%s.%s`, o.Filename(), *fReportFormat)
-		err = WriteFile(b, filepath.Join(conf.Paths.ReportDir, f))
+		err = writeFile(b, filepath.Join(conf.Paths.ReportDir, f))
 	}
 
 	return err // Errors already logged.
@@ -130,7 +130,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 	case *fSerialFetch:
 
-		if s, err = GetNewSN(o); err != nil {
+		if s, err = getNewSN(o); err != nil {
 			break // Errors already logged.
 		}
 
@@ -147,7 +147,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 			o.VID(), o.PID(), o.ID(),
 		)
 
-		err = CheckinDevice(o) // Errors already logged.
+		err = checkinDevice(o) // Errors already logged.
 	}
 
 	return err
@@ -199,7 +199,7 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 		var c []byte
 
-		if c, err = CheckoutDevice(o); err == nil {
+		if c, err = checkoutDevice(o); err == nil {
 			if chgs, err = o.CompareJSON(c); err != nil {
 				elog.Print(err)
 			}
@@ -209,7 +209,7 @@ func auditAction(o gocmdb.Auditable) (err error) {
 			o.VID(), o.PID(), o.ID(),
 		)
 
-		CheckinDevice(o) // Errors already logged.
+		checkinDevice(o) // Errors already logged.
 
 	default:
 
@@ -247,7 +247,7 @@ func auditAction(o gocmdb.Auditable) (err error) {
 
 		o.SetChanges(chgs)
 
-		err = SubmitAudit(o) // Errors already logged.
+		err = submitAudit(o) // Errors already logged.
 	}
 
 	return err
