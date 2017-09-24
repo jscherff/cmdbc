@@ -382,7 +382,7 @@ func TestAuditing(t *testing.T) {
 
 		err = auditAction(mag1mod)
 		gotest.Ok(t, err)
-log.Println(mag1mod.Changes)
+
 		gotest.Assert(t, reflect.DeepEqual(mag1mod.Changes, magChanges),
 			`device change log does not contain known device differences`)
 
@@ -412,11 +412,10 @@ log.Println(mag1mod.Changes)
 
 		err = mag1mod.RestoreJSON(mag2JSON)
 		gotest.Ok(t, err)
-log.Println(mag1)
-log.Println(mag1mod)
+
 		err = auditAction(mag1mod)
 		gotest.Ok(t, err)
-log.Println(mag1mod.Changes)
+
 		gotest.Assert(t, reflect.DeepEqual(mag1mod.Changes, magChanges),
 			`device change log does not contain known device differences`)
 

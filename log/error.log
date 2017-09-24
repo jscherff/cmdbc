@@ -87,3 +87,4 @@ error 2017/09/21 11:11:28 actions.go:191: CreateFile C:\msys64\home\John\go\src\
 error 2017/09/21 11:33:27 actions.go:187: CreateFile C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0014.json: The system cannot find the file specified.
 error 2017/09/21 11:35:16 actions.go:183: open C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-24F0014.json: The system cannot find the file specified.
 error 2017/09/21 11:35:37 httpio.go:154: device not returned - Internal Server Error
+error 2017/09/24 07:45:36 actions.go:183: open C:\msys64\home\John\go\src\github.com\jscherff\gocmdbcli\state\0801-0001-TESTING.json: The system cannot find the file specified.

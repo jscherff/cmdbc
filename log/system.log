@@ -690,3 +690,13 @@ system 2017/09/21 16:51:18 main.go:140: identified USB device as *usbci.Magtek
 system 2017/09/21 16:51:18 actions.go:196: device 0801-0001-24F0014 audit: fetching previous state from server
 system 2017/09/21 16:51:18 actions.go:208: device 0801-0001-24F0014 audit: saving current state to server
 system 2017/09/21 16:51:18 actions.go:229: device 0801-0001-24F0014 audit: no changes
+system 2017/09/24 07:45:36 main.go:128: found USB device: VID 0801 PID 0001
+system 2017/09/24 07:45:36 main.go:140: identified USB device as *usbci.Magtek
+system 2017/09/24 07:45:36 actions.go:178: device 0801-0001-TESTING audit: fetching previous state from "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-TESTING.json"
+system 2017/09/24 07:45:36 actions.go:186: device 0801-0001-TESTING audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-TESTING.json"
+system 2017/09/24 07:46:54 main.go:128: found USB device: VID 0801 PID 0001
+system 2017/09/24 07:46:54 main.go:140: identified USB device as *usbci.Magtek
+system 2017/09/24 07:46:54 actions.go:178: device 0801-0001-TESTING audit: fetching previous state from "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-TESTING.json"
+system 2017/09/24 07:46:54 actions.go:186: device 0801-0001-TESTING audit: saving current state to "C:\\msys64\\home\\John\\go\\src\\github.com\\jscherff\\gocmdbcli\\state\\0801-0001-TESTING.json"
+system 2017/09/24 07:46:54 actions.go:233: device 0801-0001-TESTING audit: recording changes in change log
+system 2017/09/24 07:46:54 actions.go:244: device 0801-0001-TESTING audit: reporting changes to server

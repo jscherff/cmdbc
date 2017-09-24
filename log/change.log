@@ -3,3 +3,5 @@ change 2017/09/20 17:59:06 actions.go:193: device 0801-0001-24F0014 changed: "So
 change 2017/09/21 06:22:55 actions.go:241: device 0801-0001-24F0014 changed: "SoftwareID" was "21042818B01", now "21042818B22"
 change 2017/09/21 06:34:04 actions.go:240: device 0801-0001-24F0014 changed: "ProductName" was "USB Swipe Reader", now "USB Swipe Stripper"
 change 2017/09/21 06:34:04 actions.go:240: device 0801-0001-24F0014 changed: "SoftwareID" was "21042818B01", now "21042818B02"
+change 2017/09/24 07:46:54 actions.go:238: device 0801-0001-TESTING changed: "SoftwareID" was "21042840G01", now "21042840G02"
+change 2017/09/24 07:46:54 actions.go:238: device 0801-0001-TESTING changed: "USBSpec" was "1.10", now "2.00"
