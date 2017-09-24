@@ -311,6 +311,20 @@ func TestReporting(t *testing.T) {
 		gotest.Ok(t, err)
 		gotest.Assert(t, mag1ShaNVP == sha256.Sum256(b), `unexpected hash signature of NVP report`)
 	})
+
+	t.Run("Legacy Report", func(t *testing.T) {
+
+		*fActionLegacy = true
+
+log.Println(conf.Files.Legacy)
+		err := legacyAction(mag1)
+		gotest.Ok(t, err)
+
+		b, err := ioutil.ReadFile(conf.Files.Legacy)
+		gotest.Ok(t, err)
+		gotest.Assert(t, mag1ShaLegacy == sha256.Sum256(b), `unexpected hash signature of Legacy report`)
+	})
+
 }
 
 // Test device checkin and checkout.
@@ -353,9 +367,6 @@ func TestCheckinCheckout(t *testing.T) {
 func TestAuditing(t *testing.T) {
 
 	var (
-		//[[SoftwareID 21042818B02 21042818B01] [USBSpec 2.00 1.10]]
-		//[[SoftwareID 21042818B02 21042818B01] [USBSpec 2.00 1.10]]
-
 		ch1 = `"SoftwareID" was "21042818B01", now "21042818B02"`
 		ch2 = `"USBSpec" was "1.10", now "2.00"`
 	)
@@ -427,3 +438,45 @@ func TestAuditing(t *testing.T) {
 			`application change log does not contain known device differences`)
 	})
 }
+
+/*
+
+TODO:
+	serialAction(o gocmdb.Configurable) (err error)
+	writeFile(b []byte, p string) (err error)
+	httpPost(url string, j []byte ) (b []byte, sc int, err error)
+	httpGet(url string) (b []byte, sc int, err error)
+	httpRequest(req *http.Request) (b []byte, sc int, err error)
+	newLoggers() (sl, cl, el *log.Logger)
+	magtekRouter(musb gocmdb.MagtekUSB) (err error)
+	genericRouter(gusb gocmdb.GenericUSB) (err error)
+	legacyAction(o gocmdb.Reportable) (err error)
+	reportAction(o gocmdb.Reportable) (err error)
+	serialAction(o gocmdb.Configurable) (err error)
+	auditAction(o gocmdb.Auditable) (err error)
+	newConfig(cf string) (this *Config, err error)
+	writeFile(b []byte, p string) (err error)
+	readFile(p string, b []byte) (err error)
+	getNewSN(o gocmdb.Registerable) (s string, err error)
+	checkinDevice(o gocmdb.Registerable) (err error)
+	checkoutDevice(o gocmdb.Auditable) (j []byte, err error)
+	submitAudit(o gocmdb.Auditable) (err error)
+	httpPost(url string, j []byte ) (b []byte, sc int, err error)
+	httpGet(url string) (b []byte, sc int, err error)
+	httpRequest(req *http.Request) (b []byte, sc int, err error)
+	newLoggers() (sl, cl, el *log.Logger)
+	magtekRouter(musb gocmdb.MagtekUSB) (err error)
+	genericRouter(gusb gocmdb.GenericUSB) (err error)
+
+DONE:
+	readFile(string, []byte) (error)
+	newConfig(string) (*Config, error) - init()
+	getNewSN(o gocmdb.Registerable) (string, error) - TestGetNewSN()
+	reportAction(o gocmdb.Reportable) (error) - TestReporting()
+	legacyAction(o gocmdb.Reportable) (error) - TestReporting()
+	checkinDevice(o gocmdb.Registerable) (error) - TestCheckinCheckout()
+	checkoutDevice(o gocmdb.Auditable) ([]byte, error) - TestCheckinCheckout()
+	auditAction(o gocmdb.Auditable) (error) - TestAuditing()
+	submitAudit(o gocmdb.Auditable) (error) - TestAuditing()
+
+*/

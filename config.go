@@ -105,7 +105,7 @@ func newConfig(cf string) (this *Config, err error) {
 	// Helpers to prepend and/or create paths as necessary.
 
 	var mkd = func(pd, d string) (string, error) {
-		if dn := filepath.Dir(d); dn == `.` {
+		if dn := filepath.Dir(d); dn == `` || dn == `.` {
 			d = filepath.Join(pd, d)
 		}
 		return d, os.MkdirAll(d, DirMode)
@@ -113,7 +113,7 @@ func newConfig(cf string) (this *Config, err error) {
 
 	var mkf = func(pd, f string) (string, error) {
 
-		if dn := filepath.Dir(f); dn == `.` {
+		if dn := filepath.Dir(f); dn == `` || dn == `.` {
 			f = filepath.Join(pd, f)
 			return f, os.MkdirAll(pd, DirMode)
 		} else {

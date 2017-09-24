@@ -23,14 +23,8 @@ import (
 
 // legacyAction writes legacy report to application directory.
 func legacyAction(o gocmdb.Reportable) (err error) {
-
-	err = writeFile(o.Legacy(), filepath.Join(conf.Paths.AppDir, conf.Files.Legacy))
-
-	if err != nil {
-		elog.Print(err)
-	}
-
-	return err
+	err = writeFile(o.Legacy(), conf.Files.Legacy)
+	return err // Errors already logged.
 }
 
 // reportAction processes report options and writes report to the
@@ -62,16 +56,17 @@ func reportAction(o gocmdb.Reportable) (err error) {
 		return err
 	}
 
+	f := fmt.Sprintf(`%s.%s`, o.Filename(), *fReportFormat)
+
 	switch {
 
 	case *fReportConsole:
 		fmt.Fprintf(os.Stdout, string(b))
 
 	case len(*fReportFolder) > 0:
-		err = writeFile(b, filepath.Join(*fReportFolder, o.Filename()))
+		err = writeFile(b, filepath.Join(*fReportFolder, f))
 
 	default:
-		f := fmt.Sprintf(`%s.%s`, o.Filename(), *fReportFormat)
 		err = writeFile(b, filepath.Join(conf.Paths.ReportDir, f))
 	}
 

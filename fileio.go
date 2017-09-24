@@ -24,7 +24,7 @@ func writeFile(b []byte, p string) (err error) {
 
 	d, f := filepath.Split(p)
 
-	if len(d) == 0 {
+	if d == `` || d == `.` {
 		d = conf.Paths.AppDir
 		p = filepath.Join(d, f)
 	}
@@ -44,7 +44,7 @@ func readFile(p string, b []byte) (err error) {
 
 	d, f := filepath.Split(p)
 
-	if len(d) == 0 {
+	if d == `` || d == `.` {
 		d = conf.Paths.AppDir
 		p = filepath.Join(d, f)
 	}
