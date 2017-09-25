@@ -24,7 +24,7 @@ func writeFile(b []byte, p string) (err error) {
 
 	d, f := filepath.Split(p)
 
-	if d == `` || d == `.` {
+	if d == `` {
 		d = conf.Paths.AppDir
 		p = filepath.Join(d, f)
 	}
@@ -40,11 +40,11 @@ func writeFile(b []byte, p string) (err error) {
 	return err
 }
 
-func readFile(p string, b []byte) (err error) {
+func readFile(p string) (b []byte, err error) {
 
 	d, f := filepath.Split(p)
 
-	if d == `` || d == `.` {
+	if d == `` {
 		d = conf.Paths.AppDir
 		p = filepath.Join(d, f)
 	}
@@ -53,5 +53,5 @@ func readFile(p string, b []byte) (err error) {
 		elog.Print(err)
 	}
 
-	return err
+	return b, err
 }

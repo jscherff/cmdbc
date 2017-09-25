@@ -235,25 +235,32 @@ func init() {
 	slog, clog, elog = newLoggers()
 }
 
-func TestgetNewSN(t *testing.T) {
+func TestGetNewSN(t *testing.T) {
 
-	j, err := mag2.JSON()
-	gotest.Ok(t, err)
+	t.Run("GetNewSN() Function", func(t *testing.T) {
 
-	mag3, err := usbci.NewMagtek(nil)
-	gotest.Ok(t, err)
+		j, err := mag2.JSON()
+		gotest.Ok(t, err)
 
-	err = mag3.RestoreJSON(j)
-	gotest.Ok(t, err)
+		mag3, err := usbci.NewMagtek(nil)
+		gotest.Ok(t, err)
 
-	mag3.SerialNum = ``
+		err = mag3.RestoreJSON(j)
+		gotest.Ok(t, err)
 
-	s, err := getNewSN(mag3)
-	gotest.Ok(t, err)
-	gotest.Assert(t, len(s) != 0, `empty SN provided by server`)
+		mag3.SerialNum = ``
 
-	s, err = getNewSN(mag2)
-	gotest.Assert(t, err != nil, `request for SN when device has one should produce error`)
+		s, err := getNewSN(mag3)
+		gotest.Ok(t, err)
+		gotest.Assert(t, len(s) != 0, `empty SN provided by server`)
+
+		s, err = getNewSN(mag2)
+		gotest.Assert(t, err != nil, `request for SN when device has one should produce error`)
+	})
+
+	t.Run("serialAction() Function", func(t *testing.T) {
+		//TODO
+	})
 }
 
 func TestReporting(t *testing.T) {
@@ -316,7 +323,6 @@ func TestReporting(t *testing.T) {
 
 		*fActionLegacy = true
 
-log.Println(conf.Files.Legacy)
 		err := legacyAction(mag1)
 		gotest.Ok(t, err)
 
@@ -439,28 +445,78 @@ func TestAuditing(t *testing.T) {
 	})
 }
 
+func TestFileReadWrite(t *testing.T) {
+
+	var (
+		b []byte
+		err error
+
+		sig = [32]byte{
+			0x3a,0x39,0xc1,0x30,0x0e,0x4c,0x8b,0xdd,
+			0x90,0x04,0x1b,0xb3,0x2b,0xf6,0x2f,0x3b,
+			0x19,0x48,0xff,0xc8,0x3e,0xb5,0x59,0xf9,
+			0x03,0x8b,0xfe,0x87,0xca,0x8f,0xb4,0xe9,
+		}
+	)
+
+	// File Write Paths
+
+	wfn1 := `test1.txt`
+	wfn2 := `log/test2.txt`
+	wfn3 := filepath.Join(os.Getenv(`TEMP`), `test3.txt`)
+
+	// File Read Paths ('should')
+
+	rfn1 := filepath.Join(conf.Paths.AppDir, `test1.txt`)
+	rfn2 := `log/test2.txt`
+	rfn3 := filepath.Join(os.Getenv(`TEMP`), `test3.txt`)
+
+	// File Write Tests
+
+	err = writeFile(mag1JSON, wfn1)
+	gotest.Ok(t, err)
+
+	err = writeFile(mag1JSON, wfn2)
+	gotest.Ok(t, err)
+
+	err = writeFile(mag1JSON, wfn3)
+	gotest.Ok(t, err)
+
+	// File Read Tests
+
+	b, err = readFile(rfn1)
+	gotest.Ok(t, err)
+	gotest.Assert(t, sha256.Sum256(b) == sig, `unexpected hash signature of file contents`)
+
+	b, err = readFile(rfn2)
+	gotest.Ok(t, err)
+	gotest.Assert(t, sha256.Sum256(b) == sig, `unexpected hash signature of file contents`)
+
+	b, err = readFile(rfn3)
+	gotest.Ok(t, err)
+	gotest.Assert(t, sha256.Sum256(b) == sig, `unexpected hash signature of file contents`)
+
+	// File Read Test Validations
+
+	b, err = ioutil.ReadFile(rfn1)
+	gotest.Ok(t, err)
+	gotest.Assert(t, sha256.Sum256(b) == sig, `unexpected hash signature of file contents`)
+
+	b, err = ioutil.ReadFile(rfn2)
+	gotest.Ok(t, err)
+	gotest.Assert(t, sha256.Sum256(b) == sig, `unexpected hash signature of file contents`)
+
+	b, err = ioutil.ReadFile(rfn3)
+	gotest.Ok(t, err)
+	gotest.Assert(t, sha256.Sum256(b) == sig, `unexpected hash signature of file contents`)
+}
+
+
+
 /*
 
 TODO:
 	serialAction(o gocmdb.Configurable) (err error)
-	writeFile(b []byte, p string) (err error)
-	httpPost(url string, j []byte ) (b []byte, sc int, err error)
-	httpGet(url string) (b []byte, sc int, err error)
-	httpRequest(req *http.Request) (b []byte, sc int, err error)
-	newLoggers() (sl, cl, el *log.Logger)
-	magtekRouter(musb gocmdb.MagtekUSB) (err error)
-	genericRouter(gusb gocmdb.GenericUSB) (err error)
-	legacyAction(o gocmdb.Reportable) (err error)
-	reportAction(o gocmdb.Reportable) (err error)
-	serialAction(o gocmdb.Configurable) (err error)
-	auditAction(o gocmdb.Auditable) (err error)
-	newConfig(cf string) (this *Config, err error)
-	writeFile(b []byte, p string) (err error)
-	readFile(p string, b []byte) (err error)
-	getNewSN(o gocmdb.Registerable) (s string, err error)
-	checkinDevice(o gocmdb.Registerable) (err error)
-	checkoutDevice(o gocmdb.Auditable) (j []byte, err error)
-	submitAudit(o gocmdb.Auditable) (err error)
 	httpPost(url string, j []byte ) (b []byte, sc int, err error)
 	httpGet(url string) (b []byte, sc int, err error)
 	httpRequest(req *http.Request) (b []byte, sc int, err error)
@@ -468,8 +524,10 @@ TODO:
 	magtekRouter(musb gocmdb.MagtekUSB) (err error)
 	genericRouter(gusb gocmdb.GenericUSB) (err error)
 
+WIP:
+
+
 DONE:
-	readFile(string, []byte) (error)
 	newConfig(string) (*Config, error) - init()
 	getNewSN(o gocmdb.Registerable) (string, error) - TestGetNewSN()
 	reportAction(o gocmdb.Reportable) (error) - TestReporting()
@@ -478,5 +536,7 @@ DONE:
 	checkoutDevice(o gocmdb.Auditable) ([]byte, error) - TestCheckinCheckout()
 	auditAction(o gocmdb.Auditable) (error) - TestAuditing()
 	submitAudit(o gocmdb.Auditable) (error) - TestAuditing()
+	readFile(string, []byte) (error) - TestFileReadWrite()
+	writeFile([]byte, string) (error) - TestFileReadWrite()
 
 */
