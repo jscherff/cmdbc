@@ -27,42 +27,6 @@ import (
 	`github.com/jscherff/gotest`
 )
 
-func init() {
-
-	magChanges[0] = []string{`SoftwareID`, `21042818B01`, `21042818B02`}
-	magChanges[1] = []string{`USBSpec`, `1.10`, `2.00`}
-
-	var err, errM1, errM2, errG1, errG2 error
-
-	if mag1, errM1 = usbci.NewMagtek(nil); errM1 == nil {
-		errM1 = mag1.RestoreJSON(mag1JSON)
-	}
-
-	if mag2, errM2 = usbci.NewMagtek(nil); errM2 == nil {
-		errM2 = mag2.RestoreJSON(mag2JSON)
-	}
-
-	if gen1, errG1 = usbci.NewGeneric(nil); errG1 == nil {
-		errG1 = gen1.RestoreJSON(gen1JSON)
-	}
-
-	if gen2, errG2 = usbci.NewGeneric(nil); errG2 == nil {
-		errG2 = gen2.RestoreJSON(gen2JSON)
-	}
-
-	if errM1 != nil || errM2 != nil || errG1 != nil || errG2 != nil {
-		log.Fatal(os.Stderr, "Testing setup failed: could not restore devices.")
-	}
-
-	if conf, err = newConfig(`config.json`); err != nil {
-		os.Exit(1)
-		log.Fatal(os.Stderr, "Testing setup failed: could not restore configuration.")
-	}
-
-	conf.Logging.Console = false
-	slog, clog, elog = newLoggers()
-}
-
 func TestGetNewSN(t *testing.T) {
 
 	t.Run("GetNewSN() Function", func(t *testing.T) {
@@ -98,52 +62,56 @@ func TestReporting(t *testing.T) {
 	t.Run("JSON Report", func(t *testing.T) {
 
 		*fReportFormat = `json`
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 
 		err := reportAction(mag1)
 		gotest.Ok(t, err)
 
+		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
-		gotest.Assert(t, mag1SigPrettyJSON == sha256.Sum256(b), `unexpected hash signature of JSON report`)
+
+		gotest.Assert(t, mag1SigPJSON == sha256.Sum256(b), `unexpected hash signature of JSON report`)
 	})
 
 	t.Run("XML Report", func(t *testing.T) {
 
 		*fReportFormat = `xml`
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 
 		err := reportAction(mag1)
 		gotest.Ok(t, err)
 
+		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
-		gotest.Assert(t, mag1SigPrettyXML == sha256.Sum256(b), `unexpected hash signature of XML report`)
+
+		gotest.Assert(t, mag1SigPXML == sha256.Sum256(b), `unexpected hash signature of XML report`)
 	})
 
 	t.Run("CSV Report", func(t *testing.T) {
 
 		*fReportFormat = `csv`
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 
 		err := reportAction(mag1)
 		gotest.Ok(t, err)
 
+		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
+
 		gotest.Assert(t, mag1SigCSV == sha256.Sum256(b), `unexpected hash signature of CSV report`)
 	})
 
 	t.Run("NVP Report", func(t *testing.T) {
 
 		*fReportFormat = `nvp`
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 
 		err := reportAction(mag1)
 		gotest.Ok(t, err)
 
+		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
+
 		gotest.Assert(t, mag1SigNVP == sha256.Sum256(b), `unexpected hash signature of NVP report`)
 	})
 
@@ -156,6 +124,7 @@ func TestReporting(t *testing.T) {
 
 		b, err := ioutil.ReadFile(conf.Files.Legacy)
 		gotest.Ok(t, err)
+
 		gotest.Assert(t, mag1SigLegacy == sha256.Sum256(b), `unexpected hash signature of Legacy report`)
 	})
 
@@ -200,12 +169,6 @@ func TestCheckinCheckout(t *testing.T) {
 
 func TestAuditing(t *testing.T) {
 
-	var (
-		ch1 = `"SoftwareID" was "21042818B01", now "21042818B02"`
-		ch2 = `"USBSpec" was "1.10", now "2.00"`
-	)
-
-
 	t.Run("Local Audit", func(t *testing.T) {
 
 		*fAuditLocal = true
@@ -235,7 +198,7 @@ func TestAuditing(t *testing.T) {
 		gotest.Ok(t, err)
 
 		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, ch1) && strings.Contains(fs, ch2),
+		gotest.Assert(t, strings.Contains(fs, ClogCh1) && strings.Contains(fs, ClogCh2),
 			`application change log does not contain known device differences`)
 	})
 
@@ -268,7 +231,7 @@ func TestAuditing(t *testing.T) {
 		gotest.Ok(t, err)
 
 		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, ch1) && strings.Contains(fs, ch2),
+		gotest.Assert(t, strings.Contains(fs, ClogCh1) && strings.Contains(fs, ClogCh2),
 			`application change log does not contain known device differences`)
 	})
 }

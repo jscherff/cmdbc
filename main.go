@@ -31,7 +31,7 @@ var (
 	slog, clog, elog *log.Logger
 )
 
-func init() {
+func main() {
 
 	var err error
 
@@ -41,19 +41,9 @@ func init() {
 		log.Fatalf(err.Error())
 	}
 
-	// Return if in testing mode.
-
-	if conf.Testing { return }
-
 	// Initialized loggers.
 
 	slog, clog, elog = newLoggers()
-
-	// If run as legacy app executable, skip flag processing.
-
-	if strings.Contains(filepath.Base(os.Args[0]), `magtek_inventory`) {
-		return
-	}
 
 	// Process command-line actions and options.
 
@@ -88,13 +78,6 @@ func init() {
 		fs.Usage()
 		os.Exit(1)
 	}
-}
-
-func main() {
-
-	// Return if in testing mode.
-
-	if conf.Testing { return }
 
 	// Instantiate context to enumerate attached USB devices.
 

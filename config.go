@@ -69,8 +69,6 @@ type Config struct {
 		Object		string
 		Default		string
 	}
-
-	Testing			bool
 }
 
 // newConfig retrieves the settings in the JSON configuration file and

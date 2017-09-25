@@ -54,7 +54,5 @@
 		"Report":		"csv",
 		"object":		"json",
 		"Legacy":		"csv"
-	},
-
-	"Testing":			false
+	}
 }
