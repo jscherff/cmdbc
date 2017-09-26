@@ -1,58 +1,58 @@
 {
 	"Paths": {
-		"AppDir":		"",
-		"LogDir":		"log",
-		"StateDir":		"state",
-		"ReportDir":		"report"
+		"AppDir": "",
+		"LogDir": "log",
+		"StateDir": "state",
+		"ReportDir": "report"
 	},
 
 	"Files": {
-		"SystemLog":		"system.log",
-		"ChangeLog":		"change.log",
-		"ErrorLog":		"error.log",
-		"Legacy":		"usb_serial.txt"
+		"SystemLog": "system.log",
+		"ChangeLog": "change.log",
+		"ErrorLog": "error.log",
+		"Legacy": "usb_serial.txt"
 	},
 
 	"Server": {
-		"URL":			"http://localhost:8080/usbci",
-		"CheckinPath":		"checkin",
-		"CheckoutPath":		"checkout",
-		"NewSNPath":		"newsn",
-		"AuditPath":		"audit"
+		"URL": "http://localhost:8080/usbci",
+		"CheckinPath": "checkin",
+		"CheckoutPath": "checkout",
+		"NewSNPath": "newsn",
+		"AuditPath": "audit"
 	},
 
 	"Logging": {
-		"LogFiles":		true,
-		"Console":		true,
-		"Syslog":		false
+		"LogFiles": true,
+		"Console": true,
+		"Syslog": false
 	},
 
 	"Syslog": {
-		"Protocol":		"tcp",
-		"Port":			"1468",
-		"Host":			"localhost"
+		"Protocol": "tcp",
+		"Port": "1468",
+		"Host": "localhost"
 	},
 
 	"Include": {
 
 		"VendorID": {
-			"0801":		true,
-			"043d":		false,
-			"045e":		false
+			"0801": true,
+			"043d": false,
+			"045e": false
 		},
 
 		"ProductID": {
 			"0801": {
-				"0001":	true
+				"0001": true
 			}
 		},
 
-		"Default":		true
+		"Default": true
 	},
 
 	"Format": {
-		"Report":		"csv",
-		"object":		"json",
-		"Legacy":		"csv"
+		"Report": "csv",
+		"object": "json",
+		"Legacy": "csv"
 	}
 }

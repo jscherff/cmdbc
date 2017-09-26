@@ -30,7 +30,7 @@ var (
 	slog, clog, elog *log.Logger
 )
 
-func init() {
+func main() {
 
 	var err error
 
@@ -43,9 +43,6 @@ func init() {
 	// Initialize loggers.
 
 	slog, clog, elog = newLoggers()
-}
-
-func main() {
 
 	// Process command-line actions and options.
 

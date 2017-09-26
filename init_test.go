@@ -350,12 +350,18 @@ func init() {
 
 func TestMain(m *testing.M) {
 
+	var err error
+
 	flag.Parse()
+
+	if conf, err = newConfig(`config.json`); err != nil {
+		log.Fatalf(err.Error())
+	}
 
 	conf.Logging.Console = false
 	slog, clog, elog = newLoggers()
 
-	if err := createObjects(); err != nil {
+	if err = createObjects(); err != nil {
 		log.Fatal(err)
 	}
 
