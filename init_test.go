@@ -19,6 +19,7 @@ import (
 	`log`
 	`os`
 	`testing`
+	`github.com/google/gousb`
 	`github.com/jscherff/gocmdb/usbci`
 )
 
