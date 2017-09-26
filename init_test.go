@@ -18,6 +18,7 @@ import (
 	`flag`
 	`log`
 	`os`
+	`sync`
 	`testing`
 	`github.com/google/gousb`
 	`github.com/jscherff/gocmdb/usbci`
@@ -338,6 +339,8 @@ var (
 
 	ClogCh1 = `"SoftwareID" was "21042840G01", now "21042840G02"`
 	ClogCh2 = `"USBSpec" was "1.10", now "2.00"`
+
+	mux sync.Mutex
 )
 
 func init() {

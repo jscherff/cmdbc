@@ -22,7 +22,6 @@ import (
 	`path/filepath`
 	`reflect`
 	`strings`
-	`sync`
 	`testing`
 	`time`
 	`github.com/google/gousb`
@@ -77,7 +76,7 @@ import (
 	        Fetch serial number from server
 	  -force
 	        Force serial number change
-	  -set "24F9999"
+	  -set "TESTING"
 	        Set serial number to <string>
 */
 
@@ -309,7 +308,6 @@ func TestFlowSerial(t *testing.T) {
 
 	var (
 		mdev *usbci.Magtek
-		mu sync.Mutex
 		err error
 	)
 
@@ -329,8 +327,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -copy (serial number exists)`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -356,8 +354,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -fetch (serial number exists)`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -379,8 +377,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -set <string> (serial number exists)`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -402,8 +400,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -erase -copy`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -427,8 +425,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -erase -fetch`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -448,8 +446,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -erase -set <string>`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -469,8 +467,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -force -copy (serial number exists)`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -494,8 +492,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -force -fetch (serial number exists)`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -515,8 +513,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -serial -force -set <string> (serial number exists)`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)
@@ -544,8 +542,8 @@ func TestFlowSerial(t *testing.T) {
 
 	t.Run(`Flags: -reset`, func(t *testing.T) {
 
-		mu.Lock()
-		defer mu.Unlock()
+		mux.Lock()
+		defer mux.Unlock()
 
 		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
 			t.Skip(`device not found`)

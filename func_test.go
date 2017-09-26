@@ -37,10 +37,7 @@ func TestFuncSerial(t *testing.T) {
 
 		mag1.SerialNum, err = getNewSN(mag1)
 		gotest.Ok(t, err)
-		gotest.Assert(t, len(mag1.SerialNum) != 0, `empty SN provided by server`)
-
-		mag1.SerialNum, err = getNewSN(mag1)
-		gotest.Assert(t, err != nil, `request for SN when device has one should produce error`)
+		gotest.Assert(t, mag1.SerialNum != ``, `empty SN provided by server`)
 	})
 
 	restoreState(t)
@@ -286,9 +283,11 @@ func TestFuncFileIO(t *testing.T) {
 	b, err = ioutil.ReadFile(rfn3)
 	gotest.Ok(t, err)
 	gotest.Assert(t, sha256.Sum256(b) == mag1SigJSON, `unexpected hash signature of file contents`)
+
+	os.RemoveAll(wfn1)
+	os.RemoveAll(wfn2)
+	os.RemoveAll(wfn3)
 }
-
-
 
 /*
 
@@ -300,9 +299,6 @@ TODO:
 	newLoggers() (sl, cl, el *log.Logger)
 	magtekRouter(musb gocmdb.MagtekUSB) (err error)
 	genericRouter(gusb gocmdb.GenericUSB) (err error)
-
-WIP:
-
 
 DONE:
 	newConfig(string) (*Config, error) - init()
