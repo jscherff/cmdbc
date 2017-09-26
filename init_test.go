@@ -340,41 +340,105 @@ var (
 )
 
 func init() {
-
 	magChanges[0] = []string{`SoftwareID`, `21042840G01`, `21042840G02`}
 	magChanges[1] = []string{`USBSpec`, `1.10`, `2.00`}
-
-	var err, errM1, errM2, errG1, errG2 error
-
-	if mag1, errM1 = usbci.NewMagtek(nil); errM1 == nil {
-		errM1 = mag1.RestoreJSON(mag1JSON)
-	}
-
-	if mag2, errM2 = usbci.NewMagtek(nil); errM2 == nil {
-		errM2 = mag2.RestoreJSON(mag2JSON)
-	}
-
-	if gen1, errG1 = usbci.NewGeneric(nil); errG1 == nil {
-		errG1 = gen1.RestoreJSON(gen1JSON)
-	}
-
-	if gen2, errG2 = usbci.NewGeneric(nil); errG2 == nil {
-		errG2 = gen2.RestoreJSON(gen2JSON)
-	}
-
-	if errM1 != nil || errM2 != nil || errG1 != nil || errG2 != nil {
-		log.Fatalln(`Testing setup failed: could not restore devices.`)
-	}
-
-	if conf, err = newConfig(`config.json`); err != nil {
-		log.Fatalln(err)
-	}
-
-	conf.Logging.Console = false
-	slog, clog, elog = newLoggers()
 }
 
 func TestMain(m *testing.M) {
+
 	flag.Parse()
+
+	conf.Logging.Console = false
+	slog, clog, elog = newLoggers()
+
+	if err := createObjects(); err != nil {
+		log.Fatal(err)
+	}
+
 	os.Exit(m.Run())
 }
+
+func createObjects() (err error) {
+
+	if mag1, err = usbci.NewMagtek(nil); err != nil {
+		return err
+	}
+
+	if mag2, err = usbci.NewMagtek(nil); err != nil {
+		return err
+	}
+
+	if gen1, err = usbci.NewGeneric(nil); err != nil {
+		return err
+	}
+
+	if gen2, err = usbci.NewGeneric(nil); err != nil {
+		return err
+	}
+
+	if err = mag1.RestoreJSON(mag1JSON); err != nil {
+		return err
+	}
+
+	if err = mag2.RestoreJSON(mag2JSON); err != nil {
+		return err
+	}
+
+	if err = gen1.RestoreJSON(gen1JSON); err != nil {
+		return err
+	}
+
+	if err = gen2.RestoreJSON(gen2JSON); err != nil {
+		return err
+	}
+
+	return err
+}
+
+func resetFlags(tb testing.TB) {
+
+	tb.Helper()
+
+	*fActionAudit = false
+	*fActionCheckin = false
+	*fActionLegacy = false
+	*fActionReport = false
+	*fActionReset = false
+	*fActionSerial = false
+
+	*fReportFolder = conf.Paths.ReportDir
+	*fReportConsole = false
+	*fReportFormat = ``
+
+	*fSerialCopy = false
+	*fSerialErase = false
+	*fSerialForce = false
+	*fSerialFetch = false
+	*fSerialSet = ``
+
+	*fAuditLocal = false
+	*fAuditServer = false
+}
+
+func restoreState(tb testing.TB) {
+
+	tb.Helper()
+
+	if err := createObjects(); err != nil {
+		tb.Fatal(err)
+	}
+}
+
+func getMagtekDevice(tb testing.TB, c *gousb.Context) (mdev *usbci.Magtek, err error) {
+
+	tb.Helper()
+
+	dev, err := c.OpenDeviceWithVIDPID(0x0801, 0x0001)
+
+	if dev != nil {
+		mdev, err = usbci.NewMagtek(dev)
+	}
+
+	return mdev, err
+}
+

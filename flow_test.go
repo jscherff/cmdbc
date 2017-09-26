@@ -16,47 +16,19 @@ package main
 
 import (
 	`crypto/sha256`
+	`fmt`
 	`io/ioutil`
-	`log`
+	`os`
 	`path/filepath`
 	`reflect`
 	`strings`
+	`sync`
 	`testing`
-	`github.com/jscherff/gocmdb`
+	`time`
+	`github.com/google/gousb`
 	`github.com/jscherff/gocmdb/usbci`
 	`github.com/jscherff/gotest`
 )
-
-var (
-	mag3, mag4 *usbci.Magtek
-	gen3, gen4 *usbci.Generic
-)
-
-func init() {
-
-	var errM3, errM4, errG3, errG4 error
-
-	if mag3, errM3 = usbci.NewMagtek(nil); errM3 == nil {
-		errM3 = mag3.RestoreJSON(mag1JSON)
-	}
-
-	if mag4, errM4 = usbci.NewMagtek(nil); errM4 == nil {
-		errM4 = mag4.RestoreJSON(mag2JSON)
-	}
-
-	if gen3, errG3 = usbci.NewGeneric(nil); errG3 == nil {
-		errG3 = gen3.RestoreJSON(gen1JSON)
-	}
-
-	if gen4, errG4 = usbci.NewGeneric(nil); errG4 == nil {
-		errG4 = gen4.RestoreJSON(gen2JSON)
-	}
-
-	if errM3 != nil || errM4 != nil || errG3 != nil || errG4 != nil {
-		log.Fatal(`Testing setup failed: could not restore devices.`)
-	}
-}
-
 
 /* TODO: test each path through the application by setting flags and
    passing an object to the router for both magtek and generic devices.
@@ -109,76 +81,39 @@ func init() {
 	        Set serial number to <string>
 */
 
-func resetFlags(tb testing.TB) {
-
-	tb.Helper()
-
-	*fActionAudit = false
-	*fActionCheckin = false
-	*fActionLegacy = false
-	*fActionReport = false
-	*fActionReset = false
-	*fActionSerial = false
-
-	*fReportFolder = conf.Paths.ReportDir
-	*fReportConsole = false
-	*fReportFormat = ``
-
-	*fSerialCopy = false
-	*fSerialErase = false
-	*fSerialForce = false
-	*fSerialFetch = false
-	*fSerialSet = ``
-
-	*fAuditLocal = false
-	*fAuditServer = false
-}
-
-func restoreState(tb testing.TB, o gocmdb.Auditable, b []byte) {
-
-	tb.Helper()
+func TestFlowAudit(t *testing.T) {
 
 	var err error
 
-	if err = o.RestoreJSON(b); err != nil {
-		tb.Fatal(`Testing failed: could not restore devices to original state.`)
-	}
-
-	if err = checkinDevice(o); err != nil {
-		tb.Fatal(`Testing failed: could not restore database to original state.`)
-	}
-}
-
-func TestAuditFlow(t *testing.T) {
-
 	t.Run(`Flags: -audit -local`, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionAudit = true
 		*fAuditLocal = true
 
+		// Remove audit file artifacts from previous tests.
+
+		af := fmt.Sprintf(`%s-%s-%s.json`, mag1.VID(), mag1.PID(), mag1.ID())
+		os.RemoveAll(filepath.Join(conf.Paths.StateDir, af))
+
 		// Send device to router.
 
-		err = magtekRouter(mag3)
+		err = magtekRouter(mag1)
 		gotest.Assert(t, err != nil, `first run should result in file-not-found error`)
 
 		// Determine whether there are no changes recorded when auditing same device.
 
-		err = magtekRouter(mag3)
+		err = magtekRouter(mag1)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, len(mag3.Changes) == 0, `device change log should be empty`)
+		gotest.Assert(t, len(mag1.Changes) == 0, `device change log should be empty`)
 
 		// Determine whether device differences are recorded in device change log.
 
-		err = magtekRouter(mag4)
+		err = magtekRouter(mag2)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, reflect.DeepEqual(mag4.Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(mag2.Changes, magChanges),
 			`device change log does not contain known device differences`)
 
 		// Determine whether device differences are recorded in app change log.
@@ -189,17 +124,9 @@ func TestAuditFlow(t *testing.T) {
 		fs := string(fb)
 		gotest.Assert(t, strings.Contains(fs, ClogCh1) && strings.Contains(fs, ClogCh2),
 			`application change log does not contain known device differences`)
-
-		// Restore state
-
-		restoreState(t, mag4, mag2JSON)
 	})
 
 	t.Run(`Flags: -audit -server`, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionAudit = true
@@ -207,20 +134,20 @@ func TestAuditFlow(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(mag3)
+		err = magtekRouter(mag1)
 		gotest.Ok(t, err)
 
 		// Determine whether there are no changes recorded when auditing same device.
 
-		err = magtekRouter(mag3)
+		err = magtekRouter(mag1)
 		gotest.Ok(t, err)
 
 		// Determine whether device differences are recorded in device change log.
 
-		err = magtekRouter(mag4)
+		err = magtekRouter(mag2)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, reflect.DeepEqual(mag4.Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(mag2.Changes, magChanges),
 			`device change log does not contain known device differences`)
 
 		// Determine whether device differences are recorded in app change log.
@@ -231,56 +158,48 @@ func TestAuditFlow(t *testing.T) {
 		fs := string(fb)
 		gotest.Assert(t, strings.Contains(fs, ClogCh1) && strings.Contains(fs, ClogCh2),
 			`application change log does not contain known device differences`)
-
-		// Restore state
-
-		restoreState(t, mag4, mag2JSON)
 	})
+
+	restoreState(t)
 }
 
-func TestCheckinFlow(t *testing.T) {
+func TestFlowCheckin(t *testing.T) {
+
+	var err error
 
 	t.Run(`Flags: -checkin`, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionCheckin = true
 
 		// Change a property.
 
-		mag4.VendorName = `Check-in Test`
+		mag2.VendorName = `Check-in Test`
 
 		// Send device to router.
 
-		err = magtekRouter(mag4)
+		err = magtekRouter(mag2)
 		gotest.Ok(t, err)
 
 		// Checkout device and test if property change persisted.
 
-		b, err := checkoutDevice(mag4)
+		b, err := checkoutDevice(mag2)
 		gotest.Ok(t, err)
 
-		err = mag4.RestoreJSON(b)
+		err = mag2.RestoreJSON(b)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag4.VendorName == `Check-in Test`, `device changes did not persist after checkin`)
-
-		// Restore state
-
-		restoreState(t, mag4, mag2JSON)
+		gotest.Assert(t, mag2.VendorName == `Check-in Test`, `device changes did not persist after checkin`)
 	})
+
+	restoreState(t)
 }
 
-func TestLegacyFlow(t *testing.T) {
+func TestFlowLegacy(t *testing.T) {
+
+	var err error
 
 	t.Run(`Flags: -legacy`, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionLegacy = true
@@ -297,15 +216,15 @@ func TestLegacyFlow(t *testing.T) {
 
 		gotest.Assert(t, mag1SigLegacy == sha256.Sum256(b), `unexpected hash signature of Legacy report`)
 	})
+
+	restoreState(t)
 }
 
-func TestReportFlow(t *testing.T) {
+func TestFlowReport(t *testing.T) {
+
+	var err error
 
 	t.Run(`Flags: -report -folder -format csv`, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionReport = true
@@ -322,14 +241,10 @@ func TestReportFlow(t *testing.T) {
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigCSV == sha256.Sum256(b), `unexpected hash signature of CSV report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigCSV, `unexpected hash signature of CSV report`)
 	})
 
 	t.Run(`Flags: -report -folder -format nvp `, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionReport = true
@@ -346,14 +261,10 @@ func TestReportFlow(t *testing.T) {
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigNVP == sha256.Sum256(b), `unexpected hash signature of NVP report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigNVP, `unexpected hash signature of NVP report`)
 	})
 
 	t.Run(`Flags: -report -folder -format xml`, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionReport = true
@@ -370,14 +281,10 @@ func TestReportFlow(t *testing.T) {
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigPXML == sha256.Sum256(b), `unexpected hash signature of XML report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigPXML, `unexpected hash signature of XML report`)
 	})
 
 	t.Run(`Flags: -report -folder -format json`, func(t *testing.T) {
-
-		var err error
-
-		// Reset and Set flags.
 
 		resetFlags(t)
 		*fActionReport = true
@@ -394,132 +301,264 @@ func TestReportFlow(t *testing.T) {
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigPJSON == sha256.Sum256(b), `unexpected hash signature of JSON report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigPJSON, `unexpected hash signature of JSON report`)
 	})
 }
 
-/*
-	t.Run(`Flags: -serial -erase`, func(t *testing.T) {
-		*fActionSerial = true
-		*fSerialErase = true
+func TestFlowSerial(t *testing.T) {
 
-		ctx := gousb.NewContext()
-		defer ctx.Close()
+	var (
+		mdev *usbci.Magtek
+		mu sync.Mutex
+		err error
+	)
 
-		dev, err := ctx.OpenDeviceWithVIDPID(0x0801, 0x0001)
+	ctx := gousb.NewContext()
+	defer ctx.Close()
 
-		if err != nil {
-			t.Skip(`no compatible devices found`)
+	if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+		t.Skip(`device not found`)
+	}
+
+	oldSn := mdev.DeviceSN
+	newSn := `TESTING`
+
+	err = mdev.SetDeviceSN(newSn)
+	gotest.Ok(t, err)
+	mdev.Close()
+
+	t.Run(`Flags: -serial -copy (serial number exists)`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
 		}
 
-		defer dev.Close()
+		defer mdev.Close()
 
+		if mdev.FactorySN == `` {
+			t.Skip(`factory SN empty`)
+		}
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
-	})
+		if mdev.DeviceSN == `` {
+			t.Skip(`device SN empty`)
+		}
 
-	t.Run(`Flags: -serial -copy`, func(t *testing.T) {
+		resetFlags(t)
 		*fActionSerial = true
 		*fSerialCopy = true
-		*fSerialFetch = false
-		*fSerialSet = ``
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
+		err = magtekRouter(mdev)
+		gotest.Assert(t, err != nil, `attempt to set SN when one already exists should produce error`)
 	})
 
-	t.Run(`Flags: -serial -fetch`, func(t *testing.T) {
+	t.Run(`Flags: -serial -fetch (serial number exists)`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		if mdev.DeviceSN == `` {
+			t.Skip(`device SN empty`)
+		}
+
+		resetFlags(t)
 		*fActionSerial = true
-		*fSerialCopy = false
 		*fSerialFetch = true
-		*fSerialSet = ``
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
+		err = magtekRouter(mdev)
+		gotest.Assert(t, err != nil, `attempt to set SN when one already exists should produce error`)
 	})
 
-	t.Run(`Flags: -serial -set "24F9999"`, func(t *testing.T) {
-		*fActionSerial = false
-		*fSerialCopy = false
-		*fSerialFetch = false
-		*fSerialSet = `24F9999`
+	t.Run(`Flags: -serial -set <string> (serial number exists)`, func(t *testing.T) {
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
-	})
+		mu.Lock()
+		defer mu.Unlock()
 
-	t.Run(`Flags: -serial -force -copy`, func(t *testing.T) {
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		if mdev.DeviceSN == `` {
+			t.Skip(`device SN empty`)
+		}
+
+		resetFlags(t)
 		*fActionSerial = true
-		*fSerialForce = true
-		*fSerialCopy = true
-		*fSerialFetch = false
-		*fSerialSet = ``
+		*fSerialSet = newSn
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
-	})
-
-	t.Run(`Flags: -serial -force -fetch`, func(t *testing.T) {
-		*fActionSerial = true
-		*fSerialForce = true
-		*fSerialCopy = false
-		*fSerialFetch = true
-		*fSerialSet = ``
-
-		magtekRouter(mag3)
-		genericRouter(gen3)
-	})
-
-	t.Run(`Flags: -serial -force -set "24F9999"`, func(t *testing.T) {
-		*fActionSerial = true
-		*fSerialForce = true
-		*fSerialCopy = false
-		*fSerialFetch = false
-		*fSerialSet = `24F9999`
-
-		magtekRouter(mag3)
-		genericRouter(gen3)
+		err = magtekRouter(mdev)
+		gotest.Assert(t, err != nil, `attempt to set SN when one already exists should produce error`)
 	})
 
 	t.Run(`Flags: -serial -erase -copy`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		if mdev.FactorySN == `` {
+			t.Skip(`factory SN empty`)
+		}
+
+		resetFlags(t)
 		*fActionSerial = true
 		*fSerialErase = true
 		*fSerialCopy = true
-		*fSerialFetch = false
-		*fSerialSet = ``
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
+		err = magtekRouter(mdev)
+		gotest.Ok(t, err)
+		gotest.Assert(t, mdev.DeviceSN == mdev.FactorySN[:7], `attempt to set device SN to factory SN failed`)
 	})
 
 	t.Run(`Flags: -serial -erase -fetch`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		resetFlags(t)
 		*fActionSerial = true
 		*fSerialErase = true
-		*fSerialCopy = false
 		*fSerialFetch = true
-		*fSerialSet = ``
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
+		err = magtekRouter(mdev)
+		gotest.Ok(t, err)
+		gotest.Assert(t, mdev.DeviceSN[:3] == `24F`, `attempt to set device SN from server failed`)
 	})
 
-	t.Run(`Flags: -serial -erase -set "24F9999"`, func(t *testing.T) {
+	t.Run(`Flags: -serial -erase -set <string>`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		resetFlags(t)
 		*fActionSerial = true
 		*fSerialErase = true
-		*fSerialCopy = false
-		*fSerialFetch = false
-		*fSerialSet = `24F9999`
+		*fSerialSet = newSn
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
+		err = magtekRouter(mdev)
+		gotest.Ok(t, err)
+		gotest.Assert(t, mdev.DeviceSN == newSn, `attempt to set device SN to string failed`)
 	})
+
+	t.Run(`Flags: -serial -force -copy (serial number exists)`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		if mdev.FactorySN == `` {
+			t.Skip(`factory SN empty`)
+		}
+
+		resetFlags(t)
+		*fActionSerial = true
+		*fSerialForce = true
+		*fSerialCopy = true
+
+		err = magtekRouter(mdev)
+		gotest.Ok(t, err)
+		gotest.Assert(t, mdev.DeviceSN == mdev.FactorySN[:7], `attempt to set device SN to factory SN failed`)
+	})
+
+	t.Run(`Flags: -serial -force -fetch (serial number exists)`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		resetFlags(t)
+		*fActionSerial = true
+		*fSerialForce = true
+		*fSerialFetch = true
+
+		err = magtekRouter(mdev)
+		gotest.Ok(t, err)
+		gotest.Assert(t, mdev.DeviceSN[:3] == `24F`, `attempt to set device SN from server failed`)
+	})
+
+	t.Run(`Flags: -serial -force -set <string> (serial number exists)`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		resetFlags(t)
+		*fActionSerial = true
+		*fSerialForce = true
+		*fSerialSet = newSn
+
+		err = magtekRouter(mdev)
+		gotest.Ok(t, err)
+		gotest.Assert(t, mdev.DeviceSN == newSn, `attempt to set device SN to string failed`)
+	})
+
+	if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+		t.Skip(`device not found`)
+	}
+
+	err = mdev.SetDeviceSN(oldSn)
+	gotest.Ok(t, err)
+	mdev.Close()
 
 	t.Run(`Flags: -reset`, func(t *testing.T) {
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if mdev, err = getMagtekDevice(t, ctx); mdev == nil {
+			t.Skip(`device not found`)
+		}
+
+		defer mdev.Close()
+
+		resetFlags(t)
 		*fActionReset = true
 
-		magtekRouter(mag3)
-		genericRouter(gen3)
-	})
-*/
+		err = magtekRouter(mdev)
+		gotest.Ok(t, err)
 
+		time.Sleep(5 * time.Second)
+	})
+}

@@ -16,126 +16,125 @@ package main
 
 import (
 	`crypto/sha256`
+	`fmt`
 	`io/ioutil`
-	`log`
 	`os`
 	`path/filepath`
 	`reflect`
 	`strings`
 	`testing`
-	`github.com/jscherff/gocmdb/usbci`
 	`github.com/jscherff/gotest`
 )
 
-func TestGetNewSN(t *testing.T) {
+func TestFuncSerial(t *testing.T) {
+
+	var err error
 
 	t.Run("GetNewSN() Function", func(t *testing.T) {
 
-		j, err := mag2.JSON()
+		resetFlags(t)
+		mag1.SerialNum = ``
+
+		mag1.SerialNum, err = getNewSN(mag1)
 		gotest.Ok(t, err)
+		gotest.Assert(t, len(mag1.SerialNum) != 0, `empty SN provided by server`)
 
-		mag3, err := usbci.NewMagtek(nil)
-		gotest.Ok(t, err)
-
-		err = mag3.RestoreJSON(j)
-		gotest.Ok(t, err)
-
-		mag3.SerialNum = ``
-
-		s, err := getNewSN(mag3)
-		gotest.Ok(t, err)
-		gotest.Assert(t, len(s) != 0, `empty SN provided by server`)
-
-		s, err = getNewSN(mag2)
+		mag1.SerialNum, err = getNewSN(mag1)
 		gotest.Assert(t, err != nil, `request for SN when device has one should produce error`)
 	})
 
-	t.Run("serialAction() Function", func(t *testing.T) {
-		//TODO
-	})
+	restoreState(t)
 }
 
-func TestReporting(t *testing.T) {
+func TestFuncReport(t *testing.T) {
 
-	*fReportConsole = false
+	var err error
 
 	t.Run("JSON Report", func(t *testing.T) {
 
+		resetFlags(t)
 		*fReportFormat = `json`
 
-		err := reportAction(mag1)
+		err = reportAction(mag1)
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigPJSON == sha256.Sum256(b), `unexpected hash signature of JSON report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigPJSON, `unexpected hash signature of JSON report`)
 	})
 
 	t.Run("XML Report", func(t *testing.T) {
 
+		resetFlags(t)
 		*fReportFormat = `xml`
 
-		err := reportAction(mag1)
+		err = reportAction(mag1)
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigPXML == sha256.Sum256(b), `unexpected hash signature of XML report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigPXML, `unexpected hash signature of XML report`)
 	})
 
 	t.Run("CSV Report", func(t *testing.T) {
 
+		resetFlags(t)
 		*fReportFormat = `csv`
 
-		err := reportAction(mag1)
+		err = reportAction(mag1)
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigCSV == sha256.Sum256(b), `unexpected hash signature of CSV report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigCSV, `unexpected hash signature of CSV report`)
 	})
 
 	t.Run("NVP Report", func(t *testing.T) {
 
+		resetFlags(t)
 		*fReportFormat = `nvp`
 
-		err := reportAction(mag1)
+		err = reportAction(mag1)
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigNVP == sha256.Sum256(b), `unexpected hash signature of NVP report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigNVP, `unexpected hash signature of NVP report`)
 	})
 
 	t.Run("Legacy Report", func(t *testing.T) {
 
+		resetFlags(t)
 		*fActionLegacy = true
 
-		err := legacyAction(mag1)
+		err = legacyAction(mag1)
 		gotest.Ok(t, err)
 
 		b, err := ioutil.ReadFile(conf.Files.Legacy)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigLegacy == sha256.Sum256(b), `unexpected hash signature of Legacy report`)
+		gotest.Assert(t, sha256.Sum256(b) == mag1SigLegacy, `unexpected hash signature of Legacy report`)
 	})
-
 }
 
 // Test device checkin and checkout.
-func TestCheckinCheckout(t *testing.T) {
+func TestFuncCheckInOut(t *testing.T) {
+
+	var err error
 
 	t.Run("Checkin and Checkout Must Match", func(t *testing.T) {
 
-		err := checkinDevice(mag1)
+		resetFlags(t)
+
+		err = checkinDevice(mag1)
 		gotest.Ok(t, err)
 
 		j, err := checkoutDevice(mag1)
@@ -148,33 +147,37 @@ func TestCheckinCheckout(t *testing.T) {
 
 	t.Run("Checkin and Checkout Must Not Match", func(t *testing.T) {
 
-		mag1mod, err := usbci.NewMagtek(nil)
+		resetFlags(t)
+
+		err = checkinDevice(mag1)
 		gotest.Ok(t, err)
 
-		err = mag1mod.RestoreJSON(mag1JSON)
-		gotest.Ok(t, err)
+		mag1.SoftwareID = `21042818B02`
 
-		mag1mod.SoftwareID = `21042818B02`
-		err = checkinDevice(mag1mod)
-		gotest.Ok(t, err)
-
-		j, err := checkoutDevice(mag1mod)
+		j, err := checkoutDevice(mag1)
 		gotest.Ok(t, err)
 
 		ss, err := mag1.CompareJSON(j)
 		gotest.Ok(t, err)
 		gotest.Assert(t, len(ss) != 0, `modified device should not match last checkin`)
 	})
+
+	restoreState(t)
 }
 
-func TestAuditing(t *testing.T) {
+func TestFuncAudit(t *testing.T) {
+
+	var err error
 
 	t.Run("Local Audit", func(t *testing.T) {
 
+		resetFlags(t)
 		*fAuditLocal = true
-		*fAuditServer = false
 
-		err := auditAction(mag1)
+		af := fmt.Sprintf(`%s-%s-%s.json`, mag1.VID(), mag1.PID(), mag1.ID())
+		os.RemoveAll(filepath.Join(conf.Paths.StateDir, af))
+
+		err = auditAction(mag1)
 		gotest.Assert(t, err != nil, `first run should result in file-not-found error`)
 
 		err = auditAction(mag1)
@@ -182,16 +185,10 @@ func TestAuditing(t *testing.T) {
 
 		gotest.Assert(t, len(mag1.Changes) == 0, `device change log should be empty`)
 
-		mag1mod, err := usbci.NewMagtek(nil)
+		err = auditAction(mag2)
 		gotest.Ok(t, err)
 
-		err = mag1mod.RestoreJSON(mag2JSON)
-		gotest.Ok(t, err)
-
-		err = auditAction(mag1mod)
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, reflect.DeepEqual(mag1mod.Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(mag2.Changes, magChanges),
 			`device change log does not contain known device differences`)
 
 		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
@@ -204,10 +201,10 @@ func TestAuditing(t *testing.T) {
 
 	t.Run("Server Audit", func(t *testing.T) {
 
-		*fAuditLocal = false
+		resetFlags(t)
 		*fAuditServer = true
 
-		err := checkinDevice(mag1)
+		err = checkinDevice(mag1)
 		gotest.Ok(t, err)
 
 		err = auditAction(mag1)
@@ -215,16 +212,10 @@ func TestAuditing(t *testing.T) {
 
 		gotest.Assert(t, len(mag1.Changes) == 0, `device change log should be empty`)
 
-		mag1mod, err := usbci.NewMagtek(nil)
+		err = auditAction(mag2)
 		gotest.Ok(t, err)
 
-		err = mag1mod.RestoreJSON(mag2JSON)
-		gotest.Ok(t, err)
-
-		err = auditAction(mag1mod)
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, reflect.DeepEqual(mag1mod.Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(mag2.Changes, magChanges),
 			`device change log does not contain known device differences`)
 
 		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
@@ -234,14 +225,11 @@ func TestAuditing(t *testing.T) {
 		gotest.Assert(t, strings.Contains(fs, ClogCh1) && strings.Contains(fs, ClogCh2),
 			`application change log does not contain known device differences`)
 	})
+
+	restoreState(t)
 }
 
-func TestFileReadWrite(t *testing.T) {
-
-	var (
-		b []byte
-		err error
-	)
+func TestFuncFileIO(t *testing.T) {
 
 	// File Write Paths
 
@@ -257,18 +245,18 @@ func TestFileReadWrite(t *testing.T) {
 
 	// Generate file content
 
-	j, err := mag1.JSON()
+	b, err := mag1.JSON()
 	gotest.Ok(t, err)
 
 	// File Write Tests
 
-	err = writeFile(j, wfn1)
+	err = writeFile(b, wfn1)
 	gotest.Ok(t, err)
 
-	err = writeFile(j, wfn2)
+	err = writeFile(b, wfn2)
 	gotest.Ok(t, err)
 
-	err = writeFile(j, wfn3)
+	err = writeFile(b, wfn3)
 	gotest.Ok(t, err)
 
 	// File Read Tests

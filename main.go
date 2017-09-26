@@ -16,7 +16,6 @@ package main
 
 import (
 	`fmt`
-	`flag`
 	`log`
 	`os`
 	`path/filepath`
@@ -31,19 +30,22 @@ var (
 	slog, clog, elog *log.Logger
 )
 
-func main() {
+func init() {
 
 	var err error
 
-	// Build systemwide configuration from config file.
+	// Build system-wide configuration from config file.
 
 	if conf, err = newConfig(`config.json`); err != nil {
 		log.Fatalf(err.Error())
 	}
 
-	// Initialized loggers.
+	// Initialize loggers.
 
 	slog, clog, elog = newLoggers()
+}
+
+func main() {
 
 	// Process command-line actions and options.
 
@@ -59,24 +61,28 @@ func main() {
 
 	// Parse option flags associated with selected action flag.
 
-	var fs *flag.FlagSet
-
 	switch {
 
 	case *fActionReport:
-		fs = fsReport
+		if fsReport.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
+			fmt.Fprintln(os.Stderr, `You must specify an option.`)
+			fsReport.Usage()
+			os.Exit(1)
+		}
 
 	case *fActionSerial:
-		fs = fsSerial
+		if fsSerial.Parse(os.Args[2:]); fsSerial.NFlag() == 0 {
+			fmt.Fprintln(os.Stderr, `You must specify an option.`)
+			fsSerial.Usage()
+			os.Exit(1)
+		}
 
 	case *fActionAudit:
-		fs = fsAudit
-	}
-
-	if fs.Parse(os.Args[2:]); fs.NFlag() == 0 {
-		fmt.Fprintln(os.Stderr, `You must specify an option.`)
-		fs.Usage()
-		os.Exit(1)
+		if fsAudit.Parse(os.Args[2:]); fsAudit.NFlag() == 0 {
+			fmt.Fprintln(os.Stderr, `You must specify an option.`)
+			fsAudit.Usage()
+			os.Exit(1)
+		}
 	}
 
 	// Instantiate context to enumerate attached USB devices.
