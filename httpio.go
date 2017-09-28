@@ -108,6 +108,8 @@ func getNewSN(o gocmdb.Registerable) (s string, err error) {
 
 	if err != nil {
 		elog.Print(err)
+	} else {
+		slog.Printf(`serial number %q generated - %s`, s, hs)
 	}
 
 	return s, err
@@ -135,7 +137,9 @@ func checkinDevice(o gocmdb.Registerable) (err error) {
 		return err
 	}
 
-	if !hs.Accepted() {
+	if hs.Accepted() {
+		slog.Printf(`checkin accepted - %s`, hs)
+	} else {
 		err = fmt.Errorf(`checkin not accepted - %s`, hs)
 		elog.Print(err)
 	}
@@ -167,8 +171,10 @@ func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 		return j, err
 	}
 
-	if !hs.Accepted() {
-		err = fmt.Errorf(`device not returned - %q`, hs)
+	if hs.Accepted() {
+		slog.Printf(`device retrieved - %s`, hs) 
+	} else {
+		err = fmt.Errorf(`device not retreived - %s`, hs)
 		elog.Print(err)
 	}
 
@@ -197,7 +203,9 @@ func submitAudit(o gocmdb.Auditable) (err error) {
 		return err
 	}
 
-	if !hs.Accepted() {
+	if hs.Accepted() {
+		slog.Printf(`audit accepted - %s`, hs)
+	} else {
 		err = fmt.Errorf(`audit not accepted - %s`, hs)
 		elog.Print(err)
 	}
