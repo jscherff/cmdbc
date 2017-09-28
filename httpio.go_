@@ -1,0 +1,272 @@
+// Copyright 2017 John Scherff
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//	 http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import (
+	`bytes`
+	`encoding/json`
+	`fmt`
+	`io/ioutil`
+	`net/http`
+	`time`
+	`github.com/jscherff/gocmdb`
+)
+
+const (
+	acceptedMask =
+		http.StatusOK |
+		http.StatusCreated |
+		http.StatusAccepted |
+		http.StatusNoContent |
+		http.StatusNotModified
+)
+
+var (
+	transport = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
+	client = &http.Client{Transport: transport}
+)
+
+type HttpStatus int
+
+func (hs HttpStatus) Accepted() bool {
+	return hs & acceptedMask == hs
+}
+
+func (hs HttpStatus) String() (s string) {
+
+	switch hs {
+
+	case http.StatusOK:
+		s = `request processed, no errors`
+	case http.StatusCreated:
+		s = `request processed, object created`
+	case http.StatusAccepted:
+		s = `request processed, data accepted`
+	case http.StatusNoContent:
+		s = `request processed, no action taken`
+	case http.StatusNotModified:
+		s = `request processed, no changes found`
+	case http.StatusBadRequest:
+		s = `unsupported or malformed request`
+	case http.StatusNotAcceptable:
+		s = `insufficient or incorrect data`
+	case http.StatusUnprocessableEntity:
+		s = `unable to decode request`
+	case http.StatusFailedDependency:
+		s = `unsatisfied prerequisite`
+	case http.StatusInternalServerError:
+		s = `unable to process request`
+	default:
+		s = `status unknown`
+	}
+
+	return s
+}
+
+// getNewSN obtains a serial number from the gocmdbd server.
+func getNewSN(o gocmdb.Registerable) (s string, err error) {
+
+	var (
+		j []byte
+		sc int
+	)
+
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.NewSNPath, o.Host(), o.VID(), o.PID(),
+	)
+
+	if j, err = o.JSON(); err != nil {
+		elog.Print(err)
+		return s, err
+	}
+
+	if j, sc, err = httpPost(url, j); err != nil {
+		return s, err
+	}
+
+	switch sc {
+	case http.StatusCreated:
+		err = json.Unmarshal(j, &s)
+	default:
+		err = fmt.Errorf(`serial number not generated - %q`, http.StatusText(sc))
+	}
+
+	if err != nil {
+		elog.Print(err)
+	}
+
+	return s, err
+}
+
+// checkinDevice checks a device in with the gocmdbd server.
+func checkinDevice(o gocmdb.Registerable) (err error) {
+
+	var (
+		j []byte
+		sc int
+	)
+
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.CheckinPath, o.Host(), o.VID(), o.PID(),
+	)
+
+	if j, err = o.JSON(); err != nil {
+		elog.Print(err)
+		return err
+	}
+
+	if _, sc, err = httpPost(url, j); err != nil {
+		elog.Print(err)
+		return err
+	}
+
+	switch sc {
+	case http.StatusOK:
+	case http.StatusCreated:
+	case http.StatusAccepted:
+	case http.StatusNoContent:
+	case http.StatusNotModified:
+	default:
+		err = fmt.Errorf(`checkin not accepted - %q`, http.StatusText(sc))
+	}
+
+	if err != nil {
+		elog.Print(err)
+	}
+
+	return err
+}
+
+// checkoutDevice obtains the JSON representation of a serialized device object
+// from the server using the unique key combination VID+PID+SN.
+func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
+
+	var (
+		sc int
+	)
+
+	if o.ID() == `` {
+		slog.Print(`device %s-%s fetch: skipping, no SN`,
+			o.VID(), o.PID(),
+		)
+		return j, err
+	}
+
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.CheckoutPath, o.Host(), o.VID(), o.PID(), o.ID(),
+	)
+
+	if j, sc, err = httpGet(url); err != nil {
+		elog.Print(err)
+		return j, err
+	}
+
+	switch sc {
+	case http.StatusOK:
+	case http.StatusCreated:
+	case http.StatusAccepted:
+	case http.StatusNoContent:
+	case http.StatusNotModified:
+	default:
+		err = fmt.Errorf(`device not returned - %q`, http.StatusText(sc))
+	}
+
+	if err != nil {
+		elog.Print(err)
+	}
+
+	return j, err
+}
+
+// submitAudit submits changes from audit to the server in JSON format.
+func submitAudit(o gocmdb.Auditable) (err error) {
+
+	var (
+		j []byte
+		sc int
+	)
+
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
+		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID(),
+	)
+
+	if j, err = json.Marshal(o.GetChanges()); err != nil {
+		elog.Print(err)
+		return err
+	}
+
+	if _, sc, err = httpPost(url, j); err != nil {
+		elog.Print(err)
+		return err
+	}
+
+	switch sc {
+	case http.StatusOK:
+	case http.StatusCreated:
+	case http.StatusAccepted:
+	case http.StatusNoContent:
+	case http.StatusNotModified:
+	default:
+		err = fmt.Errorf(`audit not accepted - %q`, http.StatusText(sc))
+	}
+
+	if err != nil {
+		elog.Print(err)
+	}
+
+	return err
+}
+
+// httpPost sends http POST requests to gocmdbd server endpoints for other functions.
+func httpPost(url string, j []byte ) (b []byte, sc int, err error) {
+
+	if req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(j)); err != nil {
+		return b, sc, err
+	} else {
+		req.Header.Add(`Content-Type`, `application/json; charset=UTF8`)
+		return httpRequest(req)
+	}
+}
+
+// httpGet sends http GET requests to gocmdbd server endpoints for other functions.
+func httpGet(url string) (b []byte, sc int, err error) {
+
+	if req, err := http.NewRequest(http.MethodGet, url, nil); err != nil {
+		return b, sc, err
+	} else {
+		return httpRequest(req)
+	}
+}
+
+// httpRequest sends http requests to gocmdbd server endpoints for other functions.
+func httpRequest(req *http.Request) (b []byte, sc int, err error) {
+
+	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
+	req.Header.Add(`X-Custom-Header`, `gocmdb`)
+
+	resp, err := client.Do(req)
+
+	if err == nil {
+		defer resp.Body.Close()
+		sc = resp.StatusCode
+		b, err = ioutil.ReadAll(resp.Body)
+	}
+
+	if err != nil {
+		elog.Print(err)
+	}
+
+	return b, sc, err
+}
