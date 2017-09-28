@@ -24,30 +24,67 @@ import (
 	`github.com/jscherff/gocmdb`
 )
 
+const (
+	acceptedMask =
+		http.StatusOK |
+		http.StatusCreated |
+		http.StatusAccepted |
+		http.StatusNoContent |
+		http.StatusNotModified
+)
+
 var (
 	transport = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
 	client = &http.Client{Transport: transport}
-
-	HttpStatusMap = map[int]string {
-		http.StatusOK:			`request processed, no errors`,		// 200
-		http.StatusCreated:		`request processed, object created`,	// 201
-		http.StatusAccepted:		`request processed, data accepted`,	// 202
-		http.StatusNoContent:		`request processed, no action taken`,	// 204
-		http.StatusNotModified:		`request processed, no changes found`,	// 302
-		http.StatusBadRequest:		`unsupported or malformed request`,	// 400
-		http.StatusNotAcceptable:	`insufficient or incorrect data`,	// 406
-		http.StatusUnprocessableEntity:	`unable to decode request`,		// 422
-		http.StatusFailedDependency:	`unsatisfied prerequisite`,		// 424
-		http.StatusInternalServerError:	`unable to process request`,		// 500
-	}
 )
+
+type httpStatus int
+
+func (this httpStatus) Accepted() bool {
+	return this & acceptedMask == this
+}
+
+func (this httpStatus) String() (s string) {
+
+	switch this {
+
+	case http.StatusOK:
+		s = `request processed, no errors`
+	case http.StatusCreated:
+		s = `request processed, object created`
+	case http.StatusAccepted:
+		s = `request processed, data accepted`
+	case http.StatusNoContent:
+		s = `request processed, no action taken`
+	case http.StatusNotModified:
+		s = `request processed, no changes found`
+	case http.StatusBadRequest:
+		s = `unsupported or malformed request`
+	case http.StatusNotAcceptable:
+		s = `insufficient or incorrect data`
+	case http.StatusUnprocessableEntity:
+		s = `unable to decode request`
+	case http.StatusFailedDependency:
+		s = `unsatisfied prerequisite`
+	case http.StatusInternalServerError:
+		s = `unable to process request`
+	default:
+		s = `status unknown`
+	}
+
+	return s
+}
+
+func (this httpStatus) StatusText() (s string) {
+	return http.StatusText(int(this))
+}
 
 // getNewSN obtains a serial number from the gocmdbd server.
 func getNewSN(o gocmdb.Registerable) (s string, err error) {
 
 	var (
 		j []byte
-		sc int
+		hs httpStatus
 	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
@@ -59,15 +96,14 @@ func getNewSN(o gocmdb.Registerable) (s string, err error) {
 		return s, err
 	}
 
-	if j, sc, err = httpPost(url, j); err != nil {
+	if j, hs, err = httpPost(url, j); err != nil {
 		return s, err
 	}
 
-	switch sc {
-	case http.StatusCreated:
+	if hs.Accepted() {
 		err = json.Unmarshal(j, &s)
-	default:
-		err = fmt.Errorf(`serial number not generated - %q`, http.StatusText(sc))
+	} else {
+		err = fmt.Errorf(`serial number not generated - %s`, hs)
 	}
 
 	if err != nil {
@@ -82,7 +118,7 @@ func checkinDevice(o gocmdb.Registerable) (err error) {
 
 	var (
 		j []byte
-		sc int
+		hs httpStatus
 	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
@@ -94,22 +130,13 @@ func checkinDevice(o gocmdb.Registerable) (err error) {
 		return err
 	}
 
-	if _, sc, err = httpPost(url, j); err != nil {
+	if _, hs, err = httpPost(url, j); err != nil {
 		elog.Print(err)
 		return err
 	}
 
-	switch sc {
-	case http.StatusOK:
-	case http.StatusCreated:
-	case http.StatusAccepted:
-	case http.StatusNoContent:
-	case http.StatusNotModified:
-	default:
-		err = fmt.Errorf(`checkin not accepted - %q`, http.StatusText(sc))
-	}
-
-	if err != nil {
+	if !hs.Accepted() {
+		err = fmt.Errorf(`checkin not accepted - %s`, hs)
 		elog.Print(err)
 	}
 
@@ -121,7 +148,7 @@ func checkinDevice(o gocmdb.Registerable) (err error) {
 func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 
 	var (
-		sc int
+		hs httpStatus
 	)
 
 	if o.ID() == `` {
@@ -135,22 +162,13 @@ func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 		conf.Server.CheckoutPath, o.Host(), o.VID(), o.PID(), o.ID(),
 	)
 
-	if j, sc, err = httpGet(url); err != nil {
+	if j, hs, err = httpGet(url); err != nil {
 		elog.Print(err)
 		return j, err
 	}
 
-	switch sc {
-	case http.StatusOK:
-	case http.StatusCreated:
-	case http.StatusAccepted:
-	case http.StatusNoContent:
-	case http.StatusNotModified:
-	default:
-		err = fmt.Errorf(`device not returned - %q`, http.StatusText(sc))
-	}
-
-	if err != nil {
+	if !hs.Accepted() {
+		err = fmt.Errorf(`device not returned - %q`, hs)
 		elog.Print(err)
 	}
 
@@ -162,7 +180,7 @@ func submitAudit(o gocmdb.Auditable) (err error) {
 
 	var (
 		j []byte
-		sc int
+		hs httpStatus
 	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
@@ -174,22 +192,13 @@ func submitAudit(o gocmdb.Auditable) (err error) {
 		return err
 	}
 
-	if _, sc, err = httpPost(url, j); err != nil {
+	if _, hs, err = httpPost(url, j); err != nil {
 		elog.Print(err)
 		return err
 	}
 
-	switch sc {
-	case http.StatusOK:
-	case http.StatusCreated:
-	case http.StatusAccepted:
-	case http.StatusNoContent:
-	case http.StatusNotModified:
-	default:
-		err = fmt.Errorf(`audit not accepted - %q`, http.StatusText(sc))
-	}
-
-	if err != nil {
+	if !hs.Accepted() {
+		err = fmt.Errorf(`audit not accepted - %s`, hs)
 		elog.Print(err)
 	}
 
@@ -197,10 +206,10 @@ func submitAudit(o gocmdb.Auditable) (err error) {
 }
 
 // httpPost sends http POST requests to gocmdbd server endpoints for other functions.
-func httpPost(url string, j []byte ) (b []byte, sc int, err error) {
+func httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error) {
 
 	if req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(j)); err != nil {
-		return b, sc, err
+		return b, hs, err
 	} else {
 		req.Header.Add(`Content-Type`, `application/json; charset=UTF8`)
 		return httpRequest(req)
@@ -208,17 +217,17 @@ func httpPost(url string, j []byte ) (b []byte, sc int, err error) {
 }
 
 // httpGet sends http GET requests to gocmdbd server endpoints for other functions.
-func httpGet(url string) (b []byte, sc int, err error) {
+func httpGet(url string) (b []byte, hs httpStatus, err error) {
 
 	if req, err := http.NewRequest(http.MethodGet, url, nil); err != nil {
-		return b, sc, err
+		return b, hs, err
 	} else {
 		return httpRequest(req)
 	}
 }
 
 // httpRequest sends http requests to gocmdbd server endpoints for other functions.
-func httpRequest(req *http.Request) (b []byte, sc int, err error) {
+func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
 
 	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
 	req.Header.Add(`X-Custom-Header`, `gocmdb`)
@@ -227,7 +236,7 @@ func httpRequest(req *http.Request) (b []byte, sc int, err error) {
 
 	if err == nil {
 		defer resp.Body.Close()
-		sc = resp.StatusCode
+		hs = httpStatus(resp.StatusCode)
 		b, err = ioutil.ReadAll(resp.Body)
 	}
 
@@ -235,5 +244,5 @@ func httpRequest(req *http.Request) (b []byte, sc int, err error) {
 		elog.Print(err)
 	}
 
-	return b, sc, err
+	return b, hs, err
 }
