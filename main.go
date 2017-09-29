@@ -25,6 +25,8 @@ import (
 	`github.com/jscherff/gocmdb/usbci`
 )
 
+const defaultConfig = `config.json`
+
 var (
 	conf *Config
 	slog, clog, elog *log.Logger
@@ -36,7 +38,7 @@ func main() {
 
 	// Build system-wide configuration from config file.
 
-	if conf, err = newConfig(`cmdbc.json`); err != nil {
+	if conf, err = newConfig(defaultConfig); err != nil {
 		log.Fatalf(err.Error())
 	}
 
