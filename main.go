@@ -36,7 +36,7 @@ func main() {
 
 	// Build system-wide configuration from config file.
 
-	if conf, err = newConfig(`config.json`); err != nil {
+	if conf, err = newConfig(`cmdbc.json`); err != nil {
 		log.Fatalf(err.Error())
 	}
 
