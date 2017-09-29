@@ -79,7 +79,7 @@ func (this httpStatus) StatusText() (s string) {
 	return http.StatusText(int(this))
 }
 
-// getNewSN obtains a serial number from the gocmdbd server.
+// getNewSN obtains a serial number from the cmdbd server.
 func getNewSN(o gocmdb.Registerable) (s string, err error) {
 
 	var (
@@ -115,7 +115,7 @@ func getNewSN(o gocmdb.Registerable) (s string, err error) {
 	return s, err
 }
 
-// checkinDevice checks a device in with the gocmdbd server.
+// checkinDevice checks a device in with the cmdbd server.
 func checkinDevice(o gocmdb.Registerable) (err error) {
 
 	var (
@@ -213,7 +213,7 @@ func submitAudit(o gocmdb.Auditable) (err error) {
 	return err
 }
 
-// httpPost sends http POST requests to gocmdbd server endpoints for other functions.
+// httpPost sends http POST requests to cmdbd server endpoints for other functions.
 func httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error) {
 
 	if req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(j)); err != nil {
@@ -224,7 +224,7 @@ func httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error) {
 	}
 }
 
-// httpGet sends http GET requests to gocmdbd server endpoints for other functions.
+// httpGet sends http GET requests to cmdbd server endpoints for other functions.
 func httpGet(url string) (b []byte, hs httpStatus, err error) {
 
 	if req, err := http.NewRequest(http.MethodGet, url, nil); err != nil {
@@ -234,11 +234,11 @@ func httpGet(url string) (b []byte, hs httpStatus, err error) {
 	}
 }
 
-// httpRequest sends http requests to gocmdbd server endpoints for other functions.
+// httpRequest sends http requests to cmdbd server endpoints for other functions.
 func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
 
 	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
-	req.Header.Add(`X-Custom-Header`, `gocmdb`)
+	req.Header.Add(`X-Custom-Header`, `cmdbc`)
 
 	resp, err := client.Do(req)
 

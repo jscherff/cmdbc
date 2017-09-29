@@ -1,1 +1,1 @@
-# gocmdbcli
+# cmdbc

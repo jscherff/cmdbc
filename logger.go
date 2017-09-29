@@ -69,13 +69,13 @@ func newLoggers() (sl, cl, el *log.Logger) {
 		prot, port, host := conf.Syslog.Protocol, conf.Syslog.Port, conf.Syslog.Host
 		raddr := strings.Join([]string{host, port}, `:`)
 
-		if s, err := newsl(prot, raddr, `gocmdbcli`, PriInfo); err == nil {
+		if s, err := newsl(prot, raddr, `cmdbc`, PriInfo); err == nil {
 			sw = append(sw, s)
 		}
-		if s, err := newsl(prot, raddr, `gocmdbcli`, PriInfo); err == nil {
+		if s, err := newsl(prot, raddr, `cmdbc`, PriInfo); err == nil {
 			cw = append(cw, s)
 		}
-		if s, err := newsl(prot, raddr, `gocmdbcli`, PriErr); err == nil {
+		if s, err := newsl(prot, raddr, `cmdbc`, PriErr); err == nil {
 			ew = append(ew, s)
 		}
 	}
