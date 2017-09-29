@@ -97,7 +97,7 @@ func getNewSN(o gocmdb.Registerable) (s string, err error) {
 	}
 
 	if j, hs, err = httpPost(url, j); err != nil {
-		return s, err
+		return s, err // Errors already logged
 	}
 
 	if hs.Accepted() {
@@ -133,8 +133,7 @@ func checkinDevice(o gocmdb.Registerable) (err error) {
 	}
 
 	if _, hs, err = httpPost(url, j); err != nil {
-		elog.Print(err)
-		return err
+		return err // Errors already logged
 	}
 
 	if hs.Accepted() {
@@ -167,8 +166,7 @@ func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 	)
 
 	if j, hs, err = httpGet(url); err != nil {
-		elog.Print(err)
-		return j, err
+		return j, err // Errors already logged
 	}
 
 	if hs.Accepted() {
@@ -199,8 +197,7 @@ func submitAudit(o gocmdb.Auditable) (err error) {
 	}
 
 	if _, hs, err = httpPost(url, j); err != nil {
-		elog.Print(err)
-		return err
+		return err // Errors already logged
 	}
 
 	if hs.Accepted() {

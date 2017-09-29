@@ -47,9 +47,24 @@ type Config struct {
 	}
 
 	Logging struct {
-		LogFiles	bool
-		Console		bool
-		Syslog		bool
+
+		System struct {
+			Logfile		bool
+			Console		bool
+			Syslog		bool
+		}
+
+		Change struct {
+			Logfile		bool
+			Console		bool
+			Syslog		bool
+		}
+
+		Error struct {
+			Logfile		bool
+			Console		bool
+			Syslog		bool
+		}
 	}
 
 	Syslog struct {

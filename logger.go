@@ -45,40 +45,60 @@ func newLoggers() (sl, cl, el *log.Logger) {
 		return s, err
 	}
 
-	if conf.Logging.LogFiles {
+	// File logging
 
+	if conf.Logging.System.Logfile {
 		if f, err := newfl(conf.Files.SystemLog); err == nil {
 			sw = append(sw, f)
 		}
+	}
+	if conf.Logging.Change.Logfile {
 		if f, err := newfl(conf.Files.ChangeLog); err == nil {
 			cw = append(cw, f)
 		}
+	}
+	if conf.Logging.Error.Logfile {
 		if f, err := newfl(conf.Files.ErrorLog); err == nil {
 			ew = append(ew, f)
 		}
 	}
 
-	if conf.Logging.Console {
+	// Console logging
+
+	if conf.Logging.System.Console {
 		sw = append(sw, os.Stdout)
+	}
+
+	if conf.Logging.Change.Console {
 		cw = append(cw, os.Stdout)
+	}
+
+	if conf.Logging.Error.Console {
 		ew = append(ew, os.Stderr)
 	}
 
-	if conf.Logging.Syslog {
+	// Syslog logging
 
-		prot, port, host := conf.Syslog.Protocol, conf.Syslog.Port, conf.Syslog.Host
-		raddr := strings.Join([]string{host, port}, `:`)
+	prot, port, host := conf.Syslog.Protocol, conf.Syslog.Port, conf.Syslog.Host
+	raddr := strings.Join([]string{host, port}, `:`)
 
+	if conf.Logging.System.Syslog {
 		if s, err := newsl(prot, raddr, `cmdbc`, PriInfo); err == nil {
 			sw = append(sw, s)
 		}
+	}
+	if conf.Logging.Change.Syslog {
 		if s, err := newsl(prot, raddr, `cmdbc`, PriInfo); err == nil {
 			cw = append(cw, s)
 		}
+	}
+	if conf.Logging.Error.Syslog {
 		if s, err := newsl(prot, raddr, `cmdbc`, PriErr); err == nil {
 			ew = append(ew, s)
 		}
 	}
+
+	// Default logging (discard)
 
 	if len(sw) == 0 {
 		sw = append(sw, ioutil.Discard)

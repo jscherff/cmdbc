@@ -14,17 +14,32 @@
 	},
 
 	"Server": {
-		"URL": "http://sysadm-dev-01.24hourfit.com:8080/usbci",
-		"CheckinPath": "checkin",
-		"CheckoutPath": "checkout",
-		"NewSNPath": "newsn",
-		"AuditPath": "audit"
+		"URL": "http://localhost:8080",
+		"CheckinPath": "usbci/checkin",
+		"CheckoutPath": "usbci/checkout",
+		"NewSNPath": "usbci/newsn",
+		"AuditPath": "usbci/audit"
 	},
 
 	"Logging": {
-		"LogFiles": true,
-		"Console": true,
-		"Syslog": false
+
+		"System": {
+			"Logfile": true,
+			"Console": false,
+			"Syslog": false
+		},
+
+		"Change": {
+			"Logfile": true,
+			"Console": false,
+			"Syslog": false
+		},
+
+		"Error": {
+			"Logfile": true,
+			"Console": true,
+			"Syslog": false
+		}
 	},
 
 	"Syslog": {
