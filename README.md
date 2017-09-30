@@ -20,9 +20,9 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 ---
 Client operation is controlled through command-line actions and options. There are six top-level ‘actions,’ some of which require (or offer) additional sub-options:
  
--audit	Performs a device change audit
-      -local	Audits against JSON state files stored on the local machine
-      -server	Audits against the last device check-in stored in the database
+* **`-audit`** performs a device change audit
+    * **`-local`** audits against JSON state files stored on the local machine
+    * **`-server`**	audits against the last device check-in stored in the database
 -checkin	Checks devices in with the server, which stores device information in the database along with the check-in date
 -legacy	Legacy mode, which produces the same output in the same file as the current inventory script
 -report	Generates reports
@@ -114,7 +114,11 @@ The configuration file is self-explanatory and probably won’t need modificatio
     "AuditPath": "usbci/audit"
 }
 ```
-
+* **`URL`** is the base URL for the **CMDBd** server hosting the REST API.
+* **`CheckinPath`** is the path below the server URL for registration or "_check-in_" actions.
+* **`CheckoutPath`** is the path below the server URL for obtaining previously submitted device confignuration information for the purpose of conducting an audit.
+* **`NewSNPath`** is the path below the server URL for obtaining a new, unique serial number for assignment to devices that support serial number configuration.
+* **`AuditPath`** is the path below the server URL for submitting device configuration changes discovered during an audit.
 ### Logging Settings
 ```json
 "Logging": {
@@ -135,6 +139,9 @@ The configuration file is self-explanatory and probably won’t need modificatio
     }
 },
 ```
+* **`Logfile`** specifies whether or not events are written to log files.
+* **`Console`** specifies whether or not events are written to the console (stdout).
+* **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
 
 ### Syslog Settings
 ```json
@@ -144,7 +151,9 @@ The configuration file is self-explanatory and probably won’t need modificatio
     "Host": "localhost"
 },
 ```
-
+* **`Protocol`** is the transport-layer protocol used by the syslog daemon (blank for local).
+* **`Port`** is the port used by the syslog daemon (blank for local).
+* **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
 ### Include Settings
 ```json
 "Include": {
@@ -268,9 +277,7 @@ The configuration file is self-explanatory and probably won’t need modificatio
     "Severity": "LOG_INFO"
 }
 ```
-* **`Protocol`** is the transport-layer protocol used by the syslog daemon (blank for local).
-* **`Port`** is the port used by the syslog daemon (blank for local).
-* **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
+
 * **`Tag`** is an arbitrary string to add to the event.
 * **`Facility`** specifies the type of program that is logging the message:
   * **`LOG_KERN`** -- kernel messages
