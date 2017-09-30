@@ -51,7 +51,6 @@
 	"Include": {
 
 		"VendorID": {
-			"0801": true,
 			"043d": false,
 			"045e": false
 		},
