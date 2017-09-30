@@ -14,7 +14,7 @@
 	},
 
 	"Server": {
-		"URL": "http://localhost:8080",
+		"URL": "http://sysadm-dev-01.24hourfit.com:8080",
 		"CheckinPath": "usbci/checkin",
 		"CheckoutPath": "usbci/checkout",
 		"NewSNPath": "usbci/newsn",
