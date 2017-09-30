@@ -23,18 +23,18 @@ Client operation is controlled through command-line actions and options. There a
 * **`-audit`** performs a device change audit
     * **`-local`** audits against JSON state files stored on the local machine
     * **`-server`**	audits against the last device check-in stored in the database
--checkin	Checks devices in with the server, which stores device information in the database along with the check-in date
--legacy	Legacy mode, which produces the same output in the same file as the current inventory script
--report	Generates reports
-      -console	Writes report output to the console (can be combined with -folder)
-      -folder <path>	Writes report output files to <path>
-      -format <format>	Specifies which report <format> to use
-            csv	Comma-Separated Value format (default)
-            nvp	Name-Value Pair format
-            xml	Extensible Markup Language format
-            json	JavaScript Object Notation format
--reset	Resets the device
--serial	Performs serial number operations
+* **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date
+* **`-legacy`** is legacy mode, which produces the same output in the same file as the current inventory script
+* **`-report`** generates reports
+    * **`-console`** writes report output to the console (can be combined with -folder)
+    * **`-folder`** `<path>` writes report output files to `<path>`
+    * **`-format`** `<format>` specifies which report `<format>` to use
+        * **`csv`** -- comma-separated value format (default)
+        * **`nvp`** -- name-value pair format
+        * **`xml`** -- extensible markup language format
+        * **`json`** -- JavaScript object notation format
+* **`-reset`** resets the device
+* **`-serial`** performs serial number operations
       -copy	Copies the factory serial number to the active serial number
       -erase	Erases the current serial number (can be combined with other options)
       -fetch	Fetches a unique serial number from the server
