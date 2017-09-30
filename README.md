@@ -18,32 +18,33 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 **WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP**
 
 ---
-Client operation is controlled through command-line actions and options. There are six top-level ‘actions,’ some of which require (or offer) additional sub-options:
+### Command-Line Flags
+Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `legacy`, `report`, `reset`, `serial`, and `help`.  Some of these require (or offer) additional _option flags_.
  
-* **`-audit`** performs a device change audit
+* **`-audit`** performs a device configuration change audit.
     * **`-local`** audits against JSON state files stored on the local machine
-    * **`-server`**	audits against the last device check-in stored in the database
-* **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date
-* **`-legacy`** is legacy mode, which produces the same output in the same file as the current inventory script
-* **`-report`** generates reports
-    * **`-console`** writes report output to the console (can be combined with -folder)
-    * **`-folder`** `<path>` writes report output files to `<path>`
-    * **`-format`** `<format>` specifies which report `<format>` to use
-        * **`csv`** -- comma-separated value format (default)
-        * **`nvp`** -- name-value pair format
-        * **`xml`** -- extensible markup language format
-        * **`json`** -- JavaScript object notation format
-* **`-reset`** resets the device
-* **`-serial`** performs serial number operations
-      -copy	Copies the factory serial number to the active serial number
-      -erase	Erases the current serial number (can be combined with other options)
-      -fetch	Fetches a unique serial number from the server
-      -force	Forces a serial number change (overrides safety mechanism which prevents setting a serial number when one is already present)
-      -set <value>	Sets serial number to the specified <value>
--help	Top-level actions help menu
--audit -help	Audit options help menu
--report -help	Report options help menu
--serial -help	Serial number options help menu
+    * **`-server`**	audits against the last device check-in stored in the database..
+    * **`-help`** lists `audit` flags and their descriptions.
+* **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date.
+* **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility . **Note**: the utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
+* **`-report`** generates device configuration reports.
+    * **`-console`** writes report output to the console (can be combined with -folder).
+    * **`-folder`** `<path>` writes report output files to `<path>`.
+    * **`-format`** `<format>` specifies which report `<format>` to use.
+        * **`csv`** specifies comma-separated value format (default).
+        * **`nvp`** specifies name-value pair format.
+        * **`xml`** specifies extensible markup language format.
+        * **`json`** specifies JavaScript object notation format.
+    * **`-help`** lists `report` flags and their descriptions.
+* **`-reset`** resets the device.
+* **`-serial`** performs serial number operations.
+    * **`-copy`** copies the factory serial number to the active serial number.
+    * **`-erase`** erases the current serial number.
+    * **`-fetch`** fetches a unique serial number from the server.
+    * **`-force`** forces a serial number change.
+    * **`-set`** `<value>` sets serial number to the specified `<value>`.
+    * **`-help`** lists `serial` flags and their descriptions.
+* **`-help`** lists top-level _action_ flags and their descriptions.
  
 Actions and events are logged to system.log, errors are logged in error.log, and changes detected during audits are recorded in change.log. The log directory is configurable; the default is the log subdirectory under the application directory. All three kinds of logs can also be written to a local or remote Syslog server.
  
