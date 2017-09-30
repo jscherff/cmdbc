@@ -23,12 +23,12 @@ Client operation is controlled through command-line _flags_. There are seven top
  
 * **`-audit`** performs a device configuration change audit.
     * **`-local`** audits against JSON state files stored on the local machine
-    * **`-server`**	audits against the last device check-in stored in the database..
+    * **`-server`**	audits against the last device check-in stored in the database.
     * **`-help`** lists `audit` flags and their descriptions.
 * **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date.
 * **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility . **Note**: the utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
 * **`-report`** generates device configuration reports.
-    * **`-console`** writes report output to the console (can be combined with -folder).
+    * **`-console`** writes report output to the console.
     * **`-folder`** `<path>` writes report output files to `<path>`.
     * **`-format`** `<format>` specifies which report `<format>` to use.
         * **`csv`** specifies comma-separated value format (default).
@@ -46,7 +46,7 @@ Client operation is controlled through command-line _flags_. There are seven top
     * **`-help`** lists `serial` flags and their descriptions.
 * **`-help`** lists top-level _action_ flags and their descriptions.
  
-Actions and events are logged to system.log, errors are logged in error.log, and changes detected during audits are recorded in change.log. The log directory is configurable; the default is the log subdirectory under the application directory. All three kinds of logs can also be written to a local or remote Syslog server.
+Actions and events are recorded in `system.log`, errors are recorded in `error.log`, and changes detected during audits are recorded in `change.log`. The log directory is configurable; the default is the `log` subdirectory under the folder in which the utility is installed. All three logs can also be written to the console (stdout) and/or to a local or remote syslog server.
  
 Device state is stored in JSON files in the state subdirectory directory (configurable)
  
@@ -278,38 +278,6 @@ The configuration file is self-explanatory and probably won’t need modificatio
     "Severity": "LOG_INFO"
 }
 ```
-
-* **`Tag`** is an arbitrary string to add to the event.
-* **`Facility`** specifies the type of program that is logging the message:
-  * **`LOG_KERN`** -- kernel messages
-  * **`LOG_USER`** -- user-level messages
-  * **`LOG_MAIL`** -- mail system
-  * **`LOG_DAEMON`** -- system daemons
-  * **`LOG_AUTH`** -- security/authorization messages
-  * **`LOG_SYSLOG`** -- messages generated internally by syslogd
-  * **`LOG_LPR`** -- line printer subsystem
-  * **`LOG_NEWS`** -- network news subsystem
-  * **`LOG_UUCP`** -- UUCP subsystem
-  * **`LOG_CRON`** -- security/authorization messages
-  * **`LOG_AUTHPRIV`** -- FTP daemon
-  * **`LOG_FTP`** -- scheduling daemon
-  * **`LOG_LOCAL0`** -- local use 0
-  * **`LOG_LOCAL1`** -- local use 1
-  * **`LOG_LOCAL2`** -- local use 2
-  * **`LOG_LOCAL3`** -- local use 3
-  * **`LOG_LOCAL4`** -- local use 4
-  * **`LOG_LOCAL5`** -- local use 5
-  * **`LOG_LOCAL6`** -- local use 6
-  * **`LOG_LOCAL7`** -- local use 7
-* **`Severity`** specifies the severity of the event:
-  * **`LOG_EMERG`** -- system is unusable
-  * **`LOG_ALERT`** -- action must be taken immediately
-  * **`LOG_CRIT`** -- critical conditions
-  * **`LOG_ERR`** -- error conditions
-  * **`LOG_WARNING`** -- warning conditions
-  * **`LOG_NOTICE`** -- normal but significant conditions
-  * **`LOG_INFO`** -- informational messages
-  * **`LOG_DEBUG`** -- debug-level messages
 
 **Log Directory Settings**
 ```json
