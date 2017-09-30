@@ -149,7 +149,6 @@ The configuration file is self-explanatory and probably won’t need modificatio
 ```json
 "Include": {
     "VendorID": {
-        "0801": true,
         "043d": false,
         "045e": false
     },
@@ -165,8 +164,9 @@ The configuration file is self-explanatory and probably won’t need modificatio
     "Default": true
 },
 ```
-* **`VendorID`** specifies vendors to include (`true`) or exclude (`false`). This setting applies to all of the vendor's products and overrides both `ProductID` and `Default` settings. Here, all devices with a **MagTek** VendorID of `0801` will be included and all devices with **Microsoft** VendorIDs `043d` and `045e` will be excluded.
-* **`ProductID`** specifies which products to include (`true`) or exlude (`false`).
+* **`VendorID`** specifies which vendors to include (`true`) or exclude (`false`). This setting applies to all of the vendor's products and overrides both _Product ID_ and _Default_ settings. Here, all devices with **Microsoft** _Vendor IDs_ `043d` and `045e` will be excluded.
+* **`ProductID`** specifies which products to include (`true`) or exlude (`false`). This setting applies to specific _Product IDs_ under a given _Vendor ID_. Here, devices with a **MagTek** _Vendor ID_ `0801` and Card Reader _Product IDs_ `0001`, `0002`, `0011`, `0012`, and `0013` will be included, and it overrides the `Default` settings.
+* **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include (`true`), which effectively renders previous inclusions redundant.
 ```json
 "Format": {
     "Report": "csv",
