@@ -71,7 +71,7 @@
 
 	"Format": {
 		"Report": "csv",
-		"object": "json",
+		"Object": "json",
 		"Legacy": "csv"
 	}
 }
