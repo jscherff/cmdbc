@@ -81,65 +81,99 @@ Audits also record the following information for each change detected:
 •	Date/Time
  
 The configuration file is self-explanatory and probably won’t need modification:
- 
-              "Paths": {
-            "AppDir": "",
-            "LogDir": "log",
-            "StateDir": "state",
-            "ReportDir": "report"
-      },
- 
-      "Files": {
-            "SystemLog": "system.log",
-            "ChangeLog": "change.log",
-            "ErrorLog": "error.log",
-            "Legacy": "usb_serial.txt"
-      },
- 
-      "Server": {
-            "URL": "http://localhost:8080/usbci",
-            "CheckinPath": "checkin",
-            "CheckoutPath": "checkout",
-            "NewSNPath": "newsn",
-            "AuditPath": "audit"
-      },
- 
-      "Logging": {
-            "LogFiles": true,
-            "Console": true,
-            "Syslog": false
-      },
- 
-      "Syslog": {
-            "Protocol": "tcp",
-            "Port": "1468",
-            "Host": "localhost"
-      },
- 
-      "Include": {
- 
-            "VendorID": {
-                  "0801": true,
-                  "043d": false,
-                  "045e": false
-            },
- 
-            "ProductID": {
-                  "0801": {
-                        "0001": true
-                  }
-            },
- 
-            "Default": true
-      },
- 
-      "Format": {
-            "Report": "csv",
-            "object": "json",
-            "Legacy": "csv"
-      }
- 
-What are my next steps in getting this piloted?
+
+### Path Settings
+```json
+"Paths": {
+    "LogDir": "log",
+    "StateDir": "state",
+    "ReportDir": "report"
+}
+```
+* **`LogDir`** is the directory where log files are written. When a relative path like `log` is provided, the directory will be created below the appliation directory. 
+* **`StateDir`** is where device state files are stored. State files are used in performing local audits.
+* **`ReportDIr`** is where device reports are written.
+
+### File Settings
+```json
+"Files": {
+    "SystemLog": "system.log",
+    "ChangeLog": "change.log",
+    "ErrorLog": "error.log",
+    "Legacy": "usb_serial.txt"
+}
+```
+
+### Server Settings
+```json
+"Server": {
+    "URL": "http://sysadm-dev-01.24hourfit.com:8080",
+    "CheckinPath": "usbci/checkin",
+    "CheckoutPath": "usbci/checkout",
+    "NewSNPath": "usbci/newsn",
+    "AuditPath": "usbci/audit"
+}
+```
+
+### Logging Settings
+```json
+"Logging": {
+    "System": {
+        "Logfile": true,
+        "Console": false,
+        "Syslog": false
+    },
+    "Change": {
+        "Logfile": true,
+        "Console": false,
+        "Syslog": false
+    },
+    "Error": {
+        "Logfile": true,
+        "Console": true,
+        "Syslog": false
+    }
+},
+```
+
+### Syslog Settings
+```json
+"Syslog": {
+    "Protocol": "tcp",
+    "Port": "1468",
+    "Host": "localhost"
+},
+```
+
+### Include Settings
+```json
+"Include": {
+    "VendorID": {
+        "0801": true,
+        "043d": false,
+        "045e": false
+    },
+    "ProductID": {
+        "0801": {
+            "0001": true
+            "0002": true
+            "0011": true
+            "0012": true
+            "0013": true
+        }
+    },
+    "Default": true
+},
+```
+* **`VendorID`** specifies vendors to include (`true`) or exclude (`false`). This setting applies to all of the vendor's products and overrides both `ProductID` and `Default` settings. Here, all devices with a **MagTek** VendorID of `0801` will be included and all devices with **Microsoft** VendorIDs `043d` and `045e` will be excluded.
+* **`ProductID`** specifies which products to include (`true`) or exlude (`false`).
+```json
+"Format": {
+    "Report": "csv",
+    "object": "json",
+    "Legacy": "csv"
+}
+```
 
 ---
 ---
