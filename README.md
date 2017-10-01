@@ -7,8 +7,8 @@ The _**Configuration Management Database Client**_ is a utility that manages inf
 ### Installation
 Pre-compiled Windows binaries are available for both 32- and 64-bit systems and can be installed in any folder along with the required JSON configuration file:
 
-* [`cmdbc.exe`](https://github.com/jscherff/cmdbc/raw/master/i686/cmdbc.exe) (x86_32)
-* [`cmdbc.exe`](https://github.com/jscherff/cmdbc/raw/master/x86_64/cmdbc.exe) (x86_64)
+* [`cmdbc.exe`](https://github.com/jscherff/cmdbc/raw/master/i686/cmdbc.exe) (32-bit)
+* [`cmdbc.exe`](https://github.com/jscherff/cmdbc/raw/master/x86_64/cmdbc.exe) (64-bit)
 * [`config.json`](https://raw.githubusercontent.com/jscherff/cmdbc/master/config.json)
 
 
