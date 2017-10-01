@@ -1,4 +1,4 @@
-# CMDBc
+l# CMDBc
 The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a cetralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_ or [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md). **CMDBc** can register or _"check-in"_ attached devices with the server, obtain unique serial numbers from the server for devices that support serial number configuration, perform audits against previous device configurations, and report configuration changes found during the audit to the server for logging and analysis.
 
 ### System Requirements
