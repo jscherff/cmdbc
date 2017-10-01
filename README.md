@@ -15,7 +15,8 @@ Pre-compiled Windows binaries are available for both 32- and 64-bit systems and 
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
-#### **Server Settings** --- parameters for communicating with the **CMDBd** server.
+#### Server Settings
+Parameters for communicating with the **CMDBd** server:
 ```json
 "Server": {
     "URL": "http://sysadm-dev-01.24hourfit.com:8080",
@@ -32,7 +33,7 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`AuditPath`** is the path below the server URL for submitting device configuration changes discovered during an audit.
 
 #### Path Settings
-Directories where logs, state files, and reports will be written. 
+Directories where logs, state files, and reports will be written:
 ```json
 "Paths": {
     "LogDir": "log",
@@ -45,7 +46,7 @@ Directories where logs, state files, and reports will be written.
 * **`ReportDir`** is where device reports are written.
 
 #### File Settings
-Filenames for logs and the legacy report file.
+Filenames for logs and the legacy report file:
 ```json
 "Files": {
     "SystemLog": "system.log",
@@ -55,12 +56,12 @@ Filenames for logs and the legacy report file.
 }
 ```
 * **`SystemLog`** is the name of the file where **CMDBc** records significant, non-error events.
-* **`ChangeLog`** is the name of the file where **CMDBc** records changes found during audits. It also reports changes to the **CMDBd** server.
+* **`ChangeLog`** is the name of the file where **CMDBc** records changes found during audits. (It also reports changes to the **CMDBd** server.)
 * **`ErrorLog`** is the name of the file where **CMDBc** records errors.
 * **`Legacy`** is the name of the file where **CMDBc** writes the legacy inventory report.
 
 #### Logging Settings
-Granular logging options for the system, change, and error log.
+Granular logging options for the system, change, and error log:
 ```json
 "Logging": {
     "System": {
@@ -85,7 +86,7 @@ Granular logging options for the system, change, and error log.
 * **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
 
 #### Syslog Settings
-Parameters for communicating with a local or remote syslog server.
+Parameters for communicating with a local or remote syslog server:
 ```json
 "Syslog": {
     "Protocol": "tcp",
@@ -98,7 +99,7 @@ Parameters for communicating with a local or remote syslog server.
 * **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
 
 #### Include Settings
-Vendors and products to include (_true_) or exclude (_false_) when inventorying devices.
+Vendors and products to include (_true_) or exclude (_false_) when inventorying devices:
 ```json
 "Include": {
     "VendorID": {
@@ -125,7 +126,7 @@ Vendors and products to include (_true_) or exclude (_false_) when inventorying 
 * **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include, which effectively renders previous inclusions redundant; however, specific _VendorID_ and _ProductID_ inclusions ensure that those devices will be inventoried even if the _Default_ setting is changed to 'exclude' (_false_).
 
 #### Format Settings
-Default file formats for various use cases.
+Default file formats for various use cases:
 ```json
 "Format": {
     "Report": "csv",
@@ -136,9 +137,9 @@ Default file formats for various use cases.
 * **`Default`** is the default output format for other use cases.
 
 ### Operation
+
 #### Command-Line Flags
 Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `legacy`, `report`, `reset`, `serial`, and `help`.  Some of these require (or offer) additional _option flags_.
- 
 * **`-audit`** performs a device configuration change audit.
     * **`-local`** audits against JSON state files stored on the local machine
     * **`-server`**	audits against the last device check-in stored in the database.
@@ -169,13 +170,14 @@ Some _action flags_ can take multiple options.
 * The **`-report`** _option flags_ can be used together in any combination. Example:
     * **`-report -format`** `json` **`-folder`** `C:\Reports` **`-console`** will write device configuration reports in JSON format to `C:\Reports` and will also display the reports on the screen.
 * The **`-serial`** _option flags_ `-copy`, `-fetch`, and `-set` are mutually-exclusive, but each can be combined with `-erase` and `-force`. Examples:
-    * **`-serial -fetch -force`** will fetch a new, unique serial number from the **CMDBd** server and will configure the device with it, overriding the safety mechanism that prevents overwriting existing serial numbers.
-    * **`-serial -erase -fetch`** will erase the existing serial number, fetch a new, unique serial number from the **CMDBd** server, and will configure the device with it (same end-result as `-serial -fetch -force`).
+    * **`-serial -fetch -force`** will fetch a new, unique serial number from the **CMDBd** server and configure the device with it, overriding the safety mechanism that prevents overwriting existing serial numbers.
+    * **`-serial -erase -fetch`** will erase the existing serial number, fetch a new, unique serial number from the **CMDBd** server, and will configure the device with it. This produces the same end result as `-serial -fetch -force`. The difference is that, if the server fails to issue a new serial number, `-force` will leave existing serial numbers in place whereas `-erase` will leave devices without serial numbers.
 
 **Caution**: action and option flags apply to _all attached devices_; if you run the utility with the `-serial -fetch` flags, it will only configure new serial numbers on compatible devices that don't already have a serial number. If all attached devices already have serial numbers or are not configurable, nothing will happen. However, if you add the `-force` flag, it will overwrite the serial number on all compatible devices -- even those that already have a serial number. If you run the utility with the `-serial -set -force` and there is more than one configurable device attached, you will end up having multiple devices with the same serial number.
 
 
-Actions and events are recorded in `system.log`, errors are recorded in `error.log`, and changes detected during audits are recorded in `change.log`. The log directory is configurable; the default is the `log` subdirectory under the folder in which the utility is installed. All three logs can also be written to the console (stdout) and/or to a local or remote syslog server.
+### Device Registration
+Register attached devices with the **CMDBd** server using the `-checkin` _action flag_. This will create a new object in the device repository. 
  
 Device state is stored in JSON files in the state subdirectory directory (configurable)
  
