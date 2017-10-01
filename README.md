@@ -198,4 +198,20 @@ Changes detected during an audit are written to the local change log and also re
 Refer to the _Database_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on device audits.
 
 ### Device Reports
-Generate device reports for attached devices using the `-report` _action flag._ Reports can be written in four formats: _comma-separated value_ (CSV), _name-value pairs_ (NVP), _extensible markup language_ (XML), and _JavaScript object notation_ (JSON). By default, report files are written to the  `report` subdirectory under the utility installation directory (configurable). a separate report file is generated for each device. The filename is {}
+Generate device reports for attached devices using the `-report` _action flag._ Reports can be written in four formats: _comma-separated value_ (CSV), _name-value pairs_ (NVP), _extensible markup language_ (XML), and _JavaScript object notation_ (JSON).
+
+By default, report files are written to the  `report` subdirectory under the utility installation directory (configurable). A separate report file is generated for each device. The report filename is `{bn}-{ba}-{pn}-{vid}-{pid}.{fmt}`, where
+* `bn` is a three-digit decimal value representing _bus number_,
+* `ba` is a three-digit decimal value representing _bus address_,
+* `pn` is a three-digit decimal value representing _port number_,
+* `vid` is a four-digit hexadecimal value representing _vendor ID_,
+* `pid` is a four-digit hexadecimal value representing _product ID_, and
+* `fmt` is the report format (csv, nvp, xml, or json)
+
+The report destination 
+
+        this.BusAddress,
+        this.PortNumber,
+        this.VendorID,
+        this.ProductID,
+    )
