@@ -176,10 +176,24 @@ Some _action flags_ can take multiple options.
 **Caution**: action and option flags apply to _all attached devices_; if you run the utility with the `-serial -fetch` flags, it will only configure new serial numbers on compatible devices that don't already have a serial number. If all attached devices already have serial numbers or are not configurable, nothing will happen. However, if you add the `-force` flag, it will overwrite the serial number on all compatible devices -- even those that already have a serial number. If you run the utility with the `-serial -set -force` and there is more than one configurable device attached, you will end up having multiple devices with the same serial number.
 
 
-### Device Registration
-Register attached devices with the **CMDBd** server using the `-checkin` _action flag_. This will create a new object in the device repository. 
+### Serial Number Configuration
+Configure serial numbers on attached devices with the `-serial` _action flag_. By default, **CMDBc** ignores serial number requests for devices that already have serial numbers. You can override this behavior with the `-erase` option flag, which erases the existing serial number before attempting to assign a new one, or with the `-force` option flag, which bypasses the safeguard feature.
+
+You can assign a specific serial number with the `-set` _option flag_, you can copy the immutable factory serial number (if one exists) to the comfigurable serial number with the `-copy` _option flag_, or you can request a new, unique serial number from the **CMDBd** server with the `-fetch` _option flag_.
+
+Refer to the _Database_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables affected on serial number requests.
  
-Device state is stored in JSON files in the state subdirectory directory (configurable)
+### Device Registration
+Register attached devices with the **CMDBd** server using the `-checkin` _action flag_. This will create a new object in the device repository.
+
+Refer to the _Database_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables affected on device registrations.
+
+### Device Audit
+Perform a configuration change audit for attached devices using the `-audit` _action flag._ Audits are only supported on serialized devices.
+
+You can audit against device state files saved on the local workstation with the `-local` _option flag_, or you csn audit against device information stored in the database with the `-server` _option flag_. The latter is preferred. By default, device state for local audits is stored in JSON files in the `state` subdirectory under the utility installation directory (configurable).
+
+Changes detected during an audit are written to the local change log and also reported to the server.
  
 Report files are written to the report subdirectory directory (configurable)
  
