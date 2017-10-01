@@ -15,7 +15,7 @@ Pre-compiled Windows binaries are available for both 32- and 64-bit systems and 
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
-##### **Server Settings**
+#### Server Settings
 Parameters for communicating with the **CMDBd** server.
 ```json
 "Server": {
