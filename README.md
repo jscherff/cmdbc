@@ -14,7 +14,8 @@ Pre-compiled Windows binaries are available for both 32- and 64-bit systems and 
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
-**Server Settings** --- parameters for communicating with the **CMDBd** server.
+##### Server Settings
+Parameters for communicating with the **CMDBd** server.
 ```json
 "Server": {
     "URL": "http://sysadm-dev-01.24hourfit.com:8080",
@@ -30,7 +31,8 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`NewSNPath`** is the path below the server URL for obtaining a new, unique serial number for assignment to devices that support serial number configuration.
 * **`AuditPath`** is the path below the server URL for submitting device configuration changes discovered during an audit.
 
-**Path Settings** --- directories where logs, state files, and reports will be written. 
+##### Path Settings
+Directories where logs, state files, and reports will be written. 
 ```json
 "Paths": {
     "LogDir": "log",
@@ -42,7 +44,8 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`StateDir`** is where device state files are stored. State files are used in performing local audits.
 * **`ReportDir`** is where device reports are written.
 
-**File Settings** --- filenames for logs and the legacy report file.
+##### File Settings
+Filenames for logs and the legacy report file.
 ```json
 "Files": {
     "SystemLog": "system.log",
@@ -56,7 +59,8 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`ErrorLog`** is the name of the file where **CMDBc** records errors.
 * **`Legacy`** is the name of the file where **CMDBc** writes the legacy inventory report.
 
-**Logging Settings** --- granular logging options for the system, change, and error log.
+##### Logging Settings
+Granular logging options for the system, change, and error log.
 ```json
 "Logging": {
     "System": {
@@ -80,7 +84,8 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`Console`** specifies whether or not events are written to the console (stdout).
 * **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
 
-**Syslog Settings** --- parameters for communicating with a local or remote syslog server.
+##### Syslog Settings
+Parameters for communicating with a local or remote syslog server.
 ```json
 "Syslog": {
     "Protocol": "tcp",
@@ -92,7 +97,8 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`Port`** is the port used by the syslog daemon (blank for local).
 * **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
 
-**Include Settings** --- vendors and products to include (_true_) or exclude (_false_) when inventorying devices.
+##### Include Settings
+Vendors and products to include (_true_) or exclude (_false_) when inventorying devices.
 ```json
 "Include": {
     "VendorID": {
@@ -118,7 +124,8 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`ProductID`** specifies which products to include (_true_) or exclude (_false_). This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, **MagTek** (_VendorID_ `0801`) card readers with  _ProductIDs_ `0001`, `0002`, `0011`, `0012`, and `0013` will be included, as will **ID TECH** (_VendorID_ `0acd`) Card 
 * **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include (`true`), which effectively renders previous inclusions redundant.
 
-**Format Settings** --- default file formats for various use cases.
+##### Format Settings
+Default file formats for various use cases.
 ```json
 "Format": {
     "Report": "csv",
@@ -129,35 +136,37 @@ The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/b
 * **`Default`** is the default output format for other use cases.
 
 ### Operation
-**Command-Line Flags**
+##### Command-Line Flags
 Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `legacy`, `report`, `reset`, `serial`, and `help`.  Some of these require (or offer) additional _option flags_.
  
 * **`-audit`** performs a device configuration change audit.
     * **`-local`** audits against JSON state files stored on the local machine
     * **`-server`**	audits against the last device check-in stored in the database.
-    * **`-help`** lists `audit` flags and their descriptions.
+    * **`-help`** lists _audit option flags_ and their descriptions.
 * **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date.
-* **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility. **Note**: the utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
+* **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility. The utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
 * **`-report`** generates device configuration reports.
     * **`-console`** writes report output to the console.
-    * **`-folder`** `<path>` writes report output files to `<path>`.
-    * **`-format`** `<format>` specifies which report `<format>` to use.
+    * **`-folder`** _`<path>`_ writes report output files to _`<path>`_.
+    * **`-format`** _`<format>`_ specifies which report _`<format>`_ to use:
         * **`csv`** specifies comma-separated value format (default).
         * **`nvp`** specifies name-value pair format.
         * **`xml`** specifies extensible markup language format.
         * **`json`** specifies JavaScript object notation format.
-    * **`-help`** lists `report` flags and their descriptions.
+    * **`-help`** lists _report option flags_ and their descriptions.
 * **`-reset`** resets the device.
-* **`-serial`** performs serial number operations.
+* **`-serial`** performs serial number operations. (By default, **CMDBc** will not configure a serial number on a device that already has one.)
     * **`-copy`** copies the factory serial number to the active serial number.
     * **`-erase`** erases the current serial number.
     * **`-fetch`** fetches a unique serial number from the server.
-    * **`-force`** forces a serial number change.
-    * **`-set`** `<value>` sets serial number to the specified `<value>`.
-    * **`-help`** lists `serial` flags and their descriptions.
-* **`-help`** lists top-level _action_ flags and their descriptions.
+    * **`-force`** forces a serial number change, even if the device already has one.
+    * **`-set`** _`<value>`_ sets serial number to the specified _`<value>`_.
+    * **`-help`** lists _serial option flags_ and their descriptions.
+* **`-help`** lists top-level _action flags_ and their descriptions.
 
- 
+##### Flag Combinations
+Some _action flags_ can take multiple options.
+* **`-report -folder`** _`<path>`_ **`-console`**
 Actions and events are recorded in `system.log`, errors are recorded in `error.log`, and changes detected during audits are recorded in `change.log`. The log directory is configurable; the default is the `log` subdirectory under the folder in which the utility is installed. All three logs can also be written to the console (stdout) and/or to a local or remote syslog server.
  
 Device state is stored in JSON files in the state subdirectory directory (configurable)
