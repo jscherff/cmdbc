@@ -32,7 +32,7 @@ Parameters for communicating with the **CMDBd** server.
 * **`NewSNPath`** is the path below the server URL for obtaining a new, unique serial number for assignment to devices that support serial number configuration.
 * **`AuditPath`** is the path below the server URL for submitting device configuration changes discovered during an audit.
 
-##### Path Settings
+#### Path Settings
 Directories where logs, state files, and reports will be written. 
 ```json
 "Paths": {
@@ -45,7 +45,7 @@ Directories where logs, state files, and reports will be written.
 * **`StateDir`** is where device state files are stored. State files are used in performing local audits.
 * **`ReportDir`** is where device reports are written.
 
-##### File Settings
+#### File Settings
 Filenames for logs and the legacy report file.
 ```json
 "Files": {
@@ -60,7 +60,7 @@ Filenames for logs and the legacy report file.
 * **`ErrorLog`** is the name of the file where **CMDBc** records errors.
 * **`Legacy`** is the name of the file where **CMDBc** writes the legacy inventory report.
 
-##### Logging Settings
+#### Logging Settings
 Granular logging options for the system, change, and error log.
 ```json
 "Logging": {
@@ -85,7 +85,7 @@ Granular logging options for the system, change, and error log.
 * **`Console`** specifies whether or not events are written to the console (stdout).
 * **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
 
-##### Syslog Settings
+#### Syslog Settings
 Parameters for communicating with a local or remote syslog server.
 ```json
 "Syslog": {
@@ -98,7 +98,7 @@ Parameters for communicating with a local or remote syslog server.
 * **`Port`** is the port used by the syslog daemon (blank for local).
 * **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
 
-##### Include Settings
+#### Include Settings
 Vendors and products to include (_true_) or exclude (_false_) when inventorying devices.
 ```json
 "Include": {
@@ -125,7 +125,7 @@ Vendors and products to include (_true_) or exclude (_false_) when inventorying 
 * **`ProductID`** specifies which products to include (_true_) or exclude (_false_). This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, **MagTek** (_VendorID_ `0801`) card readers with  _ProductIDs_ `0001`, `0002`, `0011`, `0012`, and `0013` will be included, as will **ID TECH** (_VendorID_ `0acd`) Card 
 * **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include, which effectively renders previous inclusions redundant; however, specific _VendorID_ and _ProductID_ inclusions ensure that those devices will be inventoried even if the _Default_ setting is changed to 'exclude' (_false_).
 
-##### Format Settings
+#### Format Settings
 Default file formats for various use cases.
 ```json
 "Format": {
@@ -137,7 +137,7 @@ Default file formats for various use cases.
 * **`Default`** is the default output format for other use cases.
 
 ### Operation
-##### Command-Line Flags
+#### Command-Line Flags
 Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `legacy`, `report`, `reset`, `serial`, and `help`.  Some of these require (or offer) additional _option flags_.
  
 * **`-audit`** performs a device configuration change audit.
@@ -165,7 +165,7 @@ Client operation is controlled through command-line _flags_. There are seven top
     * **`-help`** lists _serial option flags_ and their descriptions.
 * **`-help`** lists top-level _action flags_ and their descriptions.
 
-##### Flag Combinations
+#### Flag Combinations
 Some _action flags_ can take multiple options.
 * The **`-report`** _option flags_ can be used together in any combination. Example:
     * **`-report -format`** `json` **`-folder`** `C:\Reports` **`-console`** will write device configuration reports in JSON format to `C:\Reports` and will also display the reports on the screen.
