@@ -81,7 +81,6 @@ type Config struct {
 
 	Format struct {
 		Report		string
-		Object		string
 		Default		string
 	}
 }

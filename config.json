@@ -62,6 +62,9 @@
 				"0011": true,
 				"0013": true,
 				"0014": true
+			},
+			"0acd": {
+				"2030": true
 			}
 		},
 
@@ -70,7 +73,6 @@
 
 	"Format": {
 		"Report": "csv",
-		"Object": "json",
-		"Legacy": "csv"
+		"Default": "json"
 	}
 }
