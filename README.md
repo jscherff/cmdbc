@@ -11,6 +11,7 @@ Pre-compiled Windows binaries are available for both 32- and 64-bit systems and 
 * [`cmdbc.exe`](https://github.com/jscherff/cmdbc/raw/master/x86_64/cmdbc.exe) (x86_64)
 * [`config.json`](https://raw.githubusercontent.com/jscherff/cmdbc/master/config.json)
 
+
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
@@ -122,7 +123,7 @@ Vendors and products to include (_true_) or exclude (_false_) when inventorying 
 ```
 * **`VendorID`** specifies which vendors to include (_true_) or exclude (_false_). This setting applies to all of the vendor's products and overrides both the _ProductID_ and _Default_ configuration settings; that is, if a vendor is excluded under _VendorID_, that vendor's products cannot be included under _ProductID_. Here, all devices with **Microsoft** _Vendor IDs_ `043d` and `045e` will be excluded.
 * **`ProductID`** specifies which products to include (_true_) or exclude (_false_). This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, **MagTek** (_VendorID_ `0801`) card readers with  _ProductIDs_ `0001`, `0002`, `0011`, `0012`, and `0013` will be included, as will **ID TECH** (_VendorID_ `0acd`) Card 
-* **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include (`true`), which effectively renders previous inclusions redundant.
+* **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include, which effectively renders previous inclusions redundant; however, specific _VendorID_ and _ProductID_ inclusions ensure that those devices will be inventoried even if the _Default_ setting is changed to 'exclude' (_false_).
 
 ##### Format Settings
 Default file formats for various use cases.
@@ -147,7 +148,7 @@ Client operation is controlled through command-line _flags_. There are seven top
 * **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility. The utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
 * **`-report`** generates device configuration reports.
     * **`-console`** writes report output to the console.
-    * **`-folder`** _`<path>`_ writes report output files to _`<path>`_.
+    * **`-folder`** _`<path>`_ writes report output files to _`<path>`_. It defaults to the `report` folder beneath the installation directory.
     * **`-format`** _`<format>`_ specifies which report _`<format>`_ to use:
         * **`csv`** specifies comma-separated value format (default).
         * **`nvp`** specifies name-value pair format.
@@ -156,7 +157,7 @@ Client operation is controlled through command-line _flags_. There are seven top
     * **`-help`** lists _report option flags_ and their descriptions.
 * **`-reset`** resets the device.
 * **`-serial`** performs serial number operations. (By default, **CMDBc** will not configure a serial number on a device that already has one.)
-    * **`-copy`** copies the factory serial number to the active serial number.
+    * **`-copy`** copies the factory serial number (if present) to the active serial number.
     * **`-erase`** erases the current serial number.
     * **`-fetch`** fetches a unique serial number from the server.
     * **`-force`** forces a serial number change, even if the device already has one.
@@ -166,7 +167,15 @@ Client operation is controlled through command-line _flags_. There are seven top
 
 ##### Flag Combinations
 Some _action flags_ can take multiple options.
-* **`-report -folder`** _`<path>`_ **`-console`**
+* The **`-report`** _option flags_ can be used together in any combination. Example:
+    * **`-report -format`** `json` **`-folder`** `C:\Reports` **`-console`** will write device configuration reports in JSON format to `C:\Reports` and will also display the reports on the screen.
+* The **`-serial`** _option flags_ `-copy`, `-fetch`, and `-set` are mutually-exclusive, but each can be combined with `-erase` and `-force`. Examples:
+    * **`-serial -fetch -force`** will fetch a new, unique serial number from the **CMDBd** server and will configure the device with it, overriding the safety mechanism that prevents overwriting existing serial numbers.
+    * **`-serial -erase -fetch`** will erase the existing serial number, fetch a new, unique serial number from the **CMDBd** server, and will configure the device with it (same end-result as `-serial -fetch -force`).
+
+**Caution**: action and option flags apply to _all attached devices_; if you run the utility with the `-serial -fetch` flags, it will only configure new serial numbers on compatible devices that don't already have a serial number. If all attached devices already have serial numbers or are not configurable, nothing will happen. However, if you add the `-force` flag, it will overwrite the serial number on all compatible devices -- even those that already have a serial number. If you run the utility with the `-serial -set -force` and there is more than one configurable device attached, you will end up having multiple devices with the same serial number.
+
+
 Actions and events are recorded in `system.log`, errors are recorded in `error.log`, and changes detected during audits are recorded in `change.log`. The log directory is configurable; the default is the `log` subdirectory under the folder in which the utility is installed. All three logs can also be written to the console (stdout) and/or to a local or remote syslog server.
  
 Device state is stored in JSON files in the state subdirectory directory (configurable)
@@ -175,85 +184,29 @@ Report files are written to the report subdirectory directory (configurable)
  
 Serial number requests, check-ins, and audits record the following information in the database:
 * Hostname
-•	Vendor ID
-•	Product ID
-•	Serial Number
-•	Vendor Name
-•	Product Name
-•	Product Version
-•	Software ID
-•	Bus Number
-•	Bus Address
-•	Port Number
-•	Buffer Size
-•	Max Packet Size
-•	USB Specification
-•	USB Class
-•	USB Subclass
-•	USB Protocol
-•	Device Speed
-•	Device Version
-•	Factory Serial Number
-•	Date/Time
+* Vendor ID
+* Product ID
+* Serial Number
+* Vendor Name
+* Product Name
+* Product Version
+* Software ID
+* Bus Number
+* Bus Address
+* Port Number
+* Buffer Size
+* Max Packet Size
+* USB Specification
+* USB Class
+* USB Subclass
+* USB Protocol
+* Device Speed
+* Device Version
+* Factory Serial Number
+* Date/Time
  
 Audits also record the following information for each change detected:
-•	Property
-•	Old Value
-•	New Value
-•	Date/Time
- 
----
----
-
-
-
-
-
-### Startup
-Once all configuration tasks are complete, the daemon can be started with the following command:
-```sh
-systemctl start cmdbd
-```
-Service access, system events, and errors are written to the following log files:
-* **`system.log`** records significant, non-error events.
-* **`access.log`** records client activity in Apache Combined Log Format.
-* **`error.log`** records service and database errors.
-
-The daemon can also be started from the command line. The following command-line options are available:
-* **`-config`** specifies an alternate JSON configuration file; the default is `/etc/cmdbd/config.json`.
-* **`-stdout`** causes _all logs_ to be written to standard output; it overrides `Stdout` setting for individual logs.
-* **`-stderr`** causes _all logs_ to be written to standard error; it overrides `Stderr` setting for individual logs.
-* **`-syslog`** causes _all logs_ to be written to the configured syslog daemon; it overrides `Syslog` setting for individual logs.
-* **`-help`** displays the above options with a short description.
-
-You will need to become `root` or use the `sudo` command to start the daemon or it will not be able to write to its log files. (For security reasons, the daemon should never run as `root` in production; it should always run in the context of a nonprivileged account.) Manual startup example:
-```sh
-[root@sysadm-dev-01 ~]# /usr/sbin/cmdbd -help
-Usage of /usr/sbin/cmdbd:
-  -config file
-        Web server configuration file (default "/etc/cmdbd/config.json")
-  -stderr
-        Enable logging to stderr
-  -stdout
-        Enable logging to stdout
-  -syslog
-        Enable logging to syslog
-
-[root@sysadm-dev-01 ~]# /usr/sbin/cmdbd -stdout
-system 2017/09/30 09:55:38 main.go:62: Database "10.2.9-MariaDB" (cmdbd@localhost/gocmdb) using "mysql" driver
-system 2017/09/30 09:55:38 main.go:63: Server started and listening on ":8080"
-```
-
-### API Endpoints
-| Endpoint | Method | Purpose
-| :------ | :------ | :------ |
-| **`/usbci/checkin/{host}/{vid}/{pid}`** | POST | Submit configuration information for a new device or update information for an existing device. |
-| **`/usbci/checkout/{host}/{vid}/{pid}/{sn}`** | GET | Obtain configuration information for a previously-registered, serialized device in order to perform a change audit. |
-| **`/usbci/audit/{host}/{vid}/{pid}/{sn}`** | POST | Submit the results of a change audit on a serialized device. Results include the attribute name, previous value, and new value for each modified attribute.
-| **`/usbci/newsn/{host}/{vid}/{pid}`** | POST | Obtain a new unique serial number from the server for assignment to the attached device. |
-
-### API Parameters
-* **`host`** is the _hostname_ of the workstation to which the device is attached.
-* **`vid`** is the _vendor ID_ of the device.
-* **`pid`** is the _product ID_ of the device.
-* **`sn`** is the _serial number_ of the device.
+* Property
+* Old Value
+* New Value
+* Date/Time
