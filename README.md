@@ -108,10 +108,10 @@ Vendors and products to include (_true_) or exclude (_false_) when inventorying 
     },
     "ProductID": {
         "0801": {
-            "0001": true
-            "0002": true
-            "0011": true
-            "0012": true
+            "0001": true,
+            "0002": true,
+            "0011": true,
+            "0012": true,
             "0013": true
         },
         "0acd": {
