@@ -14,11 +14,122 @@ Pre-compiled Windows binaries are available for both 32- and 64-bit systems and 
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
----
-**WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP**
+**Server Settings** --- parameters for communicating with the **CMDBd** server.
+```json
+"Server": {
+    "URL": "http://sysadm-dev-01.24hourfit.com:8080",
+    "CheckinPath": "usbci/checkin",
+    "CheckoutPath": "usbci/checkout",
+    "NewSNPath": "usbci/newsn",
+    "AuditPath": "usbci/audit"
+}
+```
+* **`URL`** is the base URL for the **CMDBd** server hosting the REST API.
+* **`CheckinPath`** is the path below the server URL for registration or "_check-in_" actions.
+* **`CheckoutPath`** is the path below the server URL for obtaining previously submitted device confignuration information for the purpose of conducting an audit.
+* **`NewSNPath`** is the path below the server URL for obtaining a new, unique serial number for assignment to devices that support serial number configuration.
+* **`AuditPath`** is the path below the server URL for submitting device configuration changes discovered during an audit.
 
----
-### Command-Line Flags
+**Path Settings** --- directories where logs, state files, and reports will be written. 
+```json
+"Paths": {
+    "LogDir": "log",
+    "StateDir": "state",
+    "ReportDir": "report"
+}
+```
+* **`LogDir`** is the directory where log files are written. When a relative path like `log` is provided, the directory will be created below the appliation directory. 
+* **`StateDir`** is where device state files are stored. State files are used in performing local audits.
+* **`ReportDir`** is where device reports are written.
+
+**File Settings** --- filenames for logs and the legacy report file.
+```json
+"Files": {
+    "SystemLog": "system.log",
+    "ChangeLog": "change.log",
+    "ErrorLog": "error.log",
+    "Legacy": "usb_serial.txt"
+}
+```
+* **`SystemLog`** is the name of the file where **CMDBc** records significant, non-error events.
+* **`ChangeLog`** is the name of the file where **CMDBc** records changes found during audits. It also reports changes to the **CMDBd** server.
+* **`ErrorLog`** is the name of the file where **CMDBc** records errors.
+* **`Legacy`** is the name of the file where **CMDBc** writes the legacy inventory report.
+
+**Logging Settings** --- granular logging options for the system, change, and error log.
+```json
+"Logging": {
+    "System": {
+        "Logfile": true,
+        "Console": false,
+        "Syslog": false
+    },
+    "Change": {
+        "Logfile": true,
+        "Console": false,
+        "Syslog": false
+    },
+    "Error": {
+        "Logfile": true,
+        "Console": true,
+        "Syslog": false
+    }
+},
+```
+* **`Logfile`** specifies whether or not events are written to log files.
+* **`Console`** specifies whether or not events are written to the console (stdout).
+* **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
+
+**Syslog Settings** --- parameters for communicating with a local or remote syslog server.
+```json
+"Syslog": {
+    "Protocol": "tcp",
+    "Port": "1468",
+    "Host": "localhost"
+},
+```
+* **`Protocol`** is the transport-layer protocol used by the syslog daemon (blank for local).
+* **`Port`** is the port used by the syslog daemon (blank for local).
+* **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
+
+**Include Settings** --- vendors and products to include (_true_) or exclude (_false_) when inventorying devices.
+```json
+"Include": {
+    "VendorID": {
+        "043d": false,
+        "045e": false
+    },
+    "ProductID": {
+        "0801": {
+            "0001": true
+            "0002": true
+            "0011": true
+            "0012": true
+            "0013": true
+        },
+        "0acd": {
+            "2030": true
+        }
+    },
+    "Default": true
+},
+```
+* **`VendorID`** specifies which vendors to include (_true_) or exclude (_false_). This setting applies to all of the vendor's products and overrides both the _ProductID_ and _Default_ configuration settings; that is, if a vendor is excluded under _VendorID_, that vendor's products cannot be included under _ProductID_. Here, all devices with **Microsoft** _Vendor IDs_ `043d` and `045e` will be excluded.
+* **`ProductID`** specifies which products to include (_true_) or exclude (_false_). This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, **MagTek** (_VendorID_ `0801`) card readers with  _ProductIDs_ `0001`, `0002`, `0011`, `0012`, and `0013` will be included, as will **ID TECH** (_VendorID_ `0acd`) Card 
+* **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include (`true`), which effectively renders previous inclusions redundant.
+
+**Format Settings** --- default file formats for various use cases.
+```json
+"Format": {
+    "Report": "csv",
+    "Default": json
+}
+```
+* **`Report`** is the default output format for inventory reports.
+* **`Default`** is the default output format for other use cases.
+
+### Operation
+**Command-Line Flags**
 Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `legacy`, `report`, `reset`, `serial`, and `help`.  Some of these require (or offer) additional _option flags_.
  
 * **`-audit`** performs a device configuration change audit.
@@ -26,7 +137,7 @@ Client operation is controlled through command-line _flags_. There are seven top
     * **`-server`**	audits against the last device check-in stored in the database.
     * **`-help`** lists `audit` flags and their descriptions.
 * **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date.
-* **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility . **Note**: the utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
+* **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility. **Note**: the utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
 * **`-report`** generates device configuration reports.
     * **`-console`** writes report output to the console.
     * **`-folder`** `<path>` writes report output files to `<path>`.
@@ -45,6 +156,7 @@ Client operation is controlled through command-line _flags_. There are seven top
     * **`-set`** `<value>` sets serial number to the specified `<value>`.
     * **`-help`** lists `serial` flags and their descriptions.
 * **`-help`** lists top-level _action_ flags and their descriptions.
+
  
 Actions and events are recorded in `system.log`, errors are recorded in `error.log`, and changes detected during audits are recorded in `change.log`. The log directory is configurable; the default is the `log` subdirectory under the folder in which the utility is installed. All three logs can also be written to the console (stdout) and/or to a local or remote syslog server.
  
@@ -53,7 +165,7 @@ Device state is stored in JSON files in the state subdirectory directory (config
 Report files are written to the report subdirectory directory (configurable)
  
 Serial number requests, check-ins, and audits record the following information in the database:
-•	Hostname
+* Hostname
 •	Vendor ID
 •	Product ID
 •	Serial Number
@@ -81,227 +193,12 @@ Audits also record the following information for each change detected:
 •	New Value
 •	Date/Time
  
-The configuration file is self-explanatory and probably won’t need modification:
-
-### Path Settings
-```json
-"Paths": {
-    "LogDir": "log",
-    "StateDir": "state",
-    "ReportDir": "report"
-}
-```
-* **`LogDir`** is the directory where log files are written. When a relative path like `log` is provided, the directory will be created below the appliation directory. 
-* **`StateDir`** is where device state files are stored. State files are used in performing local audits.
-* **`ReportDIr`** is where device reports are written.
-
-### File Settings
-```json
-"Files": {
-    "SystemLog": "system.log",
-    "ChangeLog": "change.log",
-    "ErrorLog": "error.log",
-    "Legacy": "usb_serial.txt"
-}
-```
-
-### Server Settings
-```json
-"Server": {
-    "URL": "http://sysadm-dev-01.24hourfit.com:8080",
-    "CheckinPath": "usbci/checkin",
-    "CheckoutPath": "usbci/checkout",
-    "NewSNPath": "usbci/newsn",
-    "AuditPath": "usbci/audit"
-}
-```
-* **`URL`** is the base URL for the **CMDBd** server hosting the REST API.
-* **`CheckinPath`** is the path below the server URL for registration or "_check-in_" actions.
-* **`CheckoutPath`** is the path below the server URL for obtaining previously submitted device confignuration information for the purpose of conducting an audit.
-* **`NewSNPath`** is the path below the server URL for obtaining a new, unique serial number for assignment to devices that support serial number configuration.
-* **`AuditPath`** is the path below the server URL for submitting device configuration changes discovered during an audit.
-### Logging Settings
-```json
-"Logging": {
-    "System": {
-        "Logfile": true,
-        "Console": false,
-        "Syslog": false
-    },
-    "Change": {
-        "Logfile": true,
-        "Console": false,
-        "Syslog": false
-    },
-    "Error": {
-        "Logfile": true,
-        "Console": true,
-        "Syslog": false
-    }
-},
-```
-* **`Logfile`** specifies whether or not events are written to log files.
-* **`Console`** specifies whether or not events are written to the console (stdout).
-* **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
-
-### Syslog Settings
-```json
-"Syslog": {
-    "Protocol": "tcp",
-    "Port": "1468",
-    "Host": "localhost"
-},
-```
-* **`Protocol`** is the transport-layer protocol used by the syslog daemon (blank for local).
-* **`Port`** is the port used by the syslog daemon (blank for local).
-* **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
-### Include Settings
-```json
-"Include": {
-    "VendorID": {
-        "043d": false,
-        "045e": false
-    },
-    "ProductID": {
-        "0801": {
-            "0001": true
-            "0002": true
-            "0011": true
-            "0012": true
-            "0013": true
-        }
-    },
-    "Default": true
-},
-```
-* **`VendorID`** specifies which vendors to include (`true`) or exclude (`false`). This setting applies to all of the vendor's products and overrides both _Product ID_ and _Default_ settings. Here, all devices with **Microsoft** _Vendor IDs_ `043d` and `045e` will be excluded.
-* **`ProductID`** specifies which products to include (`true`) or exlude (`false`). This setting applies to specific _Product IDs_ under a given _Vendor ID_. Here, devices with a **MagTek** _Vendor ID_ `0801` and Card Reader _Product IDs_ `0001`, `0002`, `0011`, `0012`, and `0013` will be included, and it overrides the `Default` settings.
-* **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include (`true`), which effectively renders previous inclusions redundant.
-```json
-"Format": {
-    "Report": "csv",
-    "object": "json",
-    "Legacy": "csv"
-}
-```
-
 ---
 ---
 
-**Server Settings**
-```json
-"Server": {
-    "Addr": ":8080",
-    "ReadTimeout": 10,
-    "WriteTimeout": 10,
-    "MaxHeaderBytes": 1048576,
-    "HttpBodySizeLimit": 1048576,
-    "AllowedContentTypes": ["application/json"]
-}
-```
-* **`Addr`** is the hostname or IP address and port of the listener, separated by a colon. If blank, the daemon will listen on all network interfaces.
-* **`ReadTimeout`** is the maximum duration in seconds for reading the entire HTTP request, including the body.
-* **`WriteTimeout`** is the maximum duration in seconds before timing out writes of the response.
-* **`MaxHeaderBytes`** is the maximum size in bytes of the request header.
-* **`HttpBodySizeLimit`** is the maximum size in bytes of the request body.
-* **`AllowedContentTypes`** is a comma-separated list of allowed media types.
 
-**Database Settings**
-```json
-"Database": {
-    "Driver": "mysql",
-    "Config": {
-        "User": "cmdbd",
-        "Passwd": "K2Cvg3NeyR",
-        "Net": "",
-        "Addr": "localhost",
-        "DBName": "gocmdb",
-        "Params": null
-    },
-    ...
-}
-```
-* **`Driver`** is the database driver. Only `mysql` is supported.
-* **`User`** is the database user the daemon uses to access the database.
-* **`Passwd`** is the database user password. The default, shown, should be changed in production.
-* **`Net`** is the port on which the database is listening. If blank, the daemon will use the MySQL default port, 3306.
-* **`Addr`** is the database hostname or IP address.
-* **`DBName`** is the database schema used by the application.
-* **`Params`** are additional parameters to pass to the driver (advanced).
 
-**Logger Settings**
-```json
-"Loggers": {
-    "system": {
-        "LogFile": "system.log",
-        "LogFlags": ["date","time","shortfile"],
-        "Stdout": false,
-        "Stderr": false,
-        "Syslog": false
-    },
-    "access": {
-        "LogFile": "access.log",
-        "LogFlags": [],
-        "Stdout": false,
-        "Stderr": false,
-        "Syslog": true
-    },
-    "error": {
-        "LogFile": "error.log",
-        "LogFlags": ["date","time","shortfile"],
-        "Stdout": false,
-        "Stderr": false,
-        "Syslog": false
-    }
-}
-```
-* **`LogFile`** is the filename of the log file.
-* **`LogFlags`** specifies information to include in the prefix of each log entry. The following [case-sensitive] flags are supported:
-  * **`date`** -- date of the event in `YYYY/MM/DD` format.
-  * **`time`** -- local time of the event in `HH:MM:SS` 24-hour clock format.
-  * **`utc`** -- time in UTC rather than local time.
-  * **`standard`** -- shorthand for `date` and `time`.
-  * **`longfile`** -- long filename of the source code file that generated the event.
-  * **`shortfile`** -- short filename of the source code file that generated the event.
-* **`Stdout`** causes the daemon to write log entries to standard output (console) in addition to other destinations.
-* **`Stderr`** causes the daemon to write log entries to standard error in addition to other destinations.
-* **`Syslog`** causes the daemon to write log entries to a local or remote syslog daemon using the `Syslog` configuration settings, below.
 
-**Syslog Settings**
-```json
-"Syslog": {
-    "Protocol": "tcp",
-    "Port": "1468",
-    "Host": "localhost",
-    "Tag": "cmdbd",
-    "Facility": "LOG_LOCAL7",
-    "Severity": "LOG_INFO"
-}
-```
-
-**Log Directory Settings**
-```json
-"LogDir": {
-    "Windows": "log",
-    "Linux": "/var/log/cmdbd"
-}
-```
-* **`Windows`** is the log directory to use for Windows installations.
-* **`Linux`** is the log directory to use for Linux installations.
-
-**Global Options**
-```json
-"Options": {
-    "Stdout": false,
-    "Stderr": false,
-    "Syslog": false,
-    "RecoveryStack": false
-}
-```
-* **`Stdout`** causes _all logs_ to be written to standard output; it overrides `Stdout` setting for individual logs.
-* **`Stderr`** causes all logs to be written to standard error; it overrides `Stderr` setting for individual logs.
-* **`Syslog`** causes all logs to be written to the configured syslog daemon; it overrides `Syslog` settings for individual logs.
-* **`RecoveryStack`** enables or suppresses writing of the stack track to the error log on panic conditions.
 
 ### Startup
 Once all configuration tasks are complete, the daemon can be started with the following command:
