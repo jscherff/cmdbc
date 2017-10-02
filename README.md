@@ -9,8 +9,8 @@ To implement **CMDBc** quickly with minimal configuration, please see the [**Qui
 
 Pre-compiled binaries are also available for both 32- and 64-bit Windows systems and can be installed in any folder along with the required JSON configuration file:
 
-* [**`cmdbc.exe`**](https://github.com/jscherff/cmdbc/raw/master/i686/cmdbc.exe) (32-bit Windows 7 or higher)
-* [**`cmdbc.exe`**](https://github.com/jscherff/cmdbc/raw/master/x86_64/cmdbc.exe) (64-bit Windows 7 or higher)
+* [**`cmdbc.exe`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/i686/cmdbc.exe) (32-bit Windows 7 or higher)
+* [**`cmdbc.exe`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/x86_64/cmdbc.exe) (64-bit Windows 7 or higher)
 * [**`config.json`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/config.json)
 
 ### Configuration
