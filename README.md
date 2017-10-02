@@ -191,7 +191,7 @@ Refer to the _Database_ section in the documentation for [**CMDBd**](https://git
 ### Device Audits
 Perform a configuration change audit for attached devices using the `-audit` _action flag._ Audits are only supported on serialized devices.
 
-You can audit against device state files saved on the local workstation with the `-local` _option flag_, or you csn audit against device information stored in the database with the `&#x2011;server` _option flag_. The latter is preferred. By default, device state for local audits is stored in JSON files in the `state` subdirectory under the utility installation directory (configurable).
+You can audit against device state files saved on the local workstation with the `-local` _option flag_, or you csn audit against device information stored in the database with the &#x2011;`server` _option flag_. The latter is preferred. By default, device state for local audits is stored in JSON files in the `state` subdirectory under the utility installation directory (configurable).
 
 Changes detected during an audit are written to the local change log and also reported to the server.
 
