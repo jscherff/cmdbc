@@ -46,6 +46,36 @@ func main() {
 
 	slog, clog, elog = newLoggers()
 
+	// Instantiate context to enumerate devices.
+
+	ctx := gousb.NewContext()
+	defer ctx.Close()
+
+	// If run as legacy app executable, find first device matching magtek
+	// vendor ID and product ID, produce legacy report, then exit.
+
+	if strings.Contains(filepath.Base(os.Args[0]), `magtek_inventory`) {
+
+		dev, err := ctx.OpenDeviceWithVIDPID(
+			gousb.ID(usbci.MagtekVID),
+			gousb.ID(usbci.MagtekPID),
+		)
+
+		if err != nil {
+			elog.Fatal(err)
+		}
+
+		mdev, err := usbci.NewMagtek(dev)
+
+		if err != nil {
+			elog.Fatal(err)
+		}
+
+		legacyAction(mdev)
+
+		os.Exit(0)
+	}
+
 	// Process command-line actions and options.
 
 	if len(os.Args) < 2 {
@@ -82,36 +112,6 @@ func main() {
 			fsAudit.Usage()
 			os.Exit(1)
 		}
-	}
-
-	// Instantiate context to enumerate attached USB devices.
-
-	ctx := gousb.NewContext()
-	defer ctx.Close()
-
-	// If run as legacy app executable, find first device matching magtek
-	// vendor ID and product ID, produce legacy report, then exit.
-
-	if strings.Contains(filepath.Base(os.Args[0]), `magtek_inventory`) {
-
-		dev, err := ctx.OpenDeviceWithVIDPID(
-			gousb.ID(usbci.MagtekVID),
-			gousb.ID(usbci.MagtekPID),
-		)
-
-		if err != nil {
-			elog.Fatal(err)
-		}
-
-		mdev, err := usbci.NewMagtek(dev)
-
-		if err != nil {
-			elog.Fatal(err)
-		}
-
-		legacyAction(mdev)
-
-		os.Exit(0)
 	}
 
 	// Open devices that match selection criteria in the Include.ProductID
