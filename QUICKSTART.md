@@ -1,27 +1,30 @@
 # CMDBc QuickStart
-The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a centralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_ or [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md). **CMDBc** can register or _"check-in"_ attached devices with the server, obtain unique serial numbers from the server for devices that support serial number configuration, perform audits against previous device configurations, and report configuration changes found during the audit to the server for logging and analysis.
+The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a centralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_. See the [**CMDBc README.md**] and [**CMDBd README.md**] documents for more detail.
 
 ### System Requirements
 **CMDBc** is written in **Go** and can be compiled for any operating system and architecture. It is intended to be installed on end-user workstations running **Microsoft Windows 7** or higher and should be invoked by a centralized management solution like **IBM BigFix**.
 
 ### Installation
-Save the appropriate executable file and the JSON configuration file to the desired installation folder, such as C:\CMDBc
+Save the appropriate executable file and the JSON configuration file to the desired installation folder, such as C:\CMDBc:
 
-* [**`cmdbc.exe`**](https://github.com/jscherff/cmdbc/raw/master/i686/cmdbc.exe) (32-bit Windows 7 or higher)
+* [**`cmdbc.exe`**](i686/cmdbc.exe) (32-bit Windows 7 or higher)
 * [**`cmdbc.exe`**](https://github.com/jscherff/cmdbc/raw/master/x86_64/cmdbc.exe) (64-bit Windows 7 or higher)
 * [**`config.json`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/config.json)
 
 ### Configuration
-In the JSON configuration file, find the **Server** section and change the **URL** setting to the URL of the **CMDBd** server. Do not modify any other settings.
-```json
-"Server": {
-    "URL": "http://sysadm-dev-01.24hourfit.com:8080",
-    "CheckinPath": "usbci/checkin",
-    "CheckoutPath": "usbci/checkout",
-    "NewSNPath": "usbci/newsn",
-    "AuditPath": "usbci/audit"
-}
-```
+1. Obtain the **hostname** (or **IP address**) and listener **port** of the **CMDBd** server.
+1. In the **Server** section of the JSON configuration file, change the **URL** parameter to the URL and port of the **CMDBd** server.
+    ```json
+    "Server": {
+        "URL": "http://sysadm-dev-01.24hourfit.com:8080",
+        "CheckinPath": "usbci/checkin",
+        "CheckoutPath": "usbci/checkout",
+        "NewSNPath": "usbci/newsn",
+        "AuditPath": "usbci/audit"
+    }
+    ```
+1. Ensure a firewall rule is in place allowing communication from managed workstations to the **CMDBd** server.
+
 ### Operation
 Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
 1. Schedule the following command to run once per month initially, then once per quarter or as necessary:
