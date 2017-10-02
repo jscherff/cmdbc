@@ -4,6 +4,9 @@ The _**Configuration Management Database Client**_ is a utility that manages inf
 ### System Requirements
 **CMDBc** is written in **Go** and can be compiled for any operating system and architecture. It is intended to be installed on end-user workstations running **Microsoft Windows 7** or higher and should be invoked by a centralized management solution like **IBM BigFix**.
 
+### QuickStart
+To implement **CMDBc** quickly with minimal configuration, please read the [**QuickStart** document.](https://github.com/jscherff/cmdbc/blob/master/QUICKSTART.md)
+
 ### Installation
 Pre-compiled binaries are also available for both 32- and 64-bit Windows systems and can be installed in any folder along with the required JSON configuration file:
 
