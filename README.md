@@ -208,10 +208,4 @@ By default, report files are written to the  `report` subdirectory under the uti
 * `pid` is a four-digit hexadecimal value representing _product ID_, and
 * `fmt` is the report format (csv, nvp, xml, or json)
 
-The report destination 
-
-        this.BusAddress,
-        this.PortNumber,
-        this.VendorID,
-        this.ProductID,
-    )
+The report destination folder can be changed with the `-folder` _option flag_, 
