@@ -209,6 +209,3 @@ By default, report files are written to the  `report` subdirectory under the uti
 * `fmt` is the report format (csv, nvp, xml, or json)
 
 Change the report destination folder with the `-folder` _option flag_.
-
-
-
