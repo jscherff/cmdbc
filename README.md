@@ -129,7 +129,7 @@ Default file formats for various use cases:
 ```json
 "Format": {
     "Report": "csv",
-    "Default": json
+    "Default": "json"
 }
 ```
 * **`Report`** is the default output format for inventory reports.
