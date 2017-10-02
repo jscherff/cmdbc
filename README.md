@@ -1,5 +1,5 @@
 # CMDBc
-The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a cetralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_ or [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md). **CMDBc** can register or _"check-in"_ attached devices with the server, obtain unique serial numbers from the server for devices that support serial number configuration, perform audits against previous device configurations, and report configuration changes found during the audit to the server for logging and analysis.
+The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a centralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_ or [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md). **CMDBc** can register or _"check-in"_ attached devices with the server, obtain unique serial numbers from the server for devices that support serial number configuration, perform audits against previous device configurations, and report configuration changes found during the audit to the server for logging and analysis.
 
 ### System Requirements
 **CMDBc** is written in **Go** and can be compiled for any operating system and architecture. It is intended to be installed on end-user workstations running **Microsoft Windows 7** or higher and should be invoked by a centralized management solution like **IBM BigFix**.
@@ -40,7 +40,7 @@ Directories where logs, state files, and reports will be written:
     "ReportDir": "report"
 }
 ```
-* **`LogDir`** is the directory where log files are written. When a relative path like `log` is provided, the directory will be created below the appliation directory. 
+* **`LogDir`** is the directory where log files are written. When a relative path like `log` is provided, the directory will be created below the application directory. 
 * **`StateDir`** is where device state files are stored. State files are used in performing local audits.
 * **`ReportDir`** is where device reports are written.
 
@@ -165,7 +165,7 @@ Client operation is controlled through command-line _flags_. There are seven top
 ### Serial Number Configuration
 Configure serial numbers on attached devices with the `serial` _action flag_.
 
-The `set`, `copy`, and `fetch` _option flags_ are mutually-exclusive. You assign a specific serial number string with the `set` _option flag_, copy the immutable factory serial number (if one exists) to the comfigurable serial number with the `copy` _option flag_, or request a new, unique serial number from the server with the `fetch` _option flag_.
+The `set`, `copy`, and `fetch` _option flags_ are mutually-exclusive. You assign a specific serial number string with the `set` _option flag_, copy the immutable factory serial number (if one exists) to the configurable serial number with the `copy` _option flag_, or request a new, unique serial number from the server with the `fetch` _option flag_.
 
 The `copy`, `fetch`, and `set` _option flags_ can each be combined with `erase` and `force`. By default, **CMDBc** ignores serial number changes for devices that already have serial numbers. The `erase` _option flag_ bypasses this by erasing the existing serial number before attempting to assign a new one, effectively removing the constraint. The `force` _option flag_ simply overrides the safeguard feature.
 
@@ -179,7 +179,7 @@ cmdbc.exe -serial -erase -fetch
 ```
 The preceding command will, for each compatible device, erase the existing serial number, fetch a new, unique serial number from the server, and configure the device with it.
 
-While the prevoius two examples would normally produce the same result, a subtle difference is that, if **CMDBc** were unable to obtain a new serial number, `force` would leave existing serial numbers in place whereas `erase` would leave devices without serial numbers.
+While the previous two examples would normally produce the same result, a subtle difference is that, if **CMDBc** were unable to obtain a new serial number, `force` would leave existing serial numbers in place whereas `erase` would leave devices without serial numbers.
 
 You can also use the `erase` _option flag_ by itself to erase device serial numbers, although this is an unusual use case.
 
@@ -195,7 +195,7 @@ Refer to the _Database Structure_ section in the documentation for [**CMDBd**](h
 ### Device Audits
 Perform a configuration change audit for attached devices using the `audit` _action flag._
 
-You can audit against device state files saved on the local workstation with the `local` _option flag_, or you csn audit against device information stored in the database with the `server` _option flag_. The latter is preferred. By default, device state for local audits is stored in JSON files in the `state` subdirectory under the utility installation directory (configurable). Changes detected during an audit are written to the local change log and are also reported to the server.
+You can audit against device state files saved on the local workstation with the `local` _option flag_, or you can audit against device information stored in the database with the `server` _option flag_. The latter is preferred. By default, device state for local audits is stored in JSON files in the `state` subdirectory under the utility installation directory (configurable). Changes detected during an audit are written to the local change log and are also reported to the server.
 
 Audits are only supported on serialized devices.
 
@@ -232,7 +232,7 @@ Both of the preceding commands write the device reports in JSON format to the co
 cmdbc.exe -report -format xml -folder c:\reports
 cmdbc.exe -report -format xml -folder c:\reports -console
 ```
-Both of the preceeding commands write the device reports in XML format to the c:\reports folder. The second command also writes the reports to the console.
+Both of the preceding commands write the device reports in XML format to the c:\reports folder. The second command also writes the reports to the console.
 
 ### Device Resets
 Reset attached devices using the `reset` _action flag_.
