@@ -1,14 +1,14 @@
 # CMDBc QuickStart
-The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a centralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_. See the [**CMDBc README.md**] and [**CMDBd README.md**] documents for more detail.
+The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a centralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_. See the [**CMDBc README.md**](https://github.com/jscherff/cmdbc/blob/master/README.md) and [**CMDBd README.md**](https://github.com/jscherff/cmdbd/blob/master/README.md) documents for more detail.
 
 ### System Requirements
-**CMDBc** is written in **Go** and can be compiled for any operating system and architecture. It is intended to be installed on end-user workstations running **Microsoft Windows 7** or higher and should be invoked by a centralized management solution like **IBM BigFix**.
+**CMDBc** runs on end-user workstations running **Microsoft Windows 7** or higher and should be invoked by a centralized management solution like **IBM BigFix**.
 
 ### Installation
 Save the appropriate executable file and the JSON configuration file to the desired installation folder, such as C:\CMDBc:
 
-* [**`cmdbc.exe`**](i686/cmdbc.exe) (32-bit Windows 7 or higher)
-* [**`cmdbc.exe`**](https://github.com/jscherff/cmdbc/raw/master/x86_64/cmdbc.exe) (64-bit Windows 7 or higher)
+* [**`cmdbc.exe`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/i686/cmdbc.exe) (32-bit Windows 7 or higher)
+* [**`cmdbc.exe`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/x86_64/cmdbc.exe) (64-bit Windows 7 or higher)
 * [**`config.json`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/config.json)
 
 ### Configuration
