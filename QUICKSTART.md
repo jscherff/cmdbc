@@ -43,4 +43,8 @@ Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
     ```sh
     cmdbc.exe -legacy
     ```
+    Alternatvely, save a copy of the **cmdbc.exe** executable as **magtek_inventory.exe** and run it with no flags:
+    ```sh
+    magtek_inventory.exe
+    ```
 1. Periodically parse the contents of `error.log` for issues.
