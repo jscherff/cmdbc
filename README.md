@@ -185,12 +185,12 @@ You can also use the `erase` _option flag_ by itself to erase device serial numb
 
 **Caution**: action and option flags apply to _all attached devices_; if you use the `serial` _action flag_ with the `fetch` _option flag_, **CMDBc** will only configure new serial numbers on compatible devices that don't already have one. If all attached devices already have serial numbers or are not configurable, nothing will happen. However, if you add the `force` flag, it will overwrite the serial number on all compatible devices -- even those that already have a serial number. If you use the `set` and `force` _option flags_ and there is more than one configurable device attached, you will end up having multiple devices with the same serial number.
 
-Refer to the _Database_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on serial number requests.
+Refer to the _Database Structure_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on serial number requests.
  
 ### Device Registration
 Register attached devices with the server using the `checkin` _action flag_. This will create a new object in the device repository.
 
-Refer to the _Database_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on device registrations.
+Refer to the _Database Structure_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on device registrations.
 
 ### Device Audits
 Perform a configuration change audit for attached devices using the `audit` _action flag._
@@ -199,7 +199,7 @@ You can audit against device state files saved on the local workstation with the
 
 Audits are only supported on serialized devices.
 
-Refer to the _Database_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on device audits.
+Refer to the _Database Structure_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on device audits.
 
 ### Device Reports
 Generate device reports for attached devices using the `report` _action flag._
