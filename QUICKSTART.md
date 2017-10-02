@@ -9,7 +9,7 @@ Save the appropriate executable file and the JSON configuration file to the desi
 
 * [**`cmdbc.exe`**](https://github.com/jscherff/cmdbc/raw/master/i686/cmdbc.exe) (32-bit Windows 7 or higher)
 * [**`cmdbc.exe`**](https://github.com/jscherff/cmdbc/raw/master/x86_64/cmdbc.exe) (64-bit Windows 7 or higher)
-* [**`config.json`**](https://raw.githubusercontent.com/jscherff/cmdbc/master/config.json)
+* [**`config.json`**](https://github.com/jscherff/cmdbc/raw/master/config.json) (Configuration file)
 
 ### Configuration
 1. Obtain the **hostname** (or **IP address**) and listener **port** of the **CMDBd** server.
