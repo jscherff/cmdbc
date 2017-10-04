@@ -1,8 +1,6 @@
 #!/bin/sh
 
-git rm -f log/*
-git rm -f state/*
-git rm -f report/*
-git rm -f *.exe
+git rm -f {log,state,report}/*
 
-rm -rf log state report i686 x86_64
+rm -rf ./{log,state,report}
+rm -rf */{log,state,report,config.json}
