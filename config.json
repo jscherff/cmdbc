@@ -15,10 +15,10 @@
 
 	"Server": {
 		"URL": "http://sysadm-dev-01.24hourfit.com:8080",
-		"CheckinPath": "usbci/checkin",
-		"CheckoutPath": "usbci/checkout",
-		"NewSNPath": "usbci/newsn",
-		"AuditPath": "usbci/audit"
+		"CheckinPath": "v1/usbci/checkin",
+		"CheckoutPath": "v1/usbci/checkout",
+		"NewSNPath": "v1/usbci/newsn",
+		"AuditPath": "v1/usbci/audit"
 	},
 
 	"Logging": {
