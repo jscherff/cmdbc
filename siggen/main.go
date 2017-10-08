@@ -1,3 +1,17 @@
+// Copyright 2017 John Scherff
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -14,11 +28,12 @@ var (
 			"host_name": "John-SurfacePro",
 			"vendor_id": "0801",
 			"product_id": "0001",
+			"serial_number": "24FFFFF",
 			"vendor_name": "Mag-Tek",
 			"product_name": "USB Swipe Reader",
-			"serial_num": "24FFFFF",
-			"software_id": "21042840G01",
 			"product_ver": "V05",
+			"firmware_ver": "",
+			"software_id": "21042840G01",
 			"bus_number": 1,
 			"bus_address": 7,
 			"port_number": 1,
@@ -42,11 +57,12 @@ var (
 			"host_name": "John-SurfacePro",
 			"vendor_id": "0801",
 			"product_id": "0001",
+			"serial_number": "24FFFFF",
 			"vendor_name": "Mag-Tek",
 			"product_name": "USB Swipe Reader",
-			"serial_num": "24FFFFF",
-			"software_id": "21042840G02",
 			"product_ver": "V05",
+			"firmware_ver": "",
+			"software_id": "21042840G02",
 			"bus_number": 1,
 			"bus_address": 7,
 			"port_number": 1,
@@ -70,11 +86,12 @@ var (
 			"host_name": "John-SurfacePro",
 			"vendor_id": "0acd",
 			"product_id": "2030",
+			"serial_number": "",
 			"vendor_name": "ID TECH",
 			"product_name": "TM3 Magstripe USB-HID Keyboard Reader",
-			"serial_num": "",
-			"software_id": "",
 			"product_ver": "",
+			"firmware_ver": "",
+			"software_id": "",
 			"bus_number": 1,
 			"bus_address": 8,
 			"port_number": 1,
@@ -98,11 +115,12 @@ var (
 			"host_name": "John-SurfacePro",
 			"vendor_id": "0acd",
 			"product_id": "2030",
+			"serial_number": "",
 			"vendor_name": "ID TECH",
 			"product_name": "TM4 Magstripe USB-HID Keyboard Reader",
-			"serial_num": "",
-			"software_id": "",
 			"product_ver": "",
+			"firmware_ver": "",
+			"software_id": "",
 			"bus_number": 1,
 			"bus_address": 8,
 			"port_number": 1,
@@ -166,6 +184,13 @@ func main() {
 		b []byte
 		err error
 	)
+
+	fmt.Printf("package main\n\nvar (\n")
+
+	fmt.Printf("\tmag1JSON = []byte(\n\t\t`%s`,\n\t)\n\n", mag1JSON)
+	fmt.Printf("\tmag2JSON = []byte(\n\t\t`%s`,\n\t)\n\n", mag2JSON)
+	fmt.Printf("\tgen1JSON = []byte(\n\t\t`%s`,\n\t)\n\n", gen1JSON)
+	fmt.Printf("\tgen2JSON = []byte(\n\t\t`%s`,\n\t)\n\n", gen2JSON)
 
 	if b, err = mag1.PrettyJSON(); err != nil { log.Fatalln(err) }
 	fmt.Printf("\tmag1SigPJSON = [32]byte{%s\n\t}\n\n", printb(sha256.Sum256(b)))
@@ -249,6 +274,8 @@ func main() {
 	fmt.Printf("\tgen2SigNVP = [32]byte{%s\n\t}\n\n", printb(sha256.Sum256(b)))
 
 	if b = gen2.Legacy(); err != nil { log.Fatalln(err) }
-	fmt.Printf("\tgen2SigLegacy = [32]byte{%s\n\t}\n\n", printb(sha256.Sum256(b)))
+	fmt.Printf("\tgen2SigLegacy = [32]byte{%s\n\t}\n", printb(sha256.Sum256(b)))
+
+	fmt.Printf(")\n\n")
 }
 

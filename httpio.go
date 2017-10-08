@@ -24,15 +24,6 @@ import (
 	`github.com/jscherff/gocmdb`
 )
 
-const (
-	acceptedMask =
-		http.StatusOK |
-		http.StatusCreated |
-		http.StatusAccepted |
-		http.StatusNoContent |
-		http.StatusNotModified
-)
-
 var (
 	transport = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
 	client = &http.Client{Transport: transport}
@@ -40,8 +31,21 @@ var (
 
 type httpStatus int
 
-func (this httpStatus) Accepted() bool {
-	return this & acceptedMask == this
+func (this httpStatus) Accepted() (ok bool) {
+
+	ok = true
+
+	switch int(this) {
+	case http.StatusOK:
+	case http.StatusCreated:
+	case http.StatusAccepted:
+	case http.StatusNoContent:
+	case http.StatusNotModified:
+	default:
+		ok = false
+	}
+
+	return ok
 }
 
 func (this httpStatus) String() (s string) {
@@ -68,8 +72,10 @@ func (this httpStatus) String() (s string) {
 		s = `unsatisfied prerequisite`
 	case http.StatusInternalServerError:
 		s = `unable to process request`
+	case http.StatusNotFound:
+		s = `api endpoint not found`
 	default:
-		s = `status unknown`
+		s = this.StatusText()
 	}
 
 	return s
@@ -236,6 +242,8 @@ func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
 
 	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
 	req.Header.Add(`X-Custom-Header`, `cmdbc`)
+
+	slog.Printf(`API call %s %s`, req.Method, req.URL)
 
 	resp, err := client.Do(req)
 
