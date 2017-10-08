@@ -229,7 +229,7 @@ func TestFlowReport(t *testing.T) {
 		gotest.Assert(t, sha256.Sum256(b) == mag1SigCSV, `unexpected hash signature of CSV report`)
 	})
 
-	t.Run(`Flags: -report -folder -format nvp `, func(t *testing.T) {
+	t.Run(`Flags: -report -folder -format nvp`, func(t *testing.T) {
 
 		resetFlags(t)
 		*fActionReport = true
