@@ -14,7 +14,7 @@
 	},
 
 	"Server": {
-		"URL": "http://sysadm-dev-01.24hourfit.com:8080",
+		"URL": "http://localhost:8080",
 		"CheckinPath": "v1/usbci/checkin",
 		"CheckoutPath": "v1/usbci/checkout",
 		"NewSNPath": "v1/usbci/newsn",
@@ -51,8 +51,6 @@
 	"Include": {
 
 		"VendorID": {
-			"043d": false,
-			"045e": false
 		},
 
 		"ProductID": {
@@ -64,6 +62,7 @@
 				"0014": true
 			},
 			"0acd": {
+				"2010": true,
 				"2030": true
 			}
 		},
@@ -74,5 +73,7 @@
 	"Format": {
 		"Report": "csv",
 		"Default": "json"
-	}
+	},
+
+	"DebugLevel": 0
 }

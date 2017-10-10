@@ -49,6 +49,7 @@ func main() {
 	// Instantiate context to enumerate devices.
 
 	ctx := gousb.NewContext()
+	ctx.Debug(conf.DebugLevel)
 	defer ctx.Close()
 
 	// If run as legacy app executable, find first device matching magtek
@@ -117,7 +118,7 @@ func main() {
 	// Open devices that match selection criteria in the Include.ProductID
 	// and Include.VendorID maps from the configuration file.
 
-	devs, _ := ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
+	devs, err := ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
 
 		vid, pid := desc.Vendor.String(), desc.Product.String()
 
@@ -132,7 +133,9 @@ func main() {
 	})
 
 	// Log and exit if no relevant devices found.
-
+	if err != nil && conf.DebugLevel > 0 {
+		elog.Print(err)
+	}
 	if len(devs) == 0 {
 		elog.Fatalf(`no devices found`)
 	}

@@ -70,6 +70,12 @@ func TestFlowAudit(t *testing.T) {
 
 	var err error
 
+	// Check device in with the database to ensure there is at least one record
+	// to use for comparison.
+
+	err = checkinDevice(mag1)
+	gotest.Ok(t, err)
+
 	t.Run(`Flags: -audit -local`, func(t *testing.T) {
 
 		resetFlags(t)

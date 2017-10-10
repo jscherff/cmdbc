@@ -83,6 +83,8 @@ type Config struct {
 		Report		string
 		Default		string
 	}
+
+	DebugLevel		int
 }
 
 // newConfig retrieves the settings in the JSON configuration file and
