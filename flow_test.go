@@ -73,7 +73,7 @@ func TestFlowAudit(t *testing.T) {
 	// Check device in with the database to ensure there is at least one record
 	// to use for comparison.
 
-	err = checkinDevice(mag1)
+	err = checkinDevice(mag[`mag1`])
 	gotest.Ok(t, err)
 
 	t.Run(`Flags: -audit -local`, func(t *testing.T) {
@@ -84,27 +84,27 @@ func TestFlowAudit(t *testing.T) {
 
 		// Remove audit file artifacts from previous tests.
 
-		af := fmt.Sprintf(`%s-%s-%s.json`, mag1.VID(), mag1.PID(), mag1.ID())
+		af := fmt.Sprintf(`%s-%s-%s.json`, mag[`mag1`].VID(), mag[`mag1`].PID(), mag[`mag1`].ID())
 		os.RemoveAll(filepath.Join(conf.Paths.StateDir, af))
 
 		// Send device to router.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Assert(t, err != nil, `first run should result in file-not-found error`)
 
 		// Determine whether there are no changes recorded when auditing same device.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, len(mag1.Changes) == 0, `device change log should be empty`)
+		gotest.Assert(t, len(mag[`mag1`].Changes) == 0, `device change log should be empty`)
 
 		// Determine whether device differences are recorded in device change log.
 
-		err = magtekRouter(mag2)
+		err = magtekRouter(mag[`mag2`])
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, reflect.DeepEqual(mag2.Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(mag[`mag2`].Changes, magChanges),
 			`device change log does not contain known device differences`)
 
 		// Determine whether device differences are recorded in app change log.
@@ -113,7 +113,7 @@ func TestFlowAudit(t *testing.T) {
 		gotest.Ok(t, err)
 
 		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, ClogCh1) && strings.Contains(fs, ClogCh2),
+		gotest.Assert(t, strings.Contains(fs, changeLogCh1) && strings.Contains(fs, changeLogCh2),
 			`application change log does not contain known device differences`)
 	})
 
@@ -125,20 +125,20 @@ func TestFlowAudit(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Determine whether there are no changes recorded when auditing same device.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Determine whether device differences are recorded in device change log.
 
-		err = magtekRouter(mag2)
+		err = magtekRouter(mag[`mag2`])
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, reflect.DeepEqual(mag2.Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(mag[`mag2`].Changes, magChanges),
 			`device change log does not contain known device differences`)
 
 		// Determine whether device differences are recorded in app change log.
@@ -147,7 +147,7 @@ func TestFlowAudit(t *testing.T) {
 		gotest.Ok(t, err)
 
 		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, ClogCh1) && strings.Contains(fs, ClogCh2),
+		gotest.Assert(t, strings.Contains(fs, changeLogCh1) && strings.Contains(fs, changeLogCh2),
 			`application change log does not contain known device differences`)
 	})
 
@@ -165,22 +165,22 @@ func TestFlowCheckin(t *testing.T) {
 
 		// Change a property.
 
-		mag2.VendorName = `Check-in Test`
+		mag[`mag2`].VendorName = `Check-in Test`
 
 		// Send device to router.
 
-		err = magtekRouter(mag2)
+		err = magtekRouter(mag[`mag2`])
 		gotest.Ok(t, err)
 
 		// Checkout device and test if property change persisted.
 
-		b, err := checkoutDevice(mag2)
+		b, err := checkoutDevice(mag[`mag2`])
 		gotest.Ok(t, err)
 
-		err = mag2.RestoreJSON(b)
+		err = mag[`mag2`].RestoreJSON(b)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag2.VendorName == `Check-in Test`, `device changes did not persist after checkin`)
+		gotest.Assert(t, mag[`mag2`].VendorName == `Check-in Test`, `device changes did not persist after checkin`)
 	})
 
 	restoreState(t)
@@ -197,7 +197,7 @@ func TestFlowLegacy(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
@@ -205,7 +205,7 @@ func TestFlowLegacy(t *testing.T) {
 		b, err := ioutil.ReadFile(conf.Files.Legacy)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, mag1SigLegacy == sha256.Sum256(b), `unexpected hash signature of Legacy report`)
+		gotest.Assert(t, sigLegacy[`mag1`] == sha256.Sum256(b), `unexpected hash signature of Legacy report`)
 	})
 
 	restoreState(t)
@@ -223,16 +223,16 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == mag1SigCSV, `unexpected hash signature of CSV report`)
+		gotest.Assert(t, sha256.Sum256(b) == sigCSV[`mag1`], `unexpected hash signature of CSV report`)
 	})
 
 	t.Run(`Flags: -report -folder -format nvp`, func(t *testing.T) {
@@ -243,16 +243,16 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == mag1SigNVP, `unexpected hash signature of NVP report`)
+		gotest.Assert(t, sha256.Sum256(b) == sigNVP[`mag1`], `unexpected hash signature of NVP report`)
 	})
 
 	t.Run(`Flags: -report -folder -format xml`, func(t *testing.T) {
@@ -263,16 +263,16 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == mag1SigPXML, `unexpected hash signature of XML report`)
+		gotest.Assert(t, sha256.Sum256(b) == sigPrettyXML[`mag1`], `unexpected hash signature of XML report`)
 	})
 
 	t.Run(`Flags: -report -folder -format json`, func(t *testing.T) {
@@ -283,16 +283,16 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(mag1)
+		err = magtekRouter(mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag1.Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == mag1SigPJSON, `unexpected hash signature of JSON report`)
+		gotest.Assert(t, sha256.Sum256(b) == sigPrettyJSON[`mag1`], `unexpected hash signature of JSON report`)
 	})
 }
 

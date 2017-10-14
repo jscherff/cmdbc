@@ -1,30 +1,27 @@
 package main
 
 import (
+	`crypto/sha256`
 	`flag`
 	`log`
 	`os`
-	`sync`
 	`testing`
 	`github.com/google/gousb`
 	`github.com/jscherff/gocmdb/usbci`
 )
 
-var (
-	mag1, mag2 *usbci.Magtek
-	gen1, gen2 *usbci.Generic
-
-	magChanges = make([][]string, 2)
-
-	ClogCh1 = `"SoftwareID" was "21042840G01", now "21042840G02"`
-	ClogCh2 = `"USBSpec" was "1.10", now "2.00"`
-
-	mux sync.Mutex
-)
-
 func init() {
+
 	magChanges[0] = []string{`SoftwareID`, `21042840G01`, `21042840G02`}
 	magChanges[1] = []string{`USBSpec`, `1.10`, `2.00`}
+
+	if err := createObjects(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := generateSigs(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func TestMain(m *testing.M) {
@@ -51,39 +48,106 @@ func TestMain(m *testing.M) {
 
 func createObjects() (err error) {
 
-	if mag1, err = usbci.NewMagtek(nil); err != nil {
-		return err
+	for k, j := range magJSON {
+
+		if mag[k], err = usbci.NewMagtek(nil); err != nil {
+			return err
+		}
+		if err := mag[k].RestoreJSON(j); err != nil {
+			return err
+		}
 	}
 
-	if mag2, err = usbci.NewMagtek(nil); err != nil {
-		return err
+	for k, j := range genJSON {
+
+		if genDev[k], err = usbci.NewGeneric(nil); err != nil {
+			return err
+		}
+		if err := genDev[k].RestoreJSON(j); err != nil {
+			return err
+		}
 	}
 
-	if gen1, err = usbci.NewGeneric(nil); err != nil {
-		return err
+	return nil
+}
+
+func generateSigs() error {
+
+	for k := range magJSON {
+
+		if b, err := mag[k].CSV(); err != nil {
+			return err
+		} else {
+			sigCSV[k] = sha256.Sum256(b)
+		}
+		if b, err := mag[k].NVP(); err != nil {
+			return err
+		} else {
+			sigNVP[k] = sha256.Sum256(b)
+		}
+		if b, err := mag[k].XML(); err != nil {
+			return err
+		} else {
+			sigXML[k] = sha256.Sum256(b)
+		}
+		if b, err := mag[k].JSON(); err != nil {
+			return err
+		} else {
+			sigJSON[k] = sha256.Sum256(b)
+		}
+		if b, err := mag[k].PrettyXML(); err != nil {
+			return err
+		} else {
+			sigPrettyXML[k] = sha256.Sum256(b)
+		}
+		if b, err := mag[k].PrettyJSON(); err != nil {
+			return err
+		} else {
+			sigPrettyJSON[k] = sha256.Sum256(b)
+		}
+
+		b := mag[k].Legacy()
+		sigLegacy[k] = sha256.Sum256(b)
 	}
 
-	if gen2, err = usbci.NewGeneric(nil); err != nil {
-		return err
+	for k := range genJSON {
+
+		if b, err := genDev[k].CSV(); err != nil {
+			return err
+		} else {
+			sigCSV[k] = sha256.Sum256(b)
+		}
+		if b, err := genDev[k].NVP(); err != nil {
+			return err
+		} else {
+			sigNVP[k] = sha256.Sum256(b)
+		}
+		if b, err := genDev[k].XML(); err != nil {
+			return err
+		} else {
+			sigXML[k] = sha256.Sum256(b)
+		}
+		if b, err := genDev[k].JSON(); err != nil {
+			return err
+		} else {
+			sigJSON[k] = sha256.Sum256(b)
+		}
+		if b, err := genDev[k].PrettyXML(); err != nil {
+			return err
+		} else {
+			sigPrettyXML[k] = sha256.Sum256(b)
+		}
+		if b, err := genDev[k].PrettyJSON(); err != nil {
+			return err
+		} else {
+			sigPrettyJSON[k] = sha256.Sum256(b)
+		}
+
+		b := genDev[k].Legacy()
+		sigLegacy[k] = sha256.Sum256(b)
 	}
 
-	if err = mag1.RestoreJSON(mag1JSON); err != nil {
-		return err
-	}
-
-	if err = mag2.RestoreJSON(mag2JSON); err != nil {
-		return err
-	}
-
-	if err = gen1.RestoreJSON(gen1JSON); err != nil {
-		return err
-	}
-
-	if err = gen2.RestoreJSON(gen2JSON); err != nil {
-		return err
-	}
-
-	return err
+	return nil
 }
 
 func resetFlags(tb testing.TB) {
