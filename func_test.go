@@ -19,11 +19,11 @@ func TestFuncSerial(t *testing.T) {
 	t.Run("GetNewSN() Function", func(t *testing.T) {
 
 		resetFlags(t)
-		mag[`mag1`].SerialNum = ``
+		td.Mag[`mag1`].SerialNum = ``
 
-		mag[`mag1`].SerialNum, err = getNewSN(mag[`mag1`])
+		td.Mag[`mag1`].SerialNum, err = getNewSN(td.Mag[`mag1`])
 		gotest.Ok(t, err)
-		gotest.Assert(t, mag[`mag1`].SerialNum != ``, `empty SN provided by server`)
+		gotest.Assert(t, td.Mag[`mag1`].SerialNum != ``, `empty SN provided by server`)
 	})
 
 	restoreState(t)
@@ -38,14 +38,14 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `json`
 
-		err = reportAction(mag[`mag1`])
+		err = reportAction(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == sigPrettyJSON[`mag1`], `unexpected hash signature of JSON report`)
+		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PJSN`][`mag1`], `unexpected hash signature of JSON report`)
 	})
 
 	t.Run("XML Report", func(t *testing.T) {
@@ -53,14 +53,14 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `xml`
 
-		err = reportAction(mag[`mag1`])
+		err = reportAction(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == sigPrettyXML[`mag1`], `unexpected hash signature of XML report`)
+		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PXML`][`mag1`], `unexpected hash signature of XML report`)
 	})
 
 	t.Run("CSV Report", func(t *testing.T) {
@@ -68,14 +68,14 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `csv`
 
-		err = reportAction(mag[`mag1`])
+		err = reportAction(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == sigCSV[`mag1`], `unexpected hash signature of CSV report`)
+		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`CSV`][`mag1`], `unexpected hash signature of CSV report`)
 	})
 
 	t.Run("NVP Report", func(t *testing.T) {
@@ -83,14 +83,14 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `nvp`
 
-		err = reportAction(mag[`mag1`])
+		err = reportAction(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == sigNVP[`mag1`], `unexpected hash signature of NVP report`)
+		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`NVP`][`mag1`], `unexpected hash signature of NVP report`)
 	})
 
 	t.Run("Legacy Report", func(t *testing.T) {
@@ -98,13 +98,13 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fActionLegacy = true
 
-		err = legacyAction(mag[`mag1`])
+		err = legacyAction(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		b, err := ioutil.ReadFile(conf.Files.Legacy)
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, sha256.Sum256(b) == sigLegacy[`mag1`], `unexpected hash signature of Legacy report`)
+		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`Leg`][`mag1`], `unexpected hash signature of Legacy report`)
 	})
 }
 
@@ -117,13 +117,13 @@ func TestFuncCheckInOut(t *testing.T) {
 
 		resetFlags(t)
 
-		err = checkinDevice(mag[`mag1`])
+		err = checkinDevice(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		j, err := checkoutDevice(mag[`mag1`])
+		j, err := checkoutDevice(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		ss, err := mag[`mag1`].CompareJSON(j)
+		ss, err := td.Mag[`mag1`].CompareJSON(j)
 		gotest.Ok(t, err)
 		gotest.Assert(t, len(ss) == 0, `unmodified device should match last checkin`)
 	})
@@ -132,15 +132,15 @@ func TestFuncCheckInOut(t *testing.T) {
 
 		resetFlags(t)
 
-		err = checkinDevice(mag[`mag1`])
+		err = checkinDevice(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		mag[`mag1`].SoftwareID = `21042818B02`
+		td.Mag[`mag1`].SoftwareID = `21042818B02`
 
-		j, err := checkoutDevice(mag[`mag1`])
+		j, err := checkoutDevice(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		ss, err := mag[`mag1`].CompareJSON(j)
+		ss, err := td.Mag[`mag1`].CompareJSON(j)
 		gotest.Ok(t, err)
 		gotest.Assert(t, len(ss) != 0, `modified device should not match last checkin`)
 	})
@@ -157,28 +157,28 @@ func TestFuncAudit(t *testing.T) {
 		resetFlags(t)
 		*fAuditLocal = true
 
-		af := fmt.Sprintf(`%s-%s-%s.json`, mag[`mag1`].VID(), mag[`mag1`].PID(), mag[`mag1`].ID())
+		af := fmt.Sprintf(`%s-%s-%s.json`, td.Mag[`mag1`].VID(), td.Mag[`mag1`].PID(), td.Mag[`mag1`].ID())
 		os.RemoveAll(filepath.Join(conf.Paths.StateDir, af))
 
-		err = auditAction(mag[`mag1`])
+		err = auditAction(td.Mag[`mag1`])
 		gotest.Assert(t, err != nil, `first run should result in file-not-found error`)
 
-		err = auditAction(mag[`mag1`])
+		err = auditAction(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, len(mag[`mag1`].Changes) == 0, `device change log should be empty`)
+		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
 
-		err = auditAction(mag[`mag2`])
+		err = auditAction(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, reflect.DeepEqual(mag[`mag2`].Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
 			`device change log does not contain known device differences`)
 
 		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
 		gotest.Ok(t, err)
 
 		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, changeLogCh1) && strings.Contains(fs, changeLogCh2),
+		gotest.Assert(t, strings.Contains(fs, td.Clg[0]) && strings.Contains(fs, td.Clg[1]),
 			`application change log does not contain known device differences`)
 	})
 
@@ -187,25 +187,25 @@ func TestFuncAudit(t *testing.T) {
 		resetFlags(t)
 		*fAuditServer = true
 
-		err = checkinDevice(mag[`mag1`])
+		err = checkinDevice(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		err = auditAction(mag[`mag1`])
+		err = auditAction(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, len(mag[`mag1`].Changes) == 0, `device change log should be empty`)
+		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
 
-		err = auditAction(mag[`mag2`])
+		err = auditAction(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
-		gotest.Assert(t, reflect.DeepEqual(mag[`mag2`].Changes, magChanges),
+		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
 			`device change log does not contain known device differences`)
 
 		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
 		gotest.Ok(t, err)
 
 		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, changeLogCh1) && strings.Contains(fs, changeLogCh2),
+		gotest.Assert(t, strings.Contains(fs, td.Clg[0]) && strings.Contains(fs, td.Clg[1]),
 			`application change log does not contain known device differences`)
 	})
 
@@ -228,7 +228,7 @@ func TestFuncFileIO(t *testing.T) {
 
 	// Generate file content
 
-	b, err := mag[`mag1`].JSON()
+	b, err := td.Mag[`mag1`].JSON()
 	gotest.Ok(t, err)
 
 	// File Write Tests
@@ -246,29 +246,29 @@ func TestFuncFileIO(t *testing.T) {
 
 	b, err = readFile(rfn1)
 	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == sigJSON[`mag1`], `unexpected hash signature of file contents`)
+	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
 
 	b, err = readFile(rfn2)
 	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == sigJSON[`mag1`], `unexpected hash signature of file contents`)
+	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
 
 	b, err = readFile(rfn3)
 	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == sigJSON[`mag1`], `unexpected hash signature of file contents`)
+	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
 
 	// File Read Test Validations
 
 	b, err = ioutil.ReadFile(rfn1)
 	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == sigJSON[`mag1`], `unexpected hash signature of file contents`)
+	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
 
 	b, err = ioutil.ReadFile(rfn2)
 	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == sigJSON[`mag1`], `unexpected hash signature of file contents`)
+	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
 
 	b, err = ioutil.ReadFile(rfn3)
 	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == sigJSON[`mag1`], `unexpected hash signature of file contents`)
+	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
 
 	os.RemoveAll(wfn1)
 	os.RemoveAll(wfn2)

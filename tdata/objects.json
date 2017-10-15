@@ -1,16 +1,7 @@
-package main
+{
+	"Mag": {
 
-import (
-	`sync`
-
-	`github.com/jscherff/gocmdb/usbci`
-)
-
-var (
-	magJSON = map[string][]byte{
-
-		`mag1`: []byte(
-			`{
+		"mag1": {
 				"host_name": "John-SurfacePro",
 				"vendor_id": "0801",
 				"product_id": "0001",
@@ -35,11 +26,9 @@ var (
 				"device_sn": "24FFFFF",
 				"factory_sn": "B164F78022713AA",
 				"descriptor_sn": "24FFFFF"
-			}`,
-		),
+		},
 
-		`mag2`: []byte(
-			`{
+		"mag2": {
 				"host_name": "John-SurfacePro",
 				"vendor_id": "0801",
 				"product_id": "0001",
@@ -64,14 +53,12 @@ var (
 				"device_sn": "24FFFFF",
 				"factory_sn": "B164F78022713AA",
 				"descriptor_sn": "24FFFFF"
-			}`,
-		),
-	}
+		}
+	},
 
-	genJSON = map[string][]byte{
+	"Gen": {
 
-		`gen1`: []byte(
-			`{
+		"gen1": {
 				"host_name": "John-SurfacePro",
 				"vendor_id": "0acd",
 				"product_id": "2030",
@@ -96,11 +83,9 @@ var (
 				"device_sn": "",
 				"factory_sn": "",
 				"descriptor_sn": ""
-			}`,
-		),
+		},
 
-		`gen2`: []byte(
-			`{
+		"gen2": {
 				"host_name": "John-SurfacePro",
 				"vendor_id": "0acd",
 				"product_id": "2030",
@@ -125,25 +110,6 @@ var (
 				"device_sn": "",
 				"factory_sn": "",
 				"descriptor_sn": ""
-			}`,
-		),
+		}
 	}
-
-	mag = make(map[string]*usbci.Magtek)
-	genDev = make(map[string]*usbci.Generic)
-
-	sigCSV = make(map[string][32]byte)
-	sigNVP = make(map[string][32]byte)
-	sigXML = make(map[string][32]byte)
-	sigJSON = make(map[string][32]byte)
-	sigPrettyXML = make(map[string][32]byte)
-	sigPrettyJSON = make(map[string][32]byte)
-	sigLegacy = make(map[string][32]byte)
-
-	magChanges = make([][]string, 2)
-
-	changeLogCh1 = `"SoftwareID" was "21042840G01", now "21042840G02"`
-	changeLogCh2 = `"USBSpec" was "1.10", now "2.00"`
-
-	mux sync.Mutex
-)
+}

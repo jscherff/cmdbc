@@ -118,8 +118,8 @@ func main() {
 	// Open devices that match selection criteria in the Include.ProductID
 	// and Include.VendorID maps from the configuration file.
 
-	devs, err := ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
-
+	var openFunc = func(desc *gousb.DeviceDesc) bool {
+fmt.Printf("%#v\n", desc)
 		vid, pid := desc.Vendor.String(), desc.Product.String()
 
 		if val, ok := conf.Include.ProductID[vid][pid]; ok {
@@ -128,22 +128,15 @@ func main() {
 		if val, ok := conf.Include.VendorID[vid]; ok {
 			return val
 		}
-fmt.Println(
-	"Bus", desc.Bus,
-	"Address", desc.Address,
-	"Speed", desc.Speed,
-	"Port", desc.Port,
-	"Spec", desc.Spec,
-	"Device", desc.Device,
-	"Vendor", desc.Vendor,
-	"Product", desc.Product,
-	"Class", desc.Class,
-	"SUbClass", desc.SubClass,
-	"Protocol", desc.Protocol,
-	"MaxControlPacketSize", desc.MaxControlPacketSize,
-)
+
 		return conf.Include.Default
-	})
+	}
+
+	devs, err := ctx.OpenDevices(openFunc)
+
+for _, d := range devs {
+	fmt.Println(d.Desc.Bus, d.Desc.Address, d.Desc.Port)
+}
 
 	// Log and exit if no relevant devices found.
 	if err != nil && conf.DebugLevel > 0 {
