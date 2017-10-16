@@ -119,7 +119,7 @@ func main() {
 	// and Include.VendorID maps from the configuration file.
 
 	var openFunc = func(desc *gousb.DeviceDesc) bool {
-fmt.Printf("%#v\n", desc)
+
 		vid, pid := desc.Vendor.String(), desc.Product.String()
 
 		if val, ok := conf.Include.ProductID[vid][pid]; ok {
@@ -133,10 +133,6 @@ fmt.Printf("%#v\n", desc)
 	}
 
 	devs, err := ctx.OpenDevices(openFunc)
-
-for _, d := range devs {
-	fmt.Println(d.Desc.Bus, d.Desc.Address, d.Desc.Port)
-}
 
 	// Log and exit if no relevant devices found.
 	if err != nil && conf.DebugLevel > 0 {

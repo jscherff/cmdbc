@@ -72,7 +72,7 @@ func TestMain(m *testing.M) {
 
 func createObjects() error {
 
-	if fh, err := os.Open(`tdata/data.json`); err != nil {
+	if fh, err := os.Open(`testdata.json`); err != nil {
 		return err
 	} else {
 		defer fh.Close()
