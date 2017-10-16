@@ -26,6 +26,7 @@ import (
 )
 
 type TestData struct {
+	Jsn map[string][]byte
 	Mag map[string]*usbci.Magtek
 	Gen map[string]*usbci.Generic
 	Sig map[string]map[string][32]byte
