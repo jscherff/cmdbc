@@ -23,11 +23,11 @@ func magtekRouter(musb gocmdb.MagtekUSB) (err error) {
 	switch {
 
 	case *fActionSerial:
-		err = serialAction(musb)
+		err = serialHandler(musb)
 		if err == nil {defer musb.Reset()}
 
 	case *fActionLegacy:
-		err = legacyAction(musb)
+		err = legacyHandler(musb)
 
 	default:
 		err = genericRouter(musb)
@@ -41,13 +41,13 @@ func genericRouter(gusb gocmdb.GenericUSB) (err error) {
 	switch {
 
 	case *fActionAudit:
-		err = auditAction(gusb)
+		err = auditHandler(gusb)
 
 	case *fActionCheckin:
-		err = checkinDevice(gusb)
+		err = usbCiCheckinV1(gusb)
 
 	case *fActionReport:
-		err = reportAction(gusb)
+		err = reportHandler(gusb)
 
 	case *fActionReset:
 		defer gusb.Reset()

@@ -85,8 +85,8 @@ func (this httpStatus) StatusText() (s string) {
 	return http.StatusText(int(this))
 }
 
-// getNewSN obtains a serial number from the cmdbd server.
-func getNewSN(o gocmdb.Registerable) (s string, err error) {
+// usbCiNewSnV1 obtains a serial number from the cmdbd server.
+func usbCiNewSnV1(o gocmdb.Registerable) (s string, err error) {
 
 	var (
 		j []byte
@@ -94,16 +94,15 @@ func getNewSN(o gocmdb.Registerable) (s string, err error) {
 	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.NewSNPath, o.Host(), o.VID(), o.PID(),
+		conf.Server.Endpoint[`usbCiNewSnV1`], o.Host(), o.VID(), o.PID(),
 	)
 
 	if j, err = o.JSON(); err != nil {
-		elog.Print(err)
 		return s, err
 	}
 
 	if j, hs, err = httpPost(url, j); err != nil {
-		return s, err // Errors already logged
+		return s, err
 	}
 
 	if hs.Accepted() {
@@ -112,17 +111,15 @@ func getNewSN(o gocmdb.Registerable) (s string, err error) {
 		err = fmt.Errorf(`serial number not generated - %s`, hs)
 	}
 
-	if err != nil {
-		elog.Print(err)
-	} else {
+	if err == nil {
 		slog.Printf(`serial number %q generated - %s`, s, hs)
 	}
 
 	return s, err
 }
 
-// checkinDevice checks a device in with the cmdbd server.
-func checkinDevice(o gocmdb.Registerable) (err error) {
+// usbCiCheckinV1 checks a device in with the cmdbd server.
+func usbCiCheckinV1(o gocmdb.Registerable) (err error) {
 
 	var (
 		j []byte
@@ -130,31 +127,29 @@ func checkinDevice(o gocmdb.Registerable) (err error) {
 	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.CheckinPath, o.Host(), o.VID(), o.PID(),
+		conf.Server.Endpoint[`usbCiCheckinV1`], o.Host(), o.VID(), o.PID(),
 	)
 
 	if j, err = o.JSON(); err != nil {
-		elog.Print(err)
 		return err
 	}
 
 	if _, hs, err = httpPost(url, j); err != nil {
-		return err // Errors already logged
+		return err
 	}
 
 	if hs.Accepted() {
 		slog.Printf(`checkin accepted - %s`, hs)
 	} else {
 		err = fmt.Errorf(`checkin not accepted - %s`, hs)
-		elog.Print(err)
 	}
 
 	return err
 }
 
-// checkoutDevice obtains the JSON representation of a serialized device object
+// usbCiCheckoutV1 obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
-func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
+func usbCiCheckoutV1(o gocmdb.Auditable) (j []byte, err error) {
 
 	var (
 		hs httpStatus
@@ -168,25 +163,24 @@ func checkoutDevice(o gocmdb.Auditable) (j []byte, err error) {
 	}
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.CheckoutPath, o.Host(), o.VID(), o.PID(), o.ID(),
+		conf.Server.Endpoint[`usbCiCheckoutV1`], o.Host(), o.VID(), o.PID(), o.ID(),
 	)
 
 	if j, hs, err = httpGet(url); err != nil {
-		return j, err // Errors already logged
+		return j, err
 	}
 
 	if hs.Accepted() {
-		slog.Printf(`device retrieved - %s`, hs) 
+		slog.Printf(`device retrieved - %s`, hs)
 	} else {
 		err = fmt.Errorf(`device not retreived - %s`, hs)
-		elog.Print(err)
 	}
 
 	return j, err
 }
 
-// submitAudit submits changes from audit to the server in JSON format.
-func submitAudit(o gocmdb.Auditable) (err error) {
+// usbCiAuditV1 submits changes from audit to the server in JSON format.
+func usbCiAuditV1(o gocmdb.Auditable) (err error) {
 
 	var (
 		j []byte
@@ -194,23 +188,21 @@ func submitAudit(o gocmdb.Auditable) (err error) {
 	)
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.AuditPath, o.Host(), o.VID(), o.PID(), o.ID(),
+		conf.Server.Endpoint[`usbCiAuditV1`], o.Host(), o.VID(), o.PID(), o.ID(),
 	)
 
 	if j, err = json.Marshal(o.GetChanges()); err != nil {
-		elog.Print(err)
 		return err
 	}
 
 	if _, hs, err = httpPost(url, j); err != nil {
-		return err // Errors already logged
+		return err
 	}
 
 	if hs.Accepted() {
 		slog.Printf(`audit accepted - %s`, hs)
 	} else {
 		err = fmt.Errorf(`audit not accepted - %s`, hs)
-		elog.Print(err)
 	}
 
 	return err
@@ -247,15 +239,14 @@ func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
 
 	resp, err := client.Do(req)
 
-	if err == nil {
-		defer resp.Body.Close()
-		hs = httpStatus(resp.StatusCode)
-		b, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return b, hs, err
 	}
 
-	if err != nil {
-		elog.Print(err)
-	}
+	defer resp.Body.Close()
+
+	hs = httpStatus(resp.StatusCode)
+	b, err = ioutil.ReadAll(resp.Body)
 
 	return b, hs, err
 }

@@ -72,7 +72,7 @@ func main() {
 			elog.Fatal(err)
 		}
 
-		legacyAction(mdev)
+		legacyHandler(mdev)
 
 		os.Exit(0)
 	}

@@ -21,15 +21,17 @@ import (
 	`github.com/jscherff/gocmdb`
 )
 
-// legacyAction writes legacy report to application directory.
-func legacyAction(o gocmdb.Reportable) (err error) {
-	err = writeFile(o.Legacy(), conf.Files.Legacy)
-	return err // Errors already logged.
+// legacyHandler writes legacy report to application directory.
+func legacyHandler(o gocmdb.Reportable) (err error) {
+	if err = writeFile(o.Legacy(), conf.Files.Legacy); err != nil {
+		elog.Print(err)
+	}
+	return err
 }
 
-// reportAction processes report options and writes report to the
+// reportHandler processes report options and writes report to the
 // selected destination.
-func reportAction(o gocmdb.Reportable) (err error) {
+func reportHandler(o gocmdb.Reportable) (err error) {
 
 	var b []byte
 
@@ -70,12 +72,16 @@ func reportAction(o gocmdb.Reportable) (err error) {
 		err = writeFile(b, filepath.Join(conf.Paths.ReportDir, f))
 	}
 
-	return err // Errors already logged.
+	if err != nil {
+		elog.Print(err)
+	}
+
+	return err
 }
 
-// serialAction processes the serial number options and configures the
+// serialHandler processes the serial number options and configures the
 // the serial number.
-func serialAction(o gocmdb.Configurable) (err error) {
+func serialHandler(o gocmdb.Configurable) (err error) {
 
 	var s string
 
@@ -91,7 +97,7 @@ func serialAction(o gocmdb.Configurable) (err error) {
 		}
 	}
 
-	if len(o.ID()) > 0 && !*fSerialForce {
+	if !*fSerialForce && o.ID() != `` {
 
 		err = fmt.Errorf(`device %s-%s serial: SN already set to %q`,
 			o.VID(), o.PID(), o.ID(),
@@ -103,15 +109,13 @@ func serialAction(o gocmdb.Configurable) (err error) {
 
 	switch {
 
-	case len(*fSerialSet) > 0:
+	case *fSerialSet != ``:
 
 		slog.Printf(`device %s-%s serial: setting SN to %q`,
 			o.VID(), o.PID(), *fSerialSet,
 		)
 
-		if err = o.SetDeviceSN(*fSerialSet); err != nil {
-			elog.Print(err)
-		}
+		err = o.SetDeviceSN(*fSerialSet)
 
 	case *fSerialCopy:
 
@@ -119,14 +123,12 @@ func serialAction(o gocmdb.Configurable) (err error) {
 			o.VID(), o.PID(),
 		)
 
-		if err = o.CopyFactorySN(7); err != nil {
-			elog.Print(err)
-		}
+		err = o.CopyFactorySN(7)
 
 	case *fSerialFetch:
 
-		if s, err = getNewSN(o); err != nil {
-			break // Errors already logged.
+		if s, err = usbCiNewSnV1(o); err != nil {
+			break
 		}
 
 		slog.Printf(`device %s-%s serial: setting SN %q from server`,
@@ -134,7 +136,6 @@ func serialAction(o gocmdb.Configurable) (err error) {
 		)
 
 		if err = o.SetDeviceSN(s); err != nil {
-			elog.Print(err)
 			break
 		}
 
@@ -142,7 +143,11 @@ func serialAction(o gocmdb.Configurable) (err error) {
 			o.VID(), o.PID(), o.ID(),
 		)
 
-		err = checkinDevice(o) // Errors already logged.
+		err = usbCiCheckinV1(o)
+	}
+
+	if err != nil {
+		elog.Print(err)
 	}
 
 	return err
@@ -152,9 +157,9 @@ func serialAction(o gocmdb.Configurable) (err error) {
 // state file (-local) or against properties from the last server checkin.
 // It then logs the changes to the local change log and reports changes
 // back to the server.
-func auditAction(o gocmdb.Auditable) (err error) {
+func auditHandler(o gocmdb.Auditable) (err error) {
 
-	var chgs [][]string
+	var ch [][]string
 
 	if o.ID() == `` {
 		slog.Printf(`device %s-%s audit: skipping, no SN`, o.VID(), o.PID())
@@ -174,16 +179,14 @@ func auditAction(o gocmdb.Auditable) (err error) {
 			o.VID(), o.PID(), o.ID(), f,
 		)
 
-		if chgs, err = o.CompareFile(f); err != nil {
-			elog.Print(err)
-		}
+		ch, err = o.CompareFile(f)
 
 		slog.Printf(`device %s-%s-%s audit: saving current state to %q`,
 			o.VID(), o.PID(), o.ID(), f,
 		)
 
-		if errSave := o.Save(f); errSave != nil {
-			elog.Print(errSave)
+		if err := o.Save(f); err != nil {
+			elog.Print(err) // Local scope.
 		}
 
 	case *fAuditServer:
@@ -192,57 +195,56 @@ func auditAction(o gocmdb.Auditable) (err error) {
 			o.VID(), o.PID(), o.ID(),
 		)
 
-		var c []byte
+		var j []byte
 
-		if c, err = checkoutDevice(o); err == nil {
-			if chgs, err = o.CompareJSON(c); err != nil {
-				elog.Print(err)
-			}
+		if j, err = usbCiCheckoutV1(o); err == nil {
+			ch, err = o.CompareJSON(j)
 		}
 
 		slog.Printf(`device %s-%s-%s audit: saving current state to server`,
 			o.VID(), o.PID(), o.ID(),
 		)
 
-		checkinDevice(o) // Errors already logged.
+		if err := usbCiCheckinV1(o); err != nil {
+			elog.Print(err)
+		}
 
 	default:
 
 		err = fmt.Errorf(`device %s-%s-%s audit: invalid audit option`,
 			o.VID(), o.PID(), o.ID(),
 		)
-
-		elog.Print(err)
 	}
 
 	if err != nil {
+		elog.Print(err)
 		return err
 	}
 
-	if len(chgs) == 0 {
-
+	if len(ch) == 0 {
 		slog.Printf(`device %s-%s-%s audit: no changes`, o.VID(), o.PID(), o.ID())
+		return nil
+	}
 
-	} else {
+	slog.Printf(`device %s-%s-%s audit: recording changes in change log`,
+		o.VID(), o.PID(), o.ID(),
+	)
 
-		slog.Printf(`device %s-%s-%s audit: recording changes in change log`,
-			o.VID(), o.PID(), o.ID(),
+	for _, c := range ch {
+		clog.Printf(`device %s-%s-%s changed: %q was %q, now %q`,
+			o.VID(), o.PID(), o.ID(), c[0], c[1], c[2],
 		)
+	}
 
-		for _, chg := range chgs {
-			clog.Printf(`device %s-%s-%s changed: %q was %q, now %q`,
-				o.VID(), o.PID(), o.ID(),
-				chg[0], chg[1], chg[2],
-			)
-		}
+	slog.Printf(`device %s-%s-%s audit: reporting changes to server`,
+		o.VID(), o.PID(), o.ID(),
+	)
 
-		slog.Printf(`device %s-%s-%s audit: reporting changes to server`,
-			o.VID(), o.PID(), o.ID(),
-		)
+	o.SetChanges(ch)
+	err = usbCiAuditV1(o)
 
-		o.SetChanges(chgs)
-
-		err = submitAudit(o) // Errors already logged.
+	if err != nil {
+		elog.Print(err)
 	}
 
 	return err

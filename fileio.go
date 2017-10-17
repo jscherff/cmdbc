@@ -33,10 +33,6 @@ func writeFile(b []byte, p string) (err error) {
 		err = ioutil.WriteFile(p, b, FileMode)
 	}
 
-	if err != nil {
-		elog.Print(err)
-	}
-
 	return err
 }
 
@@ -49,9 +45,5 @@ func readFile(p string) (b []byte, err error) {
 		p = filepath.Join(d, f)
 	}
 
-	if b, err = ioutil.ReadFile(p); err != nil {
-		elog.Print(err)
-	}
-
-	return b, err
+	return ioutil.ReadFile(p)
 }

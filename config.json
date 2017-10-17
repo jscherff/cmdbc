@@ -1,6 +1,5 @@
 {
 	"Paths": {
-		"AppDir": "",
 		"LogDir": "log",
 		"StateDir": "state",
 		"ReportDir": "report"
@@ -15,10 +14,17 @@
 
 	"Server": {
 		"URL": "http://localhost:8080",
-		"CheckinPath": "v1/usbci/checkin",
-		"CheckoutPath": "v1/usbci/checkout",
-		"NewSNPath": "v1/usbci/newsn",
-		"AuditPath": "v1/usbci/audit"
+		"Endpoint": {
+			"usbCiCheckinV1": "v1/usbci/checkin",
+			"usbCiCheckoutV1": "v1/usbci/checkout",
+			"usbCiNewSnV1": "v1/usbci/newsn",
+			"usbCiAuditV1": "v1/usbci/audit",
+			"usbMetaVendorV1": "v1/usbmeta/vendor",
+			"usbMetaProductV1": "v1/usbmeta/product",
+			"usbMetaClassV1": "v1/usbmeta/class",
+			"usbMetaSubClassV1": "v1/usbmeta/subclass",
+			"usbMetaProtocolV1": "v1/usbmeta/protocol"
+		}
 	},
 
 	"Logging": {

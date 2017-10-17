@@ -25,66 +25,64 @@ import (
 type Config struct {
 
 	Paths struct {
-		AppDir		string
-		LogDir		string
-		StateDir	string
-		ReportDir	string
+		AppDir          string
+		LogDir          string
+		StateDir        string
+		ReportDir       string
 	}
 
 	Files struct {
-		SystemLog	string
-		ChangeLog	string
-		ErrorLog	string
-		Legacy		string
+		SystemLog       string
+		ChangeLog       string
+		ErrorLog        string
+		Legacy          string
 	}
 
 	Server struct {
-		URL		string
-		CheckinPath	string
-		CheckoutPath	string
-		NewSNPath	string
-		AuditPath	string
+		URL             string
+		Endpoint        map[string]string
 	}
+
 
 	Logging struct {
 
 		System struct {
-			Logfile		bool
-			Console		bool
-			Syslog		bool
+			Logfile bool
+			Console bool
+			Syslog  bool
 		}
 
 		Change struct {
-			Logfile		bool
-			Console		bool
-			Syslog		bool
+			Logfile bool
+			Console bool
+			Syslog  bool
 		}
 
 		Error struct {
-			Logfile		bool
-			Console		bool
-			Syslog		bool
+			Logfile bool
+			Console bool
+			Syslog  bool
 		}
 	}
 
 	Syslog struct {
-		Protocol	string
-		Port		string
-		Host		string
+		Protocol        string
+		Port            string
+		Host            string
 	}
 
 	Include struct {
-		VendorID	map[string]bool
-		ProductID	map[string]map[string]bool
-		Default		bool
+		VendorID        map[string]bool
+		ProductID       map[string]map[string]bool
+		Default         bool
 	}
 
 	Format struct {
-		Report		string
-		Default		string
+		Report          string
+		Default         string
 	}
 
-	DebugLevel		int
+	DebugLevel              int
 }
 
 // newConfig retrieves the settings in the JSON configuration file and
@@ -92,9 +90,8 @@ type Config struct {
 // directories if they do not already exist.
 func newConfig(cf string) (this *Config, err error) {
 
+	this = &Config{}
 	ad := filepath.Dir(os.Args[0])
-
-	// Decode JSON from configuration file into config object.
 
 	if dn := filepath.Dir(cf); len(dn) == 0 {
 		cf = filepath.Join(ad, cf)
@@ -107,7 +104,6 @@ func newConfig(cf string) (this *Config, err error) {
 	}
 
 	defer fh.Close()
-	this = &Config{}
 	jd := json.NewDecoder(fh)
 
 	if err = jd.Decode(&this); err != nil {
@@ -164,5 +160,5 @@ func newConfig(cf string) (this *Config, err error) {
 		return nil, err
 	}
 
-	return this, err
+	return this, nil
 }

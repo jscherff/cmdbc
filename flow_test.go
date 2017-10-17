@@ -73,7 +73,7 @@ func TestFlowAudit(t *testing.T) {
 	// Check device in with the database to ensure there is at least one record
 	// to use for comparison.
 
-	err = checkinDevice(td.Mag[`mag1`])
+	err = usbCiCheckinV1(td.Mag[`mag1`])
 	gotest.Ok(t, err)
 
 	t.Run(`Flags: -audit -local`, func(t *testing.T) {
@@ -174,7 +174,7 @@ func TestFlowCheckin(t *testing.T) {
 
 		// Checkout device and test if property change persisted.
 
-		b, err := checkoutDevice(td.Mag[`mag2`])
+		b, err := usbCiCheckoutV1(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
 		err = td.Mag[`mag2`].RestoreJSON(b)
