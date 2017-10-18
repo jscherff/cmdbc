@@ -26,9 +26,6 @@ func magtekRouter(musb gocmdb.MagtekUSB) (err error) {
 		err = serialHandler(musb)
 		if err == nil {defer musb.Reset()}
 
-	case *fActionLegacy:
-		err = legacyHandler(musb)
-
 	default:
 		err = genericRouter(musb)
 	}

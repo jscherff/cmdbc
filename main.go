@@ -18,14 +18,16 @@ import (
 	`fmt`
 	`log`
 	`os`
-	`path/filepath`
 	`strings`
 
 	`github.com/google/gousb`
 	`github.com/jscherff/gocmdb/usbci`
 )
 
-const defaultConfig = `config.json`
+const (
+	defaultConfig = `config.json`
+	legacyExec = `magtek_inventory`
+)
 
 var (
 	conf *Config
@@ -39,43 +41,24 @@ func main() {
 	// Build system-wide configuration from config file.
 
 	if conf, err = newConfig(defaultConfig); err != nil {
-		log.Fatalf(err.Error())
+		log.Fatal(err)
 	}
 
 	// Initialize loggers.
 
 	slog, clog, elog = newLoggers()
 
+	// Check for legacy mode.
+
+	if strings.Contains(os.Args[0], legacyExec) {
+		legacyMode()
+	}
+
 	// Instantiate context to enumerate devices.
 
 	ctx := gousb.NewContext()
 	ctx.Debug(conf.DebugLevel)
 	defer ctx.Close()
-
-	// If run as legacy app executable, find first device matching magtek
-	// vendor ID and product ID, produce legacy report, then exit.
-
-	if strings.Contains(filepath.Base(os.Args[0]), `magtek_inventory`) {
-
-		dev, err := ctx.OpenDeviceWithVIDPID(
-			gousb.ID(usbci.MagtekVID),
-			gousb.ID(usbci.MagtekPID),
-		)
-
-		if err != nil {
-			elog.Fatal(err)
-		}
-
-		mdev, err := usbci.NewMagtek(dev)
-
-		if err != nil {
-			elog.Fatal(err)
-		}
-
-		legacyHandler(mdev)
-
-		os.Exit(0)
-	}
 
 	// Process command-line actions and options.
 
@@ -135,9 +118,11 @@ func main() {
 	devs, err := ctx.OpenDevices(openFunc)
 
 	// Log and exit if no relevant devices found.
+
 	if err != nil && conf.DebugLevel > 0 {
 		elog.Print(err)
 	}
+
 	if len(devs) == 0 {
 		elog.Fatalf(`no devices found`)
 	}
@@ -174,4 +159,32 @@ func main() {
 			}
 		}
 	}
+}
+
+// Find first device matching magtek VID and PID, run legacy report, then exit.
+func legacyMode() {
+
+	ctx := gousb.NewContext()
+	defer ctx.Close()
+
+	d, err := ctx.OpenDeviceWithVIDPID(
+		gousb.ID(usbci.MagtekVID),
+		gousb.ID(usbci.MagtekPID),
+	)
+
+	if err != nil {
+		elog.Fatal(err)
+	}
+
+	md, err := usbci.NewMagtek(d)
+
+	if err != nil {
+		elog.Fatal(err)
+	}
+
+	if err = writeFile(md.Legacy(), conf.Files.Legacy); err != nil {
+		elog.Fatal(err)
+	}
+
+	os.Exit(0)
 }

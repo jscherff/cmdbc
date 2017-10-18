@@ -87,7 +87,6 @@ func resetFlags(tb testing.TB) {
 
 	*fActionAudit = false
 	*fActionCheckin = false
-	*fActionLegacy = false
 	*fActionReport = false
 	*fActionReset = false
 	*fActionSerial = false

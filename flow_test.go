@@ -24,8 +24,6 @@ import (
 	        Audit devices
 	  -checkin
 	        Check devices in
-	  -legacy
-	        Legacy operation
 	  -report
 	        Report actions
 	  -reset
@@ -181,31 +179,6 @@ func TestFlowCheckin(t *testing.T) {
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, td.Mag[`mag2`].VendorName == `Check-in Test`, `device changes did not persist after checkin`)
-	})
-
-	restoreState(t)
-}
-
-func TestFlowLegacy(t *testing.T) {
-
-	var err error
-
-	t.Run(`Flags: -legacy`, func(t *testing.T) {
-
-		resetFlags(t)
-		*fActionLegacy = true
-
-		// Send device to router.
-
-		err = magtekRouter(td.Mag[`mag1`])
-		gotest.Ok(t, err)
-
-		// Test whether signature of report file content is correct.
-
-		b, err := ioutil.ReadFile(conf.Files.Legacy)
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, td.Sig[`Leg`][`mag1`] == sha256.Sum256(b), `unexpected hash signature of Legacy report`)
 	})
 
 	restoreState(t)

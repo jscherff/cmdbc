@@ -92,20 +92,6 @@ func TestFuncReport(t *testing.T) {
 
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`NVP`][`mag1`], `unexpected hash signature of NVP report`)
 	})
-
-	t.Run("Legacy Report", func(t *testing.T) {
-
-		resetFlags(t)
-		*fActionLegacy = true
-
-		err = legacyHandler(td.Mag[`mag1`])
-		gotest.Ok(t, err)
-
-		b, err := ioutil.ReadFile(conf.Files.Legacy)
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`Leg`][`mag1`], `unexpected hash signature of Legacy report`)
-	})
 }
 
 // Test device checkin and checkout.

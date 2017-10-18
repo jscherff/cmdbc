@@ -20,7 +20,6 @@ var (
 	fsAction = flag.NewFlagSet("action", flag.ExitOnError)
 	fActionAudit = fsAction.Bool("audit", false, "Audit devices")
 	fActionCheckin = fsAction.Bool("checkin", false, "Check devices in")
-	fActionLegacy = fsAction.Bool("legacy", false, "Legacy operation")
 	fActionReport = fsAction.Bool("report", false, "Report actions")
 	fActionReset = fsAction.Bool("reset", false, "Reset device")
 	fActionSerial = fsAction.Bool("serial", false, "Set serial number")

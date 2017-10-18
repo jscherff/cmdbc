@@ -21,14 +21,6 @@ import (
 	`github.com/jscherff/gocmdb`
 )
 
-// legacyHandler writes legacy report to application directory.
-func legacyHandler(o gocmdb.Reportable) (err error) {
-	if err = writeFile(o.Legacy(), conf.Files.Legacy); err != nil {
-		elog.Print(err)
-	}
-	return err
-}
-
 // reportHandler processes report options and writes report to the
 // selected destination.
 func reportHandler(o gocmdb.Reportable) (err error) {
