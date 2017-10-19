@@ -38,6 +38,23 @@ func main() {
 
 	var err error
 
+	// Process command-line action flag.
+
+	if len(os.Args) < 2 {
+		fmt.Fprintln(os.Stderr, `You must specify an action.`)
+		fsAction.Usage()
+		os.Exit(1)
+	}
+
+	fsAction.Parse(os.Args[1:2])
+
+	// If version flag present, display version and exit.
+
+	if *fActionVersion {
+		displayVersion()
+		os.Exit(0)
+	}
+
 	// Build system-wide configuration from config file.
 
 	if conf, err = newConfig(defaultConfig); err != nil {
@@ -60,25 +77,9 @@ func main() {
 	ctx.Debug(conf.DebugLevel)
 	defer ctx.Close()
 
-	// Process command-line actions and options.
-
-	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, `You must specify an action.`)
-		fsAction.Usage()
-		os.Exit(1)
-	}
-
-	// Parse action flag.
-
-	fsAction.Parse(os.Args[1:2])
-
 	// Parse option flags associated with selected action flag.
 
 	switch {
-
-	case *fActionVersion:
-		displayVersion()
-		os.Exit(0)
 
 	case *fActionReport:
 		if fsReport.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
