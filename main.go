@@ -76,6 +76,10 @@ func main() {
 
 	switch {
 
+	case *fActionVersion:
+		displayVersion()
+		os.Exit(0)
+
 	case *fActionReport:
 		if fsReport.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
 			fmt.Fprintln(os.Stderr, `You must specify an option.`)

@@ -23,6 +23,7 @@ var (
 	fActionReport = fsAction.Bool("report", false, "Report actions")
 	fActionReset = fsAction.Bool("reset", false, "Reset device")
 	fActionSerial = fsAction.Bool("serial", false, "Set serial number")
+	fActionVersion = fsAction.Bool("version", false, "Display version")
 
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFolder = fsReport.String("folder", "", "Write reports to `<path>`")

@@ -16,8 +16,14 @@ package main
 
 import (
 	`encoding/json`
+	`fmt`
 	`path/filepath`
 	`os`
+)
+
+var (
+	program = filepath.Base(os.Args[0])
+	version = `undefined`
 )
 
 // Config holds the application configuration settings. The struct tags
@@ -161,4 +167,9 @@ func newConfig(cf string) (this *Config, err error) {
 	}
 
 	return this, nil
+}
+
+// displayVersion displays the program version.
+func displayVersion() {
+        fmt.Fprintf(os.Stderr, "%s version %s\n", program, version)
 }
