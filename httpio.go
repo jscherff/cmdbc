@@ -156,7 +156,7 @@ func usbCiCheckoutV1(o gocmdb.Auditable) (j []byte, err error) {
 	)
 
 	if o.ID() == `` {
-		slog.Print(`device %s-%s fetch: skipping, no SN`,
+		slog.Printf(`device %s-%s fetch: skipping, no SN`,
 			o.VID(), o.PID(),
 		)
 		return j, err
