@@ -74,7 +74,7 @@ func main() {
 		if val, ok := conf.Include.VendorID[vid]; ok {
 			return val
 		}
-route(desc)
+
 		return conf.Include.Default
 	})
 

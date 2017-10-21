@@ -87,12 +87,9 @@ func (this httpStatus) StatusText() (s string) {
 }
 
 // usbCiNewSnV1 obtains a serial number from the cmdbd server.
-func usbCiNewSnV1(dev usb.Serializer) (s string, err error) {
+func usbCiNewSnV1(dev usb.Serializer) (string, error) {
 
-	var (
-		j []byte
-		hs httpStatus
-	)
+	var s string
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
 		conf.API.Server,
@@ -100,34 +97,23 @@ func usbCiNewSnV1(dev usb.Serializer) (s string, err error) {
 		dev.Host(), dev.VID(), dev.PID(),
 	)
 
-	if j, err = dev.JSON(); err != nil {
-		return s, err
-	}
-
-	if j, hs, err = httpPost(url, j); err != nil {
-		return s, err
-	}
-
-	if hs.Accepted() {
-		err = json.Unmarshal(j, &s)
+	if j, err := dev.JSON(); err != nil {
+		return ``, err
+	} else if j, hs, err := httpPost(url, j); err != nil {
+		return ``, err
+	} else if !hs.Accepted() {
+		return ``, fmt.Errorf(`serial number not generated - %s`, hs)
+	} else if err = json.Unmarshal(j, &s); err != nil {
+		return ``, err
 	} else {
-		err = fmt.Errorf(`serial number not generated - %s`, hs)
-	}
-
-	if err == nil {
 		slog.Printf(`serial number %q generated - %s`, s, hs)
+		return s, nil
 	}
 
-	return s, err
 }
 
 // usbCiCheckinV1 checks a device in with the cmdbd server.
-func usbCiCheckinV1(dev usb.Reporter) (err error) {
-
-	var (
-		j []byte
-		hs httpStatus
-	)
+func usbCiCheckinV1(dev usb.Reporter) (error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
 		conf.API.Server,
@@ -135,36 +121,25 @@ func usbCiCheckinV1(dev usb.Reporter) (err error) {
 		dev.Host(), dev.VID(), dev.PID(),
 	)
 
-	if j, err = dev.JSON(); err != nil {
+	if j, err := dev.JSON(); err != nil {
 		return err
-	}
-
-	if _, hs, err = httpPost(url, j); err != nil {
+	} else if _, hs, err := httpPost(url, j); err != nil {
 		return err
-	}
-
-	if hs.Accepted() {
-		slog.Printf(`checkin accepted - %s`, hs)
+	} else if !hs.Accepted() {
+		return fmt.Errorf(`checkin not accepted - %s`, hs)
 	} else {
-		err = fmt.Errorf(`checkin not accepted - %s`, hs)
+		slog.Printf(`checkin accepted - %s`, hs)
+		return nil
 	}
-
-	return err
 }
 
 // usbCiCheckoutV1 obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
-func usbCiCheckoutV1(dev usb.Auditer) (j []byte, err error) {
-
-	var (
-		hs httpStatus
-	)
+func usbCiCheckoutV1(dev usb.Auditer) ([]byte, error) {
 
 	if dev.SN() == `` {
-		slog.Printf(`device %s-%s fetch: skipping, no SN`,
-			dev.VID(), dev.PID(),
-		)
-		return j, err
+		slog.Printf(`device %s-%s skipping fetch, no SN`, dev.VID(), dev.PID())
+		return nil, nil
 	}
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
@@ -173,26 +148,18 @@ func usbCiCheckoutV1(dev usb.Auditer) (j []byte, err error) {
 		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
 	)
 
-	if j, hs, err = httpGet(url); err != nil {
-		return j, err
-	}
-
-	if hs.Accepted() {
-		slog.Printf(`device retrieved - %s`, hs)
+	if j, hs, err := httpGet(url); err != nil {
+		return nil, err
+	} else if !hs.Accepted() {
+		return nil, fmt.Errorf(`device not retreived - %s`, hs)
 	} else {
-		err = fmt.Errorf(`device not retreived - %s`, hs)
+		slog.Printf(`device retrieved - %s`, hs)
+		return j, nil
 	}
-
-	return j, err
 }
 
 // usbCiAuditV1 submits changes from audit to the server in JSON format.
-func usbCiAuditV1(dev usb.Auditer) (err error) {
-
-	var (
-		j []byte
-		hs httpStatus
-	)
+func usbCiAuditV1(dev usb.Auditer) (error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
 		conf.API.Server,
@@ -200,21 +167,37 @@ func usbCiAuditV1(dev usb.Auditer) (err error) {
 		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
 	)
 
-	if j, err = json.Marshal(dev.GetChanges()); err != nil {
+	if j, err := json.Marshal(dev.GetChanges()); err != nil {
 		return err
-	}
-
-	if _, hs, err = httpPost(url, j); err != nil {
+	} else if _, hs, err := httpPost(url, j); err != nil {
 		return err
-	}
-
-	if hs.Accepted() {
-		slog.Printf(`audit accepted - %s`, hs)
+	} else if !hs.Accepted() {
+		return fmt.Errorf(`audit not accepted - %s`, hs)
 	} else {
-		err = fmt.Errorf(`audit not accepted - %s`, hs)
+		slog.Printf(`audit accepted - %s`, hs)
+		return nil
 	}
+}
 
-	return err
+//usbMetaProductV1 retrieves vendor and product name given vid and pid.
+func usbMetaProductV1(dev usb.Auditer) (error) {
+
+	url := fmt.Sprintf(`%s/%s/%s/%s`,
+		conf.API.Server,
+		conf.API.Endpoint[`usbMetaProductV1`],
+		dev.VID(), dev.PID(),
+	)
+
+	if j, hs, err := httpGet(url); err != nil {
+		return err
+	} else if !hs.Accepted() {
+		return fmt.Errorf(`lookup failed - %s`, hs)
+	} else if err := dev.RestoreJSON(j); err != nil {
+		return err
+	} else {
+		slog.Printf(`lookup succeeded - %s`, hs)
+		return nil
+	}
 }
 
 // httpPost sends http POST requests to cmdbd server endpoints for other functions.

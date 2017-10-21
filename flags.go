@@ -27,7 +27,7 @@ var (
 
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFolder = fsReport.String("folder", "", "Write reports to `<path>`")
-	fReportFormat = fsReport.String("format", "csv", "Report `<format>` {csv|nvp|xml|json}")
+	fReportFormat = fsReport.String("format", "json", "Report `<format>` {csv|nvp|xml|json}")
 	fReportConsole = fsReport.Bool("console", false, "Write reports to console")
 
 	fsSerial = flag.NewFlagSet("serial", flag.ExitOnError)

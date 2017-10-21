@@ -61,6 +61,11 @@ func route(i interface{}) (error) {
 		return err
 	}
 
+	//TODO: expand
+	//if d, ok := i.(usb.Auditer); ok {
+	//	usbMetaProductV1(d)
+	//}
+
 	if d, ok := i.(usb.Serializer); ok {
 
 		switch {
