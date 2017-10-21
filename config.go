@@ -19,6 +19,15 @@ import (
 	`fmt`
 	`path/filepath`
 	`os`
+	`github.com/RackSec/srslog`
+)
+
+const (
+	PriInfo = srslog.LOG_LOCAL7|srslog.LOG_INFO
+	PriErr = srslog.LOG_LOCAL7|srslog.LOG_ERR
+	FileFlags = os.O_APPEND|os.O_CREATE|os.O_WRONLY
+	FileMode = 0640
+	DirMode = 0750
 )
 
 var (
@@ -33,19 +42,11 @@ type Config struct {
 	Paths struct {
 		AppDir          string
 		LogDir          string
-		StateDir        string
 		ReportDir       string
 	}
 
-	Files struct {
-		SystemLog       string
-		ChangeLog       string
-		ErrorLog        string
-		Legacy          string
-	}
-
-	Server struct {
-		URL             string
+	API struct {
+		Server		string
 		Endpoint        map[string]string
 	}
 
@@ -53,21 +54,21 @@ type Config struct {
 	Logging struct {
 
 		System struct {
-			Logfile bool
+			LogFile string
 			Console bool
 			Syslog  bool
 		}
 
 		Change struct {
-			Logfile bool
-			Console bool
-			Syslog  bool
+			LogFile	string
+			Console	bool
+			Syslog	bool
 		}
 
 		Error struct {
-			Logfile bool
-			Console bool
-			Syslog  bool
+			LogFile	string
+			Console	bool
+			Syslog	bool
 		}
 	}
 
@@ -143,9 +144,6 @@ func newConfig(cf string) (this *Config, err error) {
 	if this.Paths.LogDir, err = mkd(this.Paths.AppDir, this.Paths.LogDir); err != nil {
 		return nil, err
 	}
-	if this.Paths.StateDir, err = mkd(this.Paths.AppDir, this.Paths.StateDir); err != nil {
-		return nil, err
-	}
 	if this.Paths.ReportDir, err = mkd(this.Paths.AppDir, this.Paths.ReportDir); err != nil {
 		return nil, err
 	}
@@ -153,16 +151,13 @@ func newConfig(cf string) (this *Config, err error) {
 	// Build file names and create paths as necessary. If a filename is 
 	// relative, prepend the appropriate application directory.
 
-	if this.Files.SystemLog, err = mkf(this.Paths.LogDir, this.Files.SystemLog); err != nil {
+	if this.Logging.System.LogFile, err = mkf(this.Paths.LogDir, this.Logging.System.LogFile); err != nil {
 		return nil, err
 	}
-	if this.Files.ChangeLog, err = mkf(this.Paths.LogDir, this.Files.ChangeLog); err != nil {
+	if this.Logging.Change.LogFile, err = mkf(this.Paths.LogDir, this.Logging.Change.LogFile); err != nil {
 		return nil, err
 	}
-	if this.Files.ErrorLog, err = mkf(this.Paths.LogDir, this.Files.ErrorLog); err != nil {
-		return nil, err
-	}
-	if this.Files.Legacy, err = mkf(this.Paths.AppDir, this.Files.Legacy); err != nil {
+	if this.Logging.Error.LogFile, err = mkf(this.Paths.LogDir, this.Logging.Error.LogFile); err != nil {
 		return nil, err
 	}
 

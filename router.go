@@ -15,39 +15,80 @@
 package main
 
 import (
-	`github.com/jscherff/gocmdb`
+	`fmt`
+	`github.com/google/gousb`
+	`github.com/jscherff/cmdb/ci/peripheral/usb`
 )
 
-func magtekRouter(musb gocmdb.MagtekUSB) (err error) {
+var checkin = usbCiCheckinV1 // Alias
 
-	switch {
+func convert(i interface{}) (d interface{}, err error) {
 
-	case *fActionSerial:
-		err = serialHandler(musb)
-		if err == nil {defer musb.Reset()}
+	var v, p gousb.ID
+
+	switch t := i.(type) {
+
+	case *gousb.Device:
+		v = t.Desc.Vendor
+		p = t.Desc.Product
+
+	case *gousb.DeviceDesc:
+		v = t.Vendor
+		p = t.Product
 
 	default:
-		err = genericRouter(musb)
+		return nil, fmt.Errorf(`unsupported type %T`, t)
 	}
-
-	return err
-}
-
-func genericRouter(gusb gocmdb.GenericUSB) (err error) {
 
 	switch {
 
-	case *fActionAudit:
-		err = auditHandler(gusb)
+	case usb.IsMagtek(v, p):
+		return usb.NewMagtek(i)
 
-	case *fActionCheckin:
-		err = usbCiCheckinV1(gusb)
+	case usb.IsIDTech(v, p):
+		return usb.NewIDTech(i)
 
-	case *fActionReport:
-		err = reportHandler(gusb)
+	default:
+		return usb.NewGeneric(i)
+	}
+}
 
-	case *fActionReset:
-		defer gusb.Reset()
+func route(i interface{}) (error) {
+
+	i, err := convert(i)
+
+	if err != nil {
+		return err
+	}
+
+	if d, ok := i.(usb.Serializer); ok {
+
+		switch {
+
+		case *fActionSerial:
+			if err = serial(d); err != nil {
+				return err
+			}
+			*fActionReset = true
+		}
+	}
+
+	if d, ok := i.(usb.Auditer); ok {
+
+		switch {
+
+		case *fActionReport:
+			err = report(d)
+
+		case *fActionCheckin:
+			err = checkin(d)
+
+		case *fActionAudit:
+			err = audit(d)
+
+		case *fActionReset:
+			err = d.Reset()
+		}
 	}
 
 	return err

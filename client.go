@@ -21,12 +21,12 @@ import (
 	`io/ioutil`
 	`net/http`
 	`time`
-	`github.com/jscherff/gocmdb`
+	`github.com/jscherff/cmdb/ci/peripheral/usb`
 )
 
 var (
-	transport = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
-	client = &http.Client{Transport: transport}
+	httpTransp = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
+	httpClient = &http.Client{Transport: httpTransp}
 )
 
 type httpStatus int
@@ -81,23 +81,26 @@ func (this httpStatus) String() (s string) {
 	return s
 }
 
+// StatusText returns the HTTP status text associated with the status code.
 func (this httpStatus) StatusText() (s string) {
 	return http.StatusText(int(this))
 }
 
 // usbCiNewSnV1 obtains a serial number from the cmdbd server.
-func usbCiNewSnV1(o gocmdb.Registerable) (s string, err error) {
+func usbCiNewSnV1(dev usb.Serializer) (s string, err error) {
 
 	var (
 		j []byte
 		hs httpStatus
 	)
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.Endpoint[`usbCiNewSnV1`], o.Host(), o.VID(), o.PID(),
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
+		conf.API.Server,
+		conf.API.Endpoint[`usbCiNewSnV1`],
+		dev.Host(), dev.VID(), dev.PID(),
 	)
 
-	if j, err = o.JSON(); err != nil {
+	if j, err = dev.JSON(); err != nil {
 		return s, err
 	}
 
@@ -119,18 +122,20 @@ func usbCiNewSnV1(o gocmdb.Registerable) (s string, err error) {
 }
 
 // usbCiCheckinV1 checks a device in with the cmdbd server.
-func usbCiCheckinV1(o gocmdb.Registerable) (err error) {
+func usbCiCheckinV1(dev usb.Reporter) (err error) {
 
 	var (
 		j []byte
 		hs httpStatus
 	)
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.Endpoint[`usbCiCheckinV1`], o.Host(), o.VID(), o.PID(),
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
+		conf.API.Server,
+		conf.API.Endpoint[`usbCiCheckinV1`],
+		dev.Host(), dev.VID(), dev.PID(),
 	)
 
-	if j, err = o.JSON(); err != nil {
+	if j, err = dev.JSON(); err != nil {
 		return err
 	}
 
@@ -149,21 +154,23 @@ func usbCiCheckinV1(o gocmdb.Registerable) (err error) {
 
 // usbCiCheckoutV1 obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
-func usbCiCheckoutV1(o gocmdb.Auditable) (j []byte, err error) {
+func usbCiCheckoutV1(dev usb.Auditer) (j []byte, err error) {
 
 	var (
 		hs httpStatus
 	)
 
-	if o.ID() == `` {
-		slog.Print(`device %s-%s fetch: skipping, no SN`,
-			o.VID(), o.PID(),
+	if dev.SN() == `` {
+		slog.Printf(`device %s-%s fetch: skipping, no SN`,
+			dev.VID(), dev.PID(),
 		)
 		return j, err
 	}
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.Endpoint[`usbCiCheckoutV1`], o.Host(), o.VID(), o.PID(), o.ID(),
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
+		conf.API.Server,
+		conf.API.Endpoint[`usbCiCheckoutV1`],
+		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
 	)
 
 	if j, hs, err = httpGet(url); err != nil {
@@ -180,18 +187,20 @@ func usbCiCheckoutV1(o gocmdb.Auditable) (j []byte, err error) {
 }
 
 // usbCiAuditV1 submits changes from audit to the server in JSON format.
-func usbCiAuditV1(o gocmdb.Auditable) (err error) {
+func usbCiAuditV1(dev usb.Auditer) (err error) {
 
 	var (
 		j []byte
 		hs httpStatus
 	)
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`, conf.Server.URL,
-		conf.Server.Endpoint[`usbCiAuditV1`], o.Host(), o.VID(), o.PID(), o.ID(),
+	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
+		conf.API.Server,
+		conf.API.Endpoint[`usbCiAuditV1`],
+		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
 	)
 
-	if j, err = json.Marshal(o.GetChanges()); err != nil {
+	if j, err = json.Marshal(dev.GetChanges()); err != nil {
 		return err
 	}
 
@@ -237,7 +246,7 @@ func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
 
 	slog.Printf(`API call %s %s`, req.Method, req.URL)
 
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 
 	if err != nil {
 		return b, hs, err

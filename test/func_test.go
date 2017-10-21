@@ -38,7 +38,7 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `json`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
@@ -53,7 +53,7 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `xml`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
@@ -68,7 +68,7 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `csv`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
@@ -83,7 +83,7 @@ func TestFuncReport(t *testing.T) {
 		resetFlags(t)
 		*fReportFormat = `nvp`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
@@ -146,15 +146,15 @@ func TestFuncAudit(t *testing.T) {
 		af := fmt.Sprintf(`%s-%s-%s.json`, td.Mag[`mag1`].VID(), td.Mag[`mag1`].PID(), td.Mag[`mag1`].ID())
 		os.RemoveAll(filepath.Join(conf.Paths.StateDir, af))
 
-		err = auditHandler(td.Mag[`mag1`])
+		err = audit(td.Mag[`mag1`])
 		gotest.Assert(t, err != nil, `first run should result in file-not-found error`)
 
-		err = auditHandler(td.Mag[`mag1`])
+		err = audit(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
 
-		err = auditHandler(td.Mag[`mag2`])
+		err = audit(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
@@ -176,12 +176,12 @@ func TestFuncAudit(t *testing.T) {
 		err = usbCiCheckinV1(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		err = auditHandler(td.Mag[`mag1`])
+		err = audit(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
 
-		err = auditHandler(td.Mag[`mag2`])
+		err = audit(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
@@ -264,7 +264,7 @@ func TestFuncFileIO(t *testing.T) {
 /*
 
 TODO:
-	serialHandler(o gocmdb.Configurable) (err error)
+	serial(o gocmdb.Configurable) (err error)
 	httpPost(url string, j []byte ) (b []byte, sc int, err error)
 	httpGet(url string) (b []byte, sc int, err error)
 	httpRequest(req *http.Request) (b []byte, sc int, err error)
@@ -275,11 +275,11 @@ TODO:
 DONE:
 	newConfig(string) (*Config, error) - init()
 	usbCiNewSnV1(o gocmdb.Registerable) (string, error) - TestGetNewSN()
-	reportHandler(o gocmdb.Reportable) (error) - TestReporting()
+	report(o gocmdb.Reportable) (error) - TestReporting()
 	legacyHandler(o gocmdb.Reportable) (error) - TestReporting()
 	usbCiCheckinV1(o gocmdb.Registerable) (error) - TestCheckinCheckout()
 	usbCiCheckoutV1(o gocmdb.Auditable) ([]byte, error) - TestCheckinCheckout()
-	auditHandler(o gocmdb.Auditable) (error) - TestAuditing()
+	audit(o gocmdb.Auditable) (error) - TestAuditing()
 	usbCiAuditV1(o gocmdb.Auditable) (error) - TestAuditing()
 	readFile(string, []byte) (error) - TestFileReadWrite()
 	writeFile([]byte, string) (error) - TestFileReadWrite()

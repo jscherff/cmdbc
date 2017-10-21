@@ -1,11 +1,19 @@
 {
 	"Paths": {
 		"LogDir": "log",
+		"StateDir": "state",
 		"ReportDir": "report"
 	},
 
-	"API": {
-		"Server": "http://localhost:8080",
+	"Files": {
+		"SystemLog": "system.log",
+		"ChangeLog": "change.log",
+		"ErrorLog": "error.log",
+		"Legacy": "usb_serial.txt"
+	},
+
+	"Server": {
+		"URL": "http://sysadm-dev-01.24hourfit.com:8080",
 		"Endpoint": {
 			"usbCiCheckinV1": "v1/usbci/checkin",
 			"usbCiCheckoutV1": "v1/usbci/checkout",
@@ -22,19 +30,19 @@
 	"Logging": {
 
 		"System": {
-			"LogFile": "system.log",
+			"Logfile": true,
 			"Console": false,
 			"Syslog": false
 		},
 
 		"Change": {
-			"LogFile": "change.log",
+			"Logfile": true,
 			"Console": false,
 			"Syslog": false
 		},
 
 		"Error": {
-			"LogFile": "error.log",
+			"Logfile": true,
 			"Console": true,
 			"Syslog": false
 		}

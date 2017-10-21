@@ -47,20 +47,14 @@ func newLoggers() (sl, cl, el *log.Logger) {
 
 	// File logging
 
-	if conf.Logging.System.Logfile {
-		if f, err := newfl(conf.Files.SystemLog); err == nil {
-			sw = append(sw, f)
-		}
+	if f, err := newfl(conf.Logging.System.LogFile); err == nil {
+		sw = append(sw, f)
 	}
-	if conf.Logging.Change.Logfile {
-		if f, err := newfl(conf.Files.ChangeLog); err == nil {
-			cw = append(cw, f)
-		}
+	if f, err := newfl(conf.Logging.Change.LogFile); err == nil {
+		cw = append(cw, f)
 	}
-	if conf.Logging.Error.Logfile {
-		if f, err := newfl(conf.Files.ErrorLog); err == nil {
-			ew = append(ew, f)
-		}
+	if f, err := newfl(conf.Logging.Error.LogFile); err == nil {
+		ew = append(ew, f)
 	}
 
 	// Console logging
