@@ -22,49 +22,13 @@ import (
 
 var checkin = usbCiCheckinV1 // Alias
 
-func convert(i interface{}) (d interface{}, err error) {
+func route(i interface{}) (err error) {
 
-	var v, p gousb.ID
-
-	switch t := i.(type) {
-
-	case *gousb.Device:
-		v = t.Desc.Vendor
-		p = t.Desc.Product
-
-	case *gousb.DeviceDesc:
-		v = t.Vendor
-		p = t.Product
-
-	default:
-		return nil, fmt.Errorf(`unsupported type %T`, t)
-	}
-
-	switch {
-
-	case usb.IsMagtek(v, p):
-		return usb.NewMagtek(i)
-
-	case usb.IsIDTech(v, p):
-		return usb.NewIDTech(i)
-
-	default:
-		return usb.NewGeneric(i)
-	}
-}
-
-func route(i interface{}) (error) {
-
-	i, err := convert(i)
-
-	if err != nil {
+	if i, err = convert(i); err != nil {
 		return err
 	}
 
-	//TODO: expand
-	//if d, ok := i.(usb.Auditer); ok {
-	//	usbMetaProductV1(d)
-	//}
+	i = update(i)
 
 	if d, ok := i.(usb.Serializer); ok {
 
@@ -97,4 +61,58 @@ func route(i interface{}) (error) {
 	}
 
 	return err
+}
+
+func convert(i interface{}) (interface{}, error) {
+
+	var v, p gousb.ID
+
+	switch t := i.(type) {
+
+	case *gousb.Device:
+		v = t.Desc.Vendor
+		p = t.Desc.Product
+
+	case *gousb.DeviceDesc:
+		v = t.Vendor
+		p = t.Product
+
+	default:
+		return nil, fmt.Errorf(`unsupported type %T`, t)
+	}
+
+	switch {
+
+	case usb.IsMagtek(v, p):
+		return usb.NewMagtek(i)
+
+	case usb.IsIDTech(v, p):
+		return usb.NewIDTech(i)
+
+	default:
+		return usb.NewGeneric(i)
+	}
+}
+
+func update(i interface{}) (interface{}) {
+
+	d, ok := i.(usb.Updater)
+
+	if !ok {
+		return i
+	}
+
+	if d.GetVendorName() == `` {
+		if s, err := usbMetaVendorV1(d); err == nil {
+			d.SetVendorName(s)
+		}
+	}
+
+	if d.GetProductName() == `` {
+		if s, err := usbMetaProductV1(d); err == nil {
+			d.SetProductName(s)
+		}
+	}
+
+	return i
 }

@@ -179,8 +179,29 @@ func usbCiAuditV1(dev usb.Auditer) (error) {
 	}
 }
 
-//usbMetaProductV1 retrieves vendor and product name given vid and pid.
-func usbMetaProductV1(dev usb.Auditer) (error) {
+//usbMetaVendorV1 retrieves the vendor name given the vid.
+func usbMetaVendorV1(dev usb.Updater) (s string, err error) {
+
+	url := fmt.Sprintf(`%s/%s/%s`,
+		conf.API.Server,
+		conf.API.Endpoint[`usbMetaVendorV1`],
+		dev.VID(),
+	)
+
+	if j, hs, err := httpGet(url); err != nil {
+		return ``, err
+	} else if !hs.Accepted() {
+		return ``, fmt.Errorf(`lookup failed - %s`, hs)
+	} else if err = json.Unmarshal(j, &s); err != nil {
+		return ``, err
+	} else {
+		slog.Printf(`lookup succeeded - %s`, hs)
+		return s, nil
+	}
+}
+
+//usbMetaProductV1 retrieves the product name given the vid and pid.
+func usbMetaProductV1(dev usb.Updater) (s string, err error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s`,
 		conf.API.Server,
@@ -189,14 +210,14 @@ func usbMetaProductV1(dev usb.Auditer) (error) {
 	)
 
 	if j, hs, err := httpGet(url); err != nil {
-		return err
+		return ``, err
 	} else if !hs.Accepted() {
-		return fmt.Errorf(`lookup failed - %s`, hs)
-	} else if err := dev.RestoreJSON(j); err != nil {
-		return err
+		return ``, fmt.Errorf(`lookup failed - %s`, hs)
+	} else if err = json.Unmarshal(j, &s); err != nil {
+		return ``, err
 	} else {
 		slog.Printf(`lookup succeeded - %s`, hs)
-		return nil
+		return s, nil
 	}
 }
 

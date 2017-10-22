@@ -66,6 +66,7 @@ func main() {
 
 	devs, err := ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
 
+//route(desc)
 		vid, pid := desc.Vendor.String(), desc.Product.String()
 
 		if val, ok := conf.Include.ProductID[vid][pid]; ok {
@@ -74,7 +75,6 @@ func main() {
 		if val, ok := conf.Include.VendorID[vid]; ok {
 			return val
 		}
-
 		return conf.Include.Default
 	})
 
@@ -95,7 +95,7 @@ func main() {
 		defer dev.Close()
 
 		slog.Printf(`found device %s-%s`, dev.Desc.Vendor, dev.Desc.Product)
-
+//log.Println(dev)
 		if err = route(dev); err != nil {
 			elog.Print(err)
 		}
