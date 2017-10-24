@@ -24,7 +24,7 @@ const defaultConfig = `config.json`
 
 var (
 	conf *Config
-	slog, clog, elog *log.Logger
+	slog, clog, elog *Logger
 )
 
 func main() {
@@ -54,7 +54,10 @@ func main() {
 
 	// Initialize loggers.
 
-	slog, clog, elog = newLoggers()
+	slog, clog, elog =
+		conf.Loggers.Logger[`System`],
+		conf.Loggers.Logger[`Change`],
+		conf.Loggers.Logger[`Error`]
 
 	// Instantiate context to enumerate devices.
 

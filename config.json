@@ -1,6 +1,5 @@
 {
 	"Paths": {
-		"LogDir": "log",
 		"ReportDir": "report"
 	},
 
@@ -19,31 +18,44 @@
 		}
 	},
 
-	"Logging": {
+	"Loggers": {
 
-		"System": {
-			"LogFile": "system.log",
-			"Console": false,
-			"Syslog": false
-		},
+		"LogDir": "log",
+		"Console": false,
+		"Syslog": false,
 
-		"Change": {
-			"LogFile": "change.log",
-			"Console": false,
-			"Syslog": false
-		},
+		"Logger": {
+			"System": {
+				"LogFile": "system.log",
+				"Console": false,
+				"Syslog": false,
+				"Prefix": ["date", "time"]
+			},
 
-		"Error": {
-			"LogFile": "error.log",
-			"Console": true,
-			"Syslog": false
+			"Change": {
+				"LogFile": "change.log",
+				"Console": false,
+				"Syslog": false,
+				"Prefix": ["date", "time"]
+			},
+
+			"Error": {
+				"LogFile": "error.log",
+				"Console": true,
+				"Syslog": false,
+				"Prefix": ["date", "time", "file"]
+			}
 		}
 	},
 
 	"Syslog": {
+		"Enabled": false,
 		"Protocol": "tcp",
 		"Port": "1468",
-		"Host": "localhost"
+		"Host": "localhost",
+		"Tag": "usbci_cmdbc",
+		"Facility": "LOG_LOCAL7",
+		"Severity": "LOG_INFO"
 	},
 
 	"Include": {
@@ -66,11 +78,6 @@
 		},
 
 		"Default": true
-	},
-
-	"Format": {
-		"Report": "csv",
-		"Default": "json"
 	},
 
 	"DebugLevel": 0
