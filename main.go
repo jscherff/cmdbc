@@ -20,12 +20,9 @@ import (
 	`github.com/google/gousb`
 )
 
-const defaultConfig = `config.json`
+const configFile = `config.json`
 
-var (
-	conf *Config
-	slog, clog, elog *Logger
-)
+var conf *Config
 
 func main() {
 
@@ -41,23 +38,30 @@ func main() {
 
 	fsAction.Parse(os.Args[1:2])
 
-	if *fActionVersion {
+	switch {
+
+	case *fActionVersion:
                 displayVersion()
                 os.Exit(0)
-        }
+
+	case *fActionSerial:
+		if fsSerial.Parse(os.Args[2:]); fsSerial.NFlag() == 0 {
+			fsSerial.Usage()
+			os.Exit(1)
+		}
+
+	case *fActionReport:
+		if fsReport.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
+			fsReport.Usage()
+			os.Exit(1)
+		}
+	}
 
 	// Build system-wide configuration from config file.
 
-	if conf, err = newConfig(defaultConfig); err != nil {
+	if conf, err = newConfig(configFile); err != nil {
 		log.Fatal(err)
 	}
-
-	// Initialize loggers.
-
-	slog, clog, elog =
-		conf.Loggers.Logger[`system`],
-		conf.Loggers.Logger[`change`],
-		conf.Loggers.Logger[`error`]
 
 	// Instantiate context to enumerate devices.
 
@@ -69,7 +73,6 @@ func main() {
 
 	devs, err := ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
 
-//route(desc)
 		vid, pid := desc.Vendor.String(), desc.Product.String()
 
 		if val, ok := conf.Include.ProductID[vid][pid]; ok {
@@ -82,13 +85,13 @@ func main() {
 	})
 
 	if err != nil && conf.DebugLevel > 0 {
-		elog.Print(err)
+		el.Print(err)
 	}
 
 	// Exit if no devices found.
 
 	if len(devs) == 0 {
-		elog.Fatalf(`no devices found`)
+		el.Fatalf(`no devices found`)
 	}
 
 	// Pass each device to router.
@@ -97,10 +100,10 @@ func main() {
 
 		defer dev.Close()
 
-		slog.Printf(`found device %s-%s`, dev.Desc.Vendor, dev.Desc.Product)
-//log.Println(dev)
+		sl.Printf(`found device %s-%s`, dev.Desc.Vendor, dev.Desc.Product)
+
 		if err = route(dev); err != nil {
-			elog.Print(err)
+			el.Print(err)
 		}
 	}
 }

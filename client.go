@@ -106,7 +106,7 @@ func usbCiNewSnV1(dev usb.Serializer) (string, error) {
 	} else if err = json.Unmarshal(j, &s); err != nil {
 		return ``, err
 	} else {
-		slog.Printf(`serial number %q generated - %s`, s, hs)
+		sl.Printf(`serial number %q generated - %s`, s, hs)
 		return s, nil
 	}
 
@@ -128,7 +128,7 @@ func usbCiCheckinV1(dev usb.Reporter) (error) {
 	} else if !hs.Accepted() {
 		return fmt.Errorf(`checkin not accepted - %s`, hs)
 	} else {
-		slog.Printf(`checkin accepted - %s`, hs)
+		sl.Printf(`checkin accepted - %s`, hs)
 		return nil
 	}
 }
@@ -138,7 +138,7 @@ func usbCiCheckinV1(dev usb.Reporter) (error) {
 func usbCiCheckoutV1(dev usb.Auditer) ([]byte, error) {
 
 	if dev.SN() == `` {
-		slog.Printf(`device %s-%s skipping fetch, no SN`, dev.VID(), dev.PID())
+		sl.Printf(`device %s-%s skipping fetch, no SN`, dev.VID(), dev.PID())
 		return nil, nil
 	}
 
@@ -153,7 +153,7 @@ func usbCiCheckoutV1(dev usb.Auditer) ([]byte, error) {
 	} else if !hs.Accepted() {
 		return nil, fmt.Errorf(`device not retreived - %s`, hs)
 	} else {
-		slog.Printf(`device retrieved - %s`, hs)
+		sl.Printf(`device retrieved - %s`, hs)
 		return j, nil
 	}
 }
@@ -174,7 +174,7 @@ func usbCiAuditV1(dev usb.Auditer) (error) {
 	} else if !hs.Accepted() {
 		return fmt.Errorf(`audit not accepted - %s`, hs)
 	} else {
-		slog.Printf(`audit accepted - %s`, hs)
+		sl.Printf(`audit accepted - %s`, hs)
 		return nil
 	}
 }
@@ -195,7 +195,7 @@ func usbMetaVendorV1(dev usb.Updater) (s string, err error) {
 	} else if err = json.Unmarshal(j, &s); err != nil {
 		return ``, err
 	} else {
-		slog.Printf(`lookup succeeded - %s`, hs)
+		sl.Printf(`lookup succeeded - %s`, hs)
 		return s, nil
 	}
 }
@@ -216,7 +216,7 @@ func usbMetaProductV1(dev usb.Updater) (s string, err error) {
 	} else if err = json.Unmarshal(j, &s); err != nil {
 		return ``, err
 	} else {
-		slog.Printf(`lookup succeeded - %s`, hs)
+		sl.Printf(`lookup succeeded - %s`, hs)
 		return s, nil
 	}
 }
@@ -248,7 +248,7 @@ func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
 	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
 	req.Header.Add(`X-Custom-Header`, `cmdbc`)
 
-	slog.Printf(`API call %s %s`, req.Method, req.URL)
+	sl.Printf(`API call %s %s`, req.Method, req.URL)
 
 	resp, err := httpClient.Do(req)
 

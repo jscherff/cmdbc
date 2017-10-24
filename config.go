@@ -28,9 +28,14 @@ const (
 )
 
 var (
+	// Program name and version.
+
 	progName = filepath.Base(os.Args[0])
-	progPath = filepath.Dir(os.Args[0])
 	version = `undefined`
+
+	// Configuration aliases.
+
+	sl, cl, el *Logger
 )
 
 // Config holds the application configuration settings. The struct tags
@@ -65,21 +70,43 @@ func newConfig(cf string) (*Config, error) {
 
 	this := &Config{}
 
-	if !filepath.IsAbs(cf) {
-		cf = filepath.Join(progPath, cf)
+	if dn := filepath.Dir(cf); dn == `` {
+		cf = filepath.Join(filepath.Dir(os.Args[0]), cf)
 	}
+
+	// Load the configuration.
 
 	if err := loadConfig(this, cf); err != nil {
 		return nil, err
 	}
 
+	// Create and initialize the Syslog object.
+
 	if err := this.Syslog.Init(); err != nil {
 		return nil, err
 	}
 
+	// Create and initialize the Loggers object.
+
 	if err := this.Loggers.Init(this.Syslog); err != nil {
 		return nil, err
 	}
+
+	// Ensure required loggers are present and create aliases.
+
+        var ok bool
+
+        if sl, ok = this.Loggers.Logger[`system`]; !ok {
+                return nil, fmt.Errorf(`missing "system" log config`)
+        }
+        if cl, ok = this.Loggers.Logger[`change`]; !ok {
+                return nil, fmt.Errorf(`missing "change" log config`)
+        }
+        if el, ok = this.Loggers.Logger[`error`]; !ok {
+                return nil, fmt.Errorf(`missing "error" log config`)
+        }
+
+	// Create report directory.
 
 	if dn, err := makePath(this.Paths.ReportDir); err != nil {
 		return nil, err
@@ -110,8 +137,8 @@ func makePath(path string) (string, error) {
 
 	path = filepath.Clean(path)
 
-	if !filepath.IsAbs(path) {
-		path = filepath.Join(progPath, path)
+	if dn := filepath.Dir(path); dn == `` {
+		path = filepath.Join(filepath.Dir(os.Args[0]), path)
 	}
 
 	return path, os.MkdirAll(path, DirMode)

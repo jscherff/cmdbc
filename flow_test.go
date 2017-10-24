@@ -4,64 +4,47 @@ import (
 	`crypto/sha256`
 	`fmt`
 	`io/ioutil`
-	`os`
 	`path/filepath`
 	`reflect`
 	`strings`
 	`testing`
 	`time`
 	`github.com/google/gousb`
-	`github.com/jscherff/gocmdb/usbci`
+	`github.com/jscherff/cmdb/ci/peripheral/usb`
 	`github.com/jscherff/gotest`
 )
 
-/* TODO: test each path through the application by setting flags and
-   passing an object to the router for both magtek and generic devices.
+/* Test each path through the application by setting flags and passing
+   an object to the router for each supported device type.
 
 	Actions:
 
-	  -audit
-	        Audit devices
-	  -checkin
-	        Check devices in
-	  -report
-	        Report actions
-	  -reset
-	        Reset device
-	  -serial
-	        Set serial number
-
-
-	Audit Options:
-
-	  -local
-	        Audit against local state
-	  -server
-	        Audit against server state
-
+	[X]  -audit
+	[ ]  -checkin
+	[ ]  -report
+	[ ]  -reset
+	[ ]  -serial
+	[ ]  -version
 
 	Report Options:
 
-	  -console
-	        Write reports to console
-	  -folder <path>
-	        Write reports to <path>
-	  -format <format>
-	        Report <format> {csv|nvp|xml|json}
-
+	[ ]  -console
+	[ ]  -folder
+	[X]  -format
+	[X]     csv
+	[X]     nvp
+	[X]     xml
+	[X]     json
 
 	Serial Options:
 
-	  -copy
-	        Copy factory serial number
-	  -erase
-	        Erase current serial number
-	  -fetch
-	        Fetch serial number from server
-	  -force
-	        Force serial number change
-	  -set "TESTING"
-	        Set serial number to <string>
+	[X]  -default
+	[X]     supported device
+	[X]     unsupported device
+	[X]  -erase
+	[X]  -fetch
+	[X]  -force
+	[X]  -set
 */
 
 func TestFlowAudit(t *testing.T) {
@@ -74,32 +57,30 @@ func TestFlowAudit(t *testing.T) {
 	err = usbCiCheckinV1(td.Mag[`mag1`])
 	gotest.Ok(t, err)
 
-	t.Run(`Flags: -audit -local`, func(t *testing.T) {
+	err = usbCiCheckinV1(td.Idt[`idt1`])
+	gotest.Ok(t, err)
+
+	err = usbCiCheckinV1(td.Gen[`gen1`])
+	gotest.Ok(t, err)
+
+	t.Run(`Flags: -audit`, func(t *testing.T) {
 
 		resetFlags(t)
 		*fActionAudit = true
-		*fAuditLocal = true
-
-		// Remove audit file artifacts from previous tests.
-
-		af := fmt.Sprintf(`%s-%s-%s.json`, td.Mag[`mag1`].VID(), td.Mag[`mag1`].PID(), td.Mag[`mag1`].ID())
-		os.RemoveAll(filepath.Join(conf.Paths.StateDir, af))
 
 		// Send device to router.
 
-		err = magtekRouter(td.Mag[`mag1`])
-		gotest.Assert(t, err != nil, `first run should result in file-not-found error`)
+		err = route(td.Mag[`mag1`])
+		gotest.Ok(t, err)
 
 		// Determine whether there are no changes recorded when auditing same device.
 
-		err = magtekRouter(td.Mag[`mag1`])
+		err = route(td.Mag[`mag1`])
 		gotest.Ok(t, err)
-
-		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
 
 		// Determine whether device differences are recorded in device change log.
 
-		err = magtekRouter(td.Mag[`mag2`])
+		err = route(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
@@ -107,41 +88,7 @@ func TestFlowAudit(t *testing.T) {
 
 		// Determine whether device differences are recorded in app change log.
 
-		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
-		gotest.Ok(t, err)
-
-		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, td.Clg[0]) && strings.Contains(fs, td.Clg[1]),
-			`application change log does not contain known device differences`)
-	})
-
-	t.Run(`Flags: -audit -server`, func(t *testing.T) {
-
-		resetFlags(t)
-		*fActionAudit = true
-		*fAuditServer = true
-
-		// Send device to router.
-
-		err = magtekRouter(td.Mag[`mag1`])
-		gotest.Ok(t, err)
-
-		// Determine whether there are no changes recorded when auditing same device.
-
-		err = magtekRouter(td.Mag[`mag1`])
-		gotest.Ok(t, err)
-
-		// Determine whether device differences are recorded in device change log.
-
-		err = magtekRouter(td.Mag[`mag2`])
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
-			`device change log does not contain known device differences`)
-
-		// Determine whether device differences are recorded in app change log.
-
-		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
+		fb, err := ioutil.ReadFile(conf.Loggers.Logger[`change`].LogFile)
 		gotest.Ok(t, err)
 
 		fs := string(fb)
@@ -167,7 +114,7 @@ func TestFlowCheckin(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(td.Mag[`mag2`])
+		err = route(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
 		// Checkout device and test if property change persisted.
@@ -196,12 +143,13 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(td.Mag[`mag1`])
+		err = route(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
@@ -216,12 +164,13 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(td.Mag[`mag1`])
+		err = route(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
@@ -236,12 +185,13 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(td.Mag[`mag1`])
+		err = route(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
@@ -256,12 +206,13 @@ func TestFlowReport(t *testing.T) {
 
 		// Send device to router.
 
-		err = magtekRouter(td.Mag[`mag1`])
+		err = route(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		// Test whether signature of report file content is correct.
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
@@ -272,7 +223,7 @@ func TestFlowReport(t *testing.T) {
 func TestFlowSerial(t *testing.T) {
 
 	var (
-		mdev *usbci.Magtek
+		mdev *usb.Magtek
 		err error
 	)
 
@@ -290,7 +241,7 @@ func TestFlowSerial(t *testing.T) {
 	gotest.Ok(t, err)
 	mdev.Close()
 
-	t.Run(`Flags: -serial -copy (serial number exists)`, func(t *testing.T) {
+	t.Run(`Flags: -serial -default (serial number exists)`, func(t *testing.T) {
 
 		mux.Lock()
 		defer mux.Unlock()
@@ -311,9 +262,9 @@ func TestFlowSerial(t *testing.T) {
 
 		resetFlags(t)
 		*fActionSerial = true
-		*fSerialCopy = true
+		*fSerialDefault = true
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Assert(t, err != nil, `attempt to set SN when one already exists should produce error`)
 	})
 
@@ -336,7 +287,7 @@ func TestFlowSerial(t *testing.T) {
 		*fActionSerial = true
 		*fSerialFetch = true
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Assert(t, err != nil, `attempt to set SN when one already exists should produce error`)
 	})
 
@@ -359,11 +310,11 @@ func TestFlowSerial(t *testing.T) {
 		*fActionSerial = true
 		*fSerialSet = newSn
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Assert(t, err != nil, `attempt to set SN when one already exists should produce error`)
 	})
 
-	t.Run(`Flags: -serial -erase -copy`, func(t *testing.T) {
+	t.Run(`Flags: -serial -erase -default`, func(t *testing.T) {
 
 		mux.Lock()
 		defer mux.Unlock()
@@ -381,9 +332,9 @@ func TestFlowSerial(t *testing.T) {
 		resetFlags(t)
 		*fActionSerial = true
 		*fSerialErase = true
-		*fSerialCopy = true
+		*fSerialDefault = true
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Ok(t, err)
 		gotest.Assert(t, mdev.DeviceSN == mdev.FactorySN[:7], `attempt to set device SN to factory SN failed`)
 	})
@@ -404,9 +355,9 @@ func TestFlowSerial(t *testing.T) {
 		*fSerialErase = true
 		*fSerialFetch = true
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Ok(t, err)
-		gotest.Assert(t, mdev.DeviceSN[:3] == `24F`, `attempt to set device SN from server failed`)
+		gotest.Assert(t, mdev.DeviceSN[:4] == `24HF`, `attempt to set device SN from server failed`)
 	})
 
 	t.Run(`Flags: -serial -erase -set <string>`, func(t *testing.T) {
@@ -425,12 +376,12 @@ func TestFlowSerial(t *testing.T) {
 		*fSerialErase = true
 		*fSerialSet = newSn
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Ok(t, err)
 		gotest.Assert(t, mdev.DeviceSN == newSn, `attempt to set device SN to string failed`)
 	})
 
-	t.Run(`Flags: -serial -force -copy (serial number exists)`, func(t *testing.T) {
+	t.Run(`Flags: -serial -force -default (serial number exists)`, func(t *testing.T) {
 
 		mux.Lock()
 		defer mux.Unlock()
@@ -448,9 +399,9 @@ func TestFlowSerial(t *testing.T) {
 		resetFlags(t)
 		*fActionSerial = true
 		*fSerialForce = true
-		*fSerialCopy = true
+		*fSerialDefault = true
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Ok(t, err)
 		gotest.Assert(t, mdev.DeviceSN == mdev.FactorySN[:7], `attempt to set device SN to factory SN failed`)
 	})
@@ -471,9 +422,9 @@ func TestFlowSerial(t *testing.T) {
 		*fSerialForce = true
 		*fSerialFetch = true
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Ok(t, err)
-		gotest.Assert(t, mdev.DeviceSN[:3] == `24F`, `attempt to set device SN from server failed`)
+		gotest.Assert(t, mdev.DeviceSN[:4] == `24HF`, `attempt to set device SN from server failed`)
 	})
 
 	t.Run(`Flags: -serial -force -set <string> (serial number exists)`, func(t *testing.T) {
@@ -492,7 +443,7 @@ func TestFlowSerial(t *testing.T) {
 		*fSerialForce = true
 		*fSerialSet = newSn
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Ok(t, err)
 		gotest.Assert(t, mdev.DeviceSN == newSn, `attempt to set device SN to string failed`)
 	})
@@ -519,7 +470,7 @@ func TestFlowSerial(t *testing.T) {
 		resetFlags(t)
 		*fActionReset = true
 
-		err = magtekRouter(mdev)
+		err = route(mdev)
 		gotest.Ok(t, err)
 
 		time.Sleep(5 * time.Second)

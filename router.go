@@ -77,6 +77,18 @@ func convert(i interface{}) (interface{}, error) {
 		v = t.Vendor
 		p = t.Product
 
+	case *usb.Device:
+		return t, nil
+
+	case *usb.Generic:
+		return t, nil
+
+	case *usb.Magtek:
+		return t, nil
+
+	case *usb.IDTech:
+		return t, nil
+
 	default:
 		return nil, fmt.Errorf(`unsupported type %T`, t)
 	}

@@ -28,11 +28,11 @@ func audit(dev usb.Auditer) (err error) {
 	var ch [][]string
 
 	if dev.SN() == `` {
-		slog.Printf(`device %s-%s skipping audit, no SN`, dev.VID(), dev.PID())
+		sl.Printf(`device %s-%s skipping audit, no SN`, dev.VID(), dev.PID())
 		return err
 	}
 
-	slog.Printf(`device %s-%s-%s fetching previous state from server`,
+	sl.Printf(`device %s-%s-%s fetching previous state from server`,
 		dev.VID(), dev.PID(), dev.SN(),
 	)
 
@@ -46,32 +46,32 @@ func audit(dev usb.Auditer) (err error) {
 		return err
 	}
 
-	slog.Printf(`device %s-%s-%s saving current state to server`,
+	sl.Printf(`device %s-%s-%s saving current state to server`,
 		dev.VID(), dev.PID(), dev.SN(),
 	)
 
 	if err := usbCiCheckinV1(dev); err != nil {
-		elog.Print(err)
+		el.Print(err)
 	}
 
 	if len(ch) == 0 {
-		slog.Printf(`device %s-%s-%s detected no changes`,
+		sl.Printf(`device %s-%s-%s detected no changes`,
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 		return nil
 	}
 
-	slog.Printf(`device %s-%s-%s recording changes in change log`,
+	sl.Printf(`device %s-%s-%s recording changes in change log`,
 		dev.VID(), dev.PID(), dev.SN(),
 	)
 
 	for _, c := range ch {
-		clog.Printf(`device %s-%s-%s modified: %q was %q, now %q`,
+		cl.Printf(`device %s-%s-%s modified: %q was %q, now %q`,
 			dev.VID(), dev.PID(), dev.SN(), c[0], c[1], c[2],
 		)
 	}
 
-	slog.Printf(`device %s-%s-%s reporting changes to server`,
+	sl.Printf(`device %s-%s-%s reporting changes to server`,
 		dev.VID(), dev.PID(), dev.SN(),
 	)
 
@@ -82,11 +82,6 @@ func audit(dev usb.Auditer) (err error) {
 
 // report processes options and writes report to the selected destination.
 func report(dev usb.Reporter) (err error) {
-
-	if fsReport.Parse(os.Args[2:]); fsReport.NFlag() == 0 {
-		fsReport.Usage()
-		os.Exit(1)
-	}
 
 	var b []byte
 
@@ -131,16 +126,11 @@ func report(dev usb.Reporter) (err error) {
 // serial processes options and configures the the serial number.
 func serial(dev usb.Serializer) (err error) {
 
-	if fsSerial.Parse(os.Args[2:]); fsSerial.NFlag() == 0 {
-		fsSerial.Usage()
-		os.Exit(1)
-	}
-
 	var s string
 
 	if *fSerialErase {
 
-		slog.Printf(`device %s-%s erasing serial %q`,
+		sl.Printf(`device %s-%s erasing serial %q`,
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 
@@ -161,7 +151,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	case *fSerialSet != ``:
 
-		slog.Printf(`device %s-%s setting serial to %q`,
+		sl.Printf(`device %s-%s setting serial to %q`,
 			dev.VID(), dev.PID(), *fSerialSet,
 		)
 
@@ -169,7 +159,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	case *fSerialDefault:
 
-		slog.Printf(`device %s-%s setting serial to default`,
+		sl.Printf(`device %s-%s setting serial to default`,
 			dev.VID(), dev.PID(),
 		)
 
@@ -181,7 +171,7 @@ func serial(dev usb.Serializer) (err error) {
 			break
 		}
 
-		slog.Printf(`device %s-%s setting serial to %q`,
+		sl.Printf(`device %s-%s setting serial to %q`,
 			dev.VID(), dev.PID(), s,
 		)
 
@@ -189,7 +179,7 @@ func serial(dev usb.Serializer) (err error) {
 			break
 		}
 
-		slog.Printf(`device %s-%s-%s checking in with server`,
+		sl.Printf(`device %s-%s-%s checking in with server`,
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 
