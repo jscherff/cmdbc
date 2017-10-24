@@ -1,0 +1,5 @@
+- add option to inventory devices that could not be opened.
+- for devices that cannot be opened, enable only audit capability.
+- rethink how devices that cannot be opened are instantiated.
+	- force underlying device to be nil and add nil checks on all methods?
+	- create a special, non-device type/package (like 'nil' or 'null') with no methods?
