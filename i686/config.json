@@ -22,24 +22,24 @@
 
 		"LogDir": "log",
 		"Console": false,
-		"Syslog": false,
+		"Syslog": true,
 
 		"Logger": {
-			"system": {
+			"System": {
 				"LogFile": "system.log",
 				"Console": false,
 				"Syslog": false,
 				"Prefix": ["date", "time"]
 			},
 
-			"change": {
+			"Change": {
 				"LogFile": "change.log",
 				"Console": false,
 				"Syslog": false,
 				"Prefix": ["date", "time"]
 			},
 
-			"error": {
+			"Error": {
 				"LogFile": "error.log",
 				"Console": true,
 				"Syslog": false,
@@ -49,7 +49,7 @@
 	},
 
 	"Syslog": {
-		"Enabled": false,
+		"Enabled": true,
 		"Protocol": "tcp",
 		"Port": "1468",
 		"Host": "localhost",

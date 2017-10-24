@@ -55,9 +55,9 @@ func main() {
 	// Initialize loggers.
 
 	slog, clog, elog =
-		conf.Loggers.Logger[`System`],
-		conf.Loggers.Logger[`Change`],
-		conf.Loggers.Logger[`Error`]
+		conf.Loggers.Logger[`system`],
+		conf.Loggers.Logger[`change`],
+		conf.Loggers.Logger[`error`]
 
 	// Instantiate context to enumerate devices.
 

@@ -56,6 +56,8 @@ func (this *Loggers) Init(syslog *Syslog) error {
 
 	for tag, logger := range this.Logger {
 
+		tag += ` `
+
 		logger.LogFile = filepath.Join(this.LogDir, logger.LogFile)
 		logger.Console = logger.Console || this.Console
 		logger.Syslog = logger.Syslog || this.Syslog
