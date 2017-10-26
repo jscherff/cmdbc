@@ -17,28 +17,34 @@ Pre-compiled binaries are available for both 32- and 64-bit Windows systems and 
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
 #### API Settings
-Contains parameters for communicating with the **CMDBd** server and API endpoints:
+The API section contains parameters for communicating with the **CMDBd** server URL paths for the REST API endpoints.
 ```json
-    "API": {
-        "Server": "http://localhost:8080",
-        "Endpoint": {
-            "usbCiCheckinV1": "v1/usbci/checkin",
-            "usbCiCheckoutV1": "v1/usbci/checkout",
-            "usbCiNewSnV1": "v1/usbci/newsn",
-            "usbCiAuditV1": "v1/usbci/audit",
-            "usbMetaVendorV1": "v1/usbmeta/vendor",
-            "usbMetaProductV1": "v1/usbmeta/product",
-            "usbMetaClassV1": "v1/usbmeta/class",
-            "usbMetaSubClassV1": "v1/usbmeta/subclass",
-            "usbMetaProtocolV1": "v1/usbmeta/protocol"
-        }
+"API": {
+    "Server": "http://localhost:8080",
+    "Endpoint": {
+        "usbCiCheckinV1": "v1/usbci/checkin",
+        "usbCiCheckoutV1": "v1/usbci/checkout",
+        "usbCiNewSnV1": "v1/usbci/newsn",
+        "usbCiAuditV1": "v1/usbci/audit",
+        "usbMetaVendorV1": "v1/usbmeta/vendor",
+        "usbMetaProductV1": "v1/usbmeta/product",
+        "usbMetaClassV1": "v1/usbmeta/class",
+        "usbMetaSubClassV1": "v1/usbmeta/subclass",
+        "usbMetaProtocolV1": "v1/usbmeta/protocol"
     }
+}
 ```
-* **`Server`** is the base URL for the **CMDBd** server hosting the REST API.
-* **`CheckinPath`** is the path below the server URL for registration or "_check-in_" actions.
-* **`CheckoutPath`** is the path below the server URL for obtaining previously submitted device confignuration information for the purpose of conducting an audit.
-* **`NewSNPath`** is the path below the server URL for obtaining a new, unique serial number for assignment to devices that support serial number configuration.
-* **`AuditPath`** is the path below the server URL for submitting device configuration changes discovered during an audit.
+* **`Server`** is the base URL for the server hosting the REST API.
+* **`Endpoint`** is a collection of URL paths that represent the base of the REST API endpoints on the server. The API endpoints and their parameters are described more fully in the [API Endpoints](https://github.com/jscherff/cmdbd/blob/master/README.md#api-endpoints) section of the server documentation.
+    * **`v1/usbci/checkin`** is the base path of the API on which the client submits configuration information for a new device or update information for an existing device.
+    * **`/v1/usbci/checkout`** is the base path of the API on which the client obtains configuration information for a previously-registered, serialized device in order to perform a change audit.
+    * **`/v1/usbci/newsn`** is the base path of the API on which the client obtains a new unique serial number from the server for assignment to the attached device.
+    * **`/v1/usbci/audit`** is the base path of the API on which the client submit the results of a change audit on a serialized device. Results include the attribute name, previous value, and new value for each modified attribute.
+    * **`/v1/usbmeta/vendor`** is the base path of the API on which the client obtains the USB vendor name by providing the vendor ID
+    * **`/v1/usbmeta/product`** is the base path of the API on which the client obtains the USB vendor and product names by providing the vendor and product IDs
+    * **`/v1/usbmeta/class`** is the base path of the API on which the client obtains the USB class description by providing the class ID
+    * **`/v1/usbmeta/subclass`** is the base path of the API on which the client obtains the USB class and subclass descriptions by providing the class and subclass IDs
+    * **`/v1/usbmeta/protocol`** is the base path of the API on which the client obtains the USB class, subclass, and protocol descriptions by providing the class, subclass, and protocol IDs
 
 #### Path Settings
 Directories where logs, state files, and reports will be written:
