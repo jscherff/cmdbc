@@ -19,7 +19,7 @@ Pre-compiled binaries are available for both 32- and 64-bit Windows systems and 
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
 #### API Settings
-The API section contains parameters for communicating with the **CMDBd** server and URL paths for the REST API endpoints.
+The **API** section of the configuration file contains parameters for communicating with the **CMDBd** server and URL paths for the REST API endpoints.
 ```json
 "API": {
     "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",
@@ -37,30 +37,28 @@ The API section contains parameters for communicating with the **CMDBd** server 
 }
 ```
 * **`Server`** is the base URL for the server hosting the REST API.
-* **`Endpoint`** is a collection of URL paths that represent the base of the REST API endpoints on the server. The API endpoints and their parameters are described more fully in the [API Endpoints](https://github.com/jscherff/cmdbd/blob/master/README.md#api-endpoints) section of the server documentation.
+* **`Endpoints`** is a collection of URL paths that represent the base of the REST API endpoints on the server. The API endpoints and their parameters are described more fully in the [API Endpoints](https://github.com/jscherff/cmdbd/blob/master/README.md#api-endpoints) section of the server documentation. You should not modify anything in this section unless asked to do so by a systems administrator or application designer.
     * **`v1/usbci/checkin`** is the base path of the API on which the client submits configuration information for a new device or update information for an existing device.
-    * **`/v1/usbci/checkout`** is the base path of the API on which the client obtains configuration information for a previously-registered, serialized device in order to perform a change audit.
-    * **`/v1/usbci/newsn`** is the base path of the API on which the client obtains a new unique serial number from the server for assignment to the attached device.
-    * **`/v1/usbci/audit`** is the base path of the API on which the client submit the results of a change audit on a serialized device. Results include the attribute name, previous value, and new value for each modified attribute.
-    * **`/v1/usbmeta/vendor`** is the base path of the API on which the client obtains the USB vendor name by providing the vendor ID
-    * **`/v1/usbmeta/product`** is the base path of the API on which the client obtains the USB vendor and product names by providing the vendor and product IDs
-    * **`/v1/usbmeta/class`** is the base path of the API on which the client obtains the USB class description by providing the class ID
-    * **`/v1/usbmeta/subclass`** is the base path of the API on which the client obtains the USB class and subclass descriptions by providing the class and subclass IDs
-    * **`/v1/usbmeta/protocol`** is the base path of the API on which the client obtains the USB class, subclass, and protocol descriptions by providing the class, subclass, and protocol IDs
+    * **`v1/usbci/checkout`** is the base path of the API on which the client obtains configuration information for a previously-registered, serialized device in order to perform a change audit.
+    * **`v1/usbci/newsn`** is the base path of the API on which the client obtains a new unique serial number from the server for assignment to the attached device.
+    * **`v1/usbci/audit`** is the base path of the API on which the client submit the results of a change audit on a serialized device. Results include the attribute name, previous value, and new value for each modified attribute.
+    * **`v1/usbmeta/vendor`** is the base path of the API on which the client obtains the USB vendor name by providing the vendor ID.
+    * **`v1/usbmeta/product`** is the base path of the API on which the client obtains the USB vendor and product names by providing the vendor and product IDs.
+    * **`v1/usbmeta/class`** is the base path of the API on which the client obtains the USB class description by providing the class ID.
+    * **`v1/usbmeta/subclass`** is the base path of the API on which the client obtains the USB class and subclass descriptions by providing the class and subclass IDs.
+    * **`v1/usbmeta/protocol`** is the base path of the API on which the client obtains the USB class, subclass, and protocol descriptions by providing the class, subclass, and protocol IDs.
 
 #### Path Settings
-The Paths section contains directories where various files will be written.
+The **Paths** section of the configuration file specifies directories where various files will be written. Relative paths are prepended with the installation directory.
 ```json
 "Paths": {
     "ReportDir": "report"
 }
 ```
-* **`ReportDir`** is where device reports are written.
+* **`ReportDir`** is where device reports are written. This can be overridden with the `folder` report _option flag_.
 
-
-
-#### Logging Settings
-Granular logging options for the system, change, and error log:
+#### Logger Settings
+The **Loggers** section of the configuration file contains logging options for the system, change, and error log.
 ```json
 "Loggers": {
 
@@ -90,51 +88,97 @@ Granular logging options for the system, change, and error log:
     }
 }
 ```
-* **`Logfile`** specifies whether or not events are written to log files.
-* **`Console`** specifies whether or not events are written to the console (stdout).
-* **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
-* **`SystemLog`** is the name of the file where **CMDBc** records significant, non-error events.
-* **`ChangeLog`** is the name of the file where **CMDBc** records changes found during audits. (It also reports changes to the **CMDBd** server.)
-* **`ErrorLog`** is the name of the file where **CMDBc** records errors.
+* **`LogDir`** is the directory where logs files will be written.
+* **`Console`** causes the utility to write events to the console (stdout) in addition to the log file. This overrides the same setting for individual logs, below.
+* **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings (see _Syslog Settings,_ below).
+* **`Logger`** is a collection of logs used by the utility to record events.
+    * **`system`** contains settings for the _system log,_ where the utility records significant, non-error events.
+    * **`change`** contains settings for the _change log,_ where the utility records changes found during audits. It also reports changes to the server.
+    * **`error`** contains settings for the _error log,_ where the utility records critical errors.
+
+Each logger, above, has the following configuration settings:
+
+* **`LogFile`** specifies the filename of the log file.
+* **`Console`** specifies whether or not events are written to the console (stdout) in addition to the log file.
+* **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings (see _Syslog Settings,_ below).
+* **`Prefix`** is a comma-separated list of optional attributes that will be prepended to each log entry:
+    * **`date`** is the date of the event in _YYYY/MM/DD_ format.
+    * **`time`** is the local time of the event in _HH:MM:SS_ format.
+    * **`file`** is the name of the file containing the source code that produced the event.
 
 #### Syslog Settings
-Parameters for communicating with a local or remote syslog server:
+The **Syslog** section contains parameters for communicating with a local or remote syslog server. Please note that the syslog daemon, if not running on the same host as the utility, must be configured to accept remote syslog client connections.
 ```json
 "Syslog": {
-    "Protocol": "tcp",
-    "Port": "1468",
-    "Host": "localhost"
-},
+    "Enabled": false,
+    "Protocol": "udp",
+    "Port": "514",
+    "Host": "localhost",
+    "Tag": "usbci_cmdbc",
+    "Facility": "LOG_LOCAL7",
+    "Severity": "LOG_INFO"
+}
 ```
+* **`Enabled`** specifies whether or not syslog logging is available to the loggers. If syslog logging is not _enabled,_ the loggers will not write to the configured syslog daemon, even if they're configured to do so.
 * **`Protocol`** is the transport-layer protocol used by the syslog daemon (blank for local).
 * **`Port`** is the port used by the syslog daemon (blank for local).
 * **`Host`** is the hostname or IP address of the syslog daemon (blank for local).
+* **`Tag`** is an arbitrary string to prepend to the syslog event.
+* **`Facility`** specifies the type of program that is logging the message (see [RFC 5424](https://tools.ietf.org/html/rfc5424)):
+    * **`LOG_KERN`** -- kernel messages
+    * **`LOG_USER`** -- user-level messages
+    * **`LOG_MAIL`** -- mail system
+    * **`LOG_DAEMON`** -- system daemons
+    * **`LOG_AUTH`** -- security/authorization messages
+    * **`LOG_SYSLOG`** -- messages generated internally by syslogd
+    * **`LOG_LPR`** -- line printer subsystem
+    * **`LOG_NEWS`** -- network news subsystem
+    * **`LOG_UUCP`** -- UUCP subsystem
+    * **`LOG_CRON`** -- security/authorization messages
+    * **`LOG_AUTHPRIV`** -- FTP daemon
+    * **`LOG_FTP`** -- scheduling daemon
+    * **`LOG_LOCAL0`** -- local use 0
+    * **`LOG_LOCAL1`** -- local use 1
+    * **`LOG_LOCAL2`** -- local use 2
+    * **`LOG_LOCAL3`** -- local use 3
+    * **`LOG_LOCAL4`** -- local use 4
+    * **`LOG_LOCAL5`** -- local use 5
+    * **`LOG_LOCAL6`** -- local use 6
+    * **`LOG_LOCAL7`** -- local use 7
+* **`Severity`** specifies the severity of the event (see [RFC 5424](https://tools.ietf.org/html/rfc5424)):
+    * **`LOG_EMERG`** -- system is unusable
+    * **`LOG_ALERT`** -- action must be taken immediately
+    * **`LOG_CRIT`** -- critical conditions
+    * **`LOG_ERR`** -- error conditions
+    * **`LOG_WARNING`** -- warning conditions
+    * **`LOG_NOTICE`** -- normal but significant conditions
+    * **`LOG_INFO`** -- informational messages
+    * **`LOG_DEBUG`** -- debug-level messages
+
 
 #### Include Settings
-Vendors and products to include (_true_) or exclude (_false_) when inventorying devices:
+The **Include** section specifies device vendors and products to include (_true_) or exclude (_false_) when conducting inventories.
 ```json
 "Include": {
     "VendorID": {
+        "0801": true,
         "043d": false,
         "045e": false
-    },
+    }
     "ProductID": {
-        "0801": {
-            "0001": true,
-            "0002": true,
-            "0011": true,
-            "0012": true,
-            "0013": true
-        },
         "0acd": {
+            "2010": true,
             "2030": true
+        },
+        "046a": {
+            "0001": true
         }
     },
-    "Default": true
-},
+    "Default": false
+}
 ```
-* **`VendorID`** specifies which vendors to include or exclude. This setting applies to all of the vendor's products and overrides both the _ProductID_ and _Default_ configuration settings; that is, if a vendor is excluded under _VendorID_, that vendor's products cannot be included under _ProductID_. Here, all devices with **Microsoft** _Vendor IDs_ `043d` and `045e` will be excluded.
-* **`ProductID`** specifies which products to include or exclude. This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, **MagTek** (_VendorID_ `0801`) card readers with  _ProductIDs_ `0001`, `0002`, `0011`, `0012`, and `0013` will be included, as will **ID TECH** (_VendorID_ `0acd`) Card 
+* **`VendorID`** specifies which vendors to include or exclude. This setting applies to all of the vendor's products and overrides both the _ProductID_ and _Default_ configuration settings; that is, if a vendor is excluded under _VendorID_, that vendor's products cannot be included under the _ProductID_ or _Default_ sections. Here, all **Magtek** (vendor ID **0801**) devices will be included and **Microsoft** (vendor IDs **043d** and **045e**) devices will be excluded.
+* **`ProductID`** specifies individual products to include or exclude. This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, **IDTech** (vendor ID **0acd**) card readers (product IDs **2010** and **2030** will be included, as will **Cherry** (vendor ID **046a**) keyboards (product ID **0001**). 
 * **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include, which effectively renders previous inclusions redundant; however, specific _VendorID_ and _ProductID_ inclusions ensure that those devices will be inventoried even if the _Default_ setting is changed to 'exclude' (_false_).
 
 #### Format Settings
