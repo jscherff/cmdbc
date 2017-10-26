@@ -31,6 +31,7 @@ var (
 
 type httpStatus int
 
+// Accepted returns true for a successful http response status.
 func (this httpStatus) Accepted() (ok bool) {
 
 	ok = true
@@ -48,6 +49,7 @@ func (this httpStatus) Accepted() (ok bool) {
 	return ok
 }
 
+// String implements the Stringer interface for httpStatus.
 func (this httpStatus) String() (s string) {
 
 	switch this {
