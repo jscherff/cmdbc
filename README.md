@@ -16,18 +16,25 @@ Pre-compiled binaries are available for both 32- and 64-bit Windows systems and 
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
-#### Server Settings
-Parameters for communicating with the **CMDBd** server:
+#### API Settings
+Contains parameters for communicating with the **CMDBd** server and API endpoints:
 ```json
-"Server": {
-    "URL": "http://sysadm-dev-01.24hourfit.com:8080",
-    "CheckinPath": "usbci/checkin",
-    "CheckoutPath": "usbci/checkout",
-    "NewSNPath": "usbci/newsn",
-    "AuditPath": "usbci/audit"
-}
+    "API": {
+        "Server": "http://localhost:8080",
+        "Endpoint": {
+            "usbCiCheckinV1": "v1/usbci/checkin",
+            "usbCiCheckoutV1": "v1/usbci/checkout",
+            "usbCiNewSnV1": "v1/usbci/newsn",
+            "usbCiAuditV1": "v1/usbci/audit",
+            "usbMetaVendorV1": "v1/usbmeta/vendor",
+            "usbMetaProductV1": "v1/usbmeta/product",
+            "usbMetaClassV1": "v1/usbmeta/class",
+            "usbMetaSubClassV1": "v1/usbmeta/subclass",
+            "usbMetaProtocolV1": "v1/usbmeta/protocol"
+        }
+    }
 ```
-* **`URL`** is the base URL for the **CMDBd** server hosting the REST API.
+* **`Server`** is the base URL for the **CMDBd** server hosting the REST API.
 * **`CheckinPath`** is the path below the server URL for registration or "_check-in_" actions.
 * **`CheckoutPath`** is the path below the server URL for obtaining previously submitted device confignuration information for the purpose of conducting an audit.
 * **`NewSNPath`** is the path below the server URL for obtaining a new, unique serial number for assignment to devices that support serial number configuration.
