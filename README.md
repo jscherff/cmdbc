@@ -1,5 +1,7 @@
 # CMDBc
-The _**Configuration Management Database Client**_ is a utility that manages information about devices attached to end-user workstations and reports that information to a centralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_ or [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md). **CMDBc** can register or _"check-in"_ attached devices with the server, obtain unique serial numbers from the server for devices that support serial number configuration, perform audits against previous device configurations, and report configuration changes found during the audit to the server for logging and analysis.
+The _**Configuration Management Database Client**_ or **CMDBc** is a utility that manages information about devices attached to end-user workstations and reports that information to a centralized repository over a RESTful JSON API provided by the complementary server component, the _**Configuration Management Database Daemon**_ or **CMDBd**. Detailed documentation for **CMDBd** is located [here](https://github.com/jscherff/cmdbd/blob/master/README.md). 
+
+**CMDBc** can register or _"check-in"_ attached devices with the server, obtain unique serial numbers from the server for devices that support serial number configuration, perform audits against previous device configurations, and report configuration changes found during the audit to the server for logging and analysis.
 
 ### System Requirements
 **CMDBc** is written in **Go** and can be compiled for any operating system and architecture. It is intended to be installed on end-user workstations running **Microsoft Windows 7** or higher and should be invoked by a centralized management solution like **IBM BigFix**.
@@ -17,10 +19,10 @@ Pre-compiled binaries are available for both 32- and 64-bit Windows systems and 
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
 #### API Settings
-The API section contains parameters for communicating with the **CMDBd** server URL paths for the REST API endpoints.
+The API section contains parameters for communicating with the **CMDBd** server and URL paths for the REST API endpoints.
 ```json
 "API": {
-    "Server": "http://localhost:8080",
+    "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",
     "Endpoint": {
         "usbCiCheckinV1": "v1/usbci/checkin",
         "usbCiCheckoutV1": "v1/usbci/checkout",
