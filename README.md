@@ -248,7 +248,7 @@ Generate device reports for attached devices using the `report` _action flag._
 
 Select the report format with the `format` _option flag_. Four formats are currently supported: _comma-separated value_ (CSV), _name-value pairs_ (NVP), _extensible markup language_ (XML), and _JavaScript object notation_ (JSON). JSON is the default format.
 
-By default, report files are written to the `report` subdirectory under the utility installation directory (configurable). A separate report file is generated for each device. The report filename is `{pn}-{bn}-{vid}-{pid}.{fmt}`, where
+By default, report files are written to the `report` subdirectory under the utility installation directory (configurable). A separate report file is generated for each device. The report filename is `P{pn}-B{bn}-V{vid}-P{pid}.{fmt}`, where
 * `pn` is a two-digit hexadecimal value representing _port number_,
 * `bn` is a two-digit hexadecimal value representing _bus number_,
 * `vid` is a four-digit hexadecimal value representing _vendor ID_,
