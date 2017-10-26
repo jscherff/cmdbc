@@ -37,4 +37,4 @@ Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
     ```sh
     cmdbc.exe -audit
     ```
-1. Periodically parse the contents of `error.log` for issues.
+1. Periodically parse the contents of `error.log` for issues. This file is located in the "log" subdirectory beneath the installation folder.
