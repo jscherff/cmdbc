@@ -148,7 +148,12 @@ func TestFlowReport(t *testing.T) {
 
 		// Test whether signature of report file content is correct.
 
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
 		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
@@ -169,7 +174,12 @@ func TestFlowReport(t *testing.T) {
 
 		// Test whether signature of report file content is correct.
 
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
 		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
@@ -190,7 +200,12 @@ func TestFlowReport(t *testing.T) {
 
 		// Test whether signature of report file content is correct.
 
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
 		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
@@ -211,7 +226,12 @@ func TestFlowReport(t *testing.T) {
 
 		// Test whether signature of report file content is correct.
 
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
 		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)

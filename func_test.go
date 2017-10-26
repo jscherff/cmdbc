@@ -11,6 +11,43 @@ import (
 	`github.com/jscherff/gotest`
 )
 
+/* Test each function of the application by calling the function directly
+   and comparing expected results with actual results.
+
+	Config Helper Functions:
+
+	[ ] newConfig(cf string) (*Config, error)
+	[ ] loadConfig(t interface{}, cf string) error
+	[ ] makePath(path string) (string, error)
+
+	Router Functions:
+
+	[X] route(i interface{}) (err error)
+	[X] convert(i interface{}) (interface{}, error)
+	[ ] update(i interface{}) (interface{})
+
+	Action Functions:
+
+	[ ] audit(dev usb.Auditer) (err error)
+	[X] report(dev usb.Reporter) (err error)
+	[X] serial(dev usb.Serializer) (err error)
+
+	API Client Functions:
+
+	[X] usbCiNewSnV1(dev usb.Serializer) (string, error)
+	[X] usbCiCheckinV1(dev usb.Reporter) (error)
+	[X] usbCiCheckoutV1(dev usb.Auditer) ([]byte, error)
+	[ ] usbCiAuditV1(dev usb.Auditer) (error)
+	[ ] usbMetaVendorV1(dev usb.Updater) (s string, err error)
+	[ ] usbMetaProductV1(dev usb.Updater) (s string, err error)
+
+	HTTP Helper Functions:
+
+	[ ] httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error)
+	[ ] httpGet(url string) (b []byte, hs httpStatus, err error)
+	[ ] httpRequest(req *http.Request) (b []byte, hs httpStatus, err error)
+*/
+
 func TestFuncSerial(t *testing.T) {
 
 	var err error
@@ -55,38 +92,6 @@ func TestFuncReport(t *testing.T) {
 
 	var err error
 
-	t.Run("(*Device).JSON() Must Match SHA256 Signature", func(t *testing.T) {
-
-		resetFlags(t)
-		*fReportFormat = `json`
-
-		err = report(td.Mag[`mag1`])
-		gotest.Ok(t, err)
-
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
-		fn = filepath.Join(conf.Paths.ReportDir, fn)
-		b, err := ioutil.ReadFile(fn)
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PJSN`][`mag1`], `unexpected hash signature of JSON report`)
-	})
-
-	t.Run("(*Device).XML() Must Match SHA256 Signature", func(t *testing.T) {
-
-		resetFlags(t)
-		*fReportFormat = `xml`
-
-		err = report(td.Mag[`mag1`])
-		gotest.Ok(t, err)
-
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
-		fn = filepath.Join(conf.Paths.ReportDir, fn)
-		b, err := ioutil.ReadFile(fn)
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PXML`][`mag1`], `unexpected hash signature of XML report`)
-	})
-
 	t.Run("(*Device).CSV() Must Match SHA256 Signature", func(t *testing.T) {
 
 		resetFlags(t)
@@ -95,7 +100,12 @@ func TestFuncReport(t *testing.T) {
 		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
 		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
@@ -111,12 +121,59 @@ func TestFuncReport(t *testing.T) {
 		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
 		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`NVP`][`mag1`], `unexpected hash signature of NVP report`)
+	})
+
+	t.Run("(*Device).XML() Must Match SHA256 Signature", func(t *testing.T) {
+
+		resetFlags(t)
+		*fReportFormat = `xml`
+
+		err = report(td.Mag[`mag1`])
+		gotest.Ok(t, err)
+
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
+		b, err := ioutil.ReadFile(fn)
+		gotest.Ok(t, err)
+
+		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PXML`][`mag1`], `unexpected hash signature of XML report`)
+	})
+
+	t.Run("(*Device).JSON() Must Match SHA256 Signature", func(t *testing.T) {
+
+		resetFlags(t)
+		*fReportFormat = `json`
+
+		err = report(td.Mag[`mag1`])
+		gotest.Ok(t, err)
+
+		fn := fmt.Sprintf(`%s-V%s-P%s.%s`,
+			td.Mag[`mag1`].Conn(),
+			td.Mag[`mag1`].VID(),
+			td.Mag[`mag1`].PID(),
+			*fReportFormat,
+		)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
+		b, err := ioutil.ReadFile(fn)
+		gotest.Ok(t, err)
+
+		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PJSN`][`mag1`], `unexpected hash signature of JSON report`)
 	})
 }
 
@@ -193,44 +250,3 @@ func TestFuncAudit(t *testing.T) {
 
 	restoreState(t)
 }
-
-/*
-TODO (OLD):
-	[ ] serial(o gocmdb.Configurable) (err error)
-	[ ] httpPost(url string, j []byte ) (b []byte, sc int, err error)
-	[ ] httpGet(url string) (b []byte, sc int, err error)
-	[ ] httpRequest(req *http.Request) (b []byte, sc int, err error)
-	[ ] newLoggers() (sl, cl, el *log.Logger)
-	[ ] magtekRouter(musb gocmdb.MagtekUSB) (err error)
-	[ ] genericRouter(gusb gocmdb.GenericUSB) (err error)
-	[X] newConfig(string) (*Config, error) - init()
-	[X] usbCiNewSnV1(o gocmdb.Registerable) (string, error) - TestGetNewSN()
-	[X] report(o gocmdb.Reportable) (error) - TestReporting()
-	[X] legacyHandler(o gocmdb.Reportable) (error) - TestReporting()
-	[X] usbCiCheckinV1(o gocmdb.Registerable) (error) - TestCheckinCheckout()
-	[X] usbCiCheckoutV1(o gocmdb.Auditable) ([]byte, error) - TestCheckinCheckout()
-	[X] audit(o gocmdb.Auditable) (error) - TestAuditing()
-	[X] usbCiAuditV1(o gocmdb.Auditable) (error) - TestAuditing()
-	[X] readFile(string, []byte) (error) - TestFileReadWrite()
-	[X] writeFile([]byte, string) (error) - TestFileReadWrite()
-
-TODO (NEW):
-	[ ] audit(dev usb.Auditer) (err error)
-	[X] report(dev usb.Reporter) (err error)
-	[X] serial(dev usb.Serializer) (err error)
-	[X] usbCiNewSnV1(dev usb.Serializer) (string, error)
-	[X] usbCiCheckinV1(dev usb.Reporter) (error)
-	[X] usbCiCheckoutV1(dev usb.Auditer) ([]byte, error)
-	[ ] usbCiAuditV1(dev usb.Auditer) (error)
-	[ ] usbMetaVendorV1(dev usb.Updater) (s string, err error)
-	[ ] usbMetaProductV1(dev usb.Updater) (s string, err error)
-	[ ] httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error)
-	[ ] httpGet(url string) (b []byte, hs httpStatus, err error)
-	[ ] httpRequest(req *http.Request) (b []byte, hs httpStatus, err error)
-	[ ] newConfig(cf string) (*Config, error)
-	[ ] loadConfig(t interface{}, cf string) error
-	[ ] makePath(path string) (string, error)
-	[X] route(i interface{}) (err error)
-	[X] convert(i interface{}) (interface{}, error)
-	[ ] update(i interface{}) (interface{})
-*/
