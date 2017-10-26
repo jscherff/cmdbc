@@ -164,7 +164,7 @@ The **Include** section specifies device vendors and products to include (_true_
         "0801": true,
         "043d": false,
         "045e": false
-    }
+    },
     "ProductID": {
         "0acd": {
             "2010": true,
