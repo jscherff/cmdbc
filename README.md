@@ -174,44 +174,29 @@ The **Include** section specifies device vendors and products to include (_true_
             "0001": true
         }
     },
-    "Default": false
+    "Default": true
 }
 ```
-* **`VendorID`** specifies which vendors to include or exclude. This setting applies to all of the vendor's products and overrides both the _ProductID_ and _Default_ configuration settings; that is, if a vendor is excluded under _VendorID_, that vendor's products cannot be included under the _ProductID_ or _Default_ sections. Here, all **Magtek** (vendor ID **0801**) devices will be included and **Microsoft** (vendor IDs **043d** and **045e**) devices will be excluded.
-* **`ProductID`** specifies individual products to include or exclude. This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, **IDTech** (vendor ID **0acd**) card readers (product IDs **2010** and **2030** will be included, as will **Cherry** (vendor ID **046a**) keyboards (product ID **0001**). 
+* **`VendorID`** specifies which vendors to include or exclude. This setting applies to all of the vendor's products and overrides both the _ProductID_ and _Default_ configuration settings; that is, if a vendor is excluded under _VendorID_, that vendor's products cannot be included under the _ProductID_ or _Default_ sections. Here, all Magtek devices (vendor ID "0801") will be included, whereas Microsoft devices (vendor IDs "043d" and "045e") will be excluded.
+* **`ProductID`** specifies individual products to include or exclude. This setting applies to specific _ProductIDs_ under a given _VendorID_ and overrides the _Default_ configuration setting. Here, IDTech card readers (vendor ID "0acd," product IDs "2010" and "2030") will be included, as will Cherry keyboards (vendor ID "046a," product ID "0001"). 
 * **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include, which effectively renders previous inclusions redundant; however, specific _VendorID_ and _ProductID_ inclusions ensure that those devices will be inventoried even if the _Default_ setting is changed to 'exclude' (_false_).
 
-#### Format Settings
-Default file formats for various use cases:
-```json
-"Format": {
-    "Report": "csv",
-    "Default": "json"
-}
-```
-* **`Report`** is the default output format for inventory reports.
-* **`Default`** is the default output format for other use cases.
-
 ### Command-Line Flags
-Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `legacy`, `report`, `reset`, `serial`, and `help`.  Some of these require (or offer) additional _option flags_.
+Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `report`, `reset`, `serial`, `version`, and `help`.  Some of these require (or offer) additional _option flags_.
 * **`-audit`** performs a device configuration change audit.
-    * **`-local`** audits against JSON state files stored on the local machine
-    * **`-server`**	audits against the last device check-in stored in the database.
-    * **`-help`** lists _audit option flags_ and their descriptions.
 * **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date.
-* **`-legacy`** specifies _legacy mode_, which produces the same output to the same filename, `usb_serials.txt`, as the legacy inventory utility. The utility will also operate in legacy mode if the executable is renamed from **cmdbc.exe** to **magtek_inventory.exe**, the name of the legacy inventory utility executable.
 * **`-report`** generates device configuration reports.
     * **`-console`** writes report output to the console.
     * **`-folder`** _`<path>`_ writes report output files to _`<path>`_. It defaults to the `report` folder beneath the installation directory.
     * **`-format`** _`<format>`_ specifies which report _`<format>`_ to use:
-        * **`csv`** specifies comma-separated value format (default).
+        * **`csv`** specifies comma-separated value format.
         * **`nvp`** specifies name-value pair format.
         * **`xml`** specifies extensible markup language format.
-        * **`json`** specifies JavaScript object notation format.
+        * **`json`** specifies JavaScript object notation format (default).
     * **`-help`** lists _report option flags_ and their descriptions.
 * **`-reset`** resets the device.
-* **`-serial`** performs serial number operations. (By default, **CMDBc** will not configure a serial number on a device that already has one.)
-    * **`-copy`** copies the factory serial number (if present) to the active serial number.
+* **`-serial`** performs serial number operations. (By default, the utility will not configure a serial number on a device that already has one.)
+    * **`-default`** sets the serial number to the factory default (if present).
     * **`-erase`** erases the current serial number.
     * **`-fetch`** fetches a unique serial number from the server.
     * **`-force`** forces a serial number change, even if the device already has one.
@@ -222,11 +207,15 @@ Client operation is controlled through command-line _flags_. There are seven top
 ### Serial Number Configuration
 Configure serial numbers on attached devices with the `serial` _action flag_.
 
-The `set`, `copy`, and `fetch` _option flags_ are mutually-exclusive. You assign a specific serial number string with the `set` _option flag_, copy the immutable factory serial number (if one exists) to the configurable serial number with the `copy` _option flag_, or request a new, unique serial number from the server with the `fetch` _option flag_.
+The `fetch`, `default`, and `set` _option flags_ are mutually-exclusive. If you use more than one, `fetch` will take highest precedence, followed by `default` and `set`.
 
-The `copy`, `fetch`, and `set` _option flags_ can each be combined with `erase` and `force`. By default, **CMDBc** ignores serial number changes for devices that already have serial numbers. The `erase` _option flag_ bypasses this by erasing the existing serial number before attempting to assign a new one, effectively removing the constraint. The `force` _option flag_ simply overrides the safeguard feature.
+The `fetch`, `default`, and `set` _option flags_ can each be combined with `erase` and `force`. By default, the utility ignores serial number changes for devices that already have one. The `erase` _option flag_ bypasses this by erasing the existing serial number before attempting to assign a new one, effectively removing the constraint. The `force` _option flag_ simply overrides the safeguard feature.
 
 **Examples**:
+```sh
+cmdbc.exe -serial -fetch
+```
+The preceding command will, for each compatible device, fetch a new serial number from the server and configure the device with it -- but only for devices that do not already have a serial number. This is the safe and preferred method for assigning unique serial numbers to unserialized devices.
 ```sh
 cmdbc.exe -serial -fetch -force
 ```
@@ -236,69 +225,58 @@ cmdbc.exe -serial -erase -fetch
 ```
 The preceding command will, for each compatible device, erase the existing serial number, fetch a new, unique serial number from the server, and configure the device with it.
 
-While the previous two examples would normally produce the same result, a subtle difference is that, if **CMDBc** were unable to obtain a new serial number, `force` would leave existing serial numbers in place whereas `erase` would leave devices without serial numbers.
+While the previous two examples would normally produce the same result, a subtle difference is that, if the utility were unable to obtain a new serial number, `force` would leave existing serial numbers in place whereas `erase` would leave devices without serial numbers.
 
 You can also use the `erase` _option flag_ by itself to erase device serial numbers, although this is an unusual use case.
 
-**Caution**: action and option flags apply to _all attached devices_; if you use the `serial` _action flag_ with the `fetch` _option flag_, **CMDBc** will only configure new serial numbers on compatible devices that don't already have one. If all attached devices already have serial numbers or are not configurable, nothing will happen. However, if you add the `force` flag, it will overwrite the serial number on all compatible devices -- even those that already have a serial number. If you use the `set` and `force` _option flags_ and there is more than one configurable device attached, you will end up having multiple devices with the same serial number.
+**Caution**: action and option flags apply to _all attached devices_. As noted above, if you use the `serial` _action flag_ with the `fetch` _option flag_, the utility will only configure new serial numbers on compatible devices that don't already have one. If all attached devices already have serial numbers or are not configurable, nothing will happen. However, if you add the `force` flag, it will overwrite the serial number on all compatible devices -- even those that already have a serial number. If you use the `set` and `force` _option flags_ and there is more than one configurable device attached, you will end up having multiple devices with the same serial number.
 
-Refer to the _Database Structure_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on serial number requests.
+Refer to the [Database Structure](https://github.com/jscherff/cmdbd#database-structure) section in the **CMDBd** documentation for details on device information transferred to the server and tables/columns affected by serial number requests.
  
 ### Device Registration
 Register attached devices with the server using the `checkin` _action flag_. This will create a new object in the device repository.
 
-Refer to the _Database Structure_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on device registrations.
+Refer to the [Database Structure](https://github.com/jscherff/cmdbd#database-structure) section in the **CMDBd** documentation for details on device information transferred to the server and tables/columns affected by device registrations.
 
 ### Device Audits
-Perform a configuration change audit for attached devices using the `audit` _action flag._
+Perform a configuration change audit for attached devices using the `audit` _action flag._ During an audit, device configurations are compared against those stored on the server for the previous device check-in. Changes detected during an audit are written to the local change log and are also reported to the server. Audits are only supported on serialized devices.
 
-You can audit against device state files saved on the local workstation with the `local` _option flag_, or you can audit against device information stored in the database with the `server` _option flag_. The latter is preferred. By default, device state for local audits is stored in JSON files in the `state` subdirectory under the utility installation directory (configurable). Changes detected during an audit are written to the local change log and are also reported to the server.
-
-Audits are only supported on serialized devices.
-
-Refer to the _Database Structure_ section in the documentation for [**CMDBd**](https://github.com/jscherff/cmdbd/blob/master/README.md) for details on device information transferred to the server and tables/columns affected on device audits.
+Refer to the [Database Structure](https://github.com/jscherff/cmdbd#database-structure) section in the **CMDBd** documentation for details on device information transferred to the server and tables/columns affected by device audits.
 
 ### Device Reports
 Generate device reports for attached devices using the `report` _action flag._
 
-Select the report format with the `format` _option flag_. Four formats are currently supported: _comma-separated value_ (CSV), _name-value pairs_ (NVP), _extensible markup language_ (XML), and _JavaScript object notation_ (JSON). 
+Select the report format with the `format` _option flag_. Four formats are currently supported: _comma-separated value_ (CSV), _name-value pairs_ (NVP), _extensible markup language_ (XML), and _JavaScript object notation_ (JSON). JSON is the default format.
 
-By default, report files are written to the `report` subdirectory under the utility installation directory (configurable). A separate report file is generated for each device. The report filename is `{bn}-{ba}-{pn}-{vid}-{pid}.{fmt}`, where
-* `bn` is a three-digit decimal value representing _bus number_,
-* `ba` is a three-digit decimal value representing _bus address_,
-* `pn` is a three-digit decimal value representing _port number_,
+By default, report files are written to the `report` subdirectory under the utility installation directory (configurable). A separate report file is generated for each device. The report filename is `{pn}-{bn}-{vid}-{pid}.{fmt}`, where
+* `pn` is a two-digit hexadecimal value representing _port number_,
+* `bn` is a two-digit hexadecimal value representing _bus number_,
 * `vid` is a four-digit hexadecimal value representing _vendor ID_,
 * `pid` is a four-digit hexadecimal value representing _product ID_, and
 * `fmt` is the report format (csv, nvp, xml, or json)
 
 Change the report destination folder with the `folder` _option flag_.
 
-Write the report to the console with the `console` _option flag_. If you use the `console` _option flag_ without `folder`, the report will only be written to the console. If you use the `console` _option flag_ after `folder`, the report will be written to the specified folder _and_ to the console. If you use the `console` _option flag_ before `folder`, the report will only be written to the console and `folder` will be ignored.
+Write the report to the console with the `console` _option flag_. If you use the `console` _option flag_, the report will only be written to the console and `folder` _option flag_, if used, will be ignored.
 
 **Examples**:
 ```sh
+cmdbc.exe -report -console
+```
+The preceding command writes the device reports to the console in JSON format (the default format).
+```sh
 cmdbc.exe -report -format csv
 ```
-The preceding command writes the device reports in CSV format to the 'reports' subdirectory.
+The preceding command writes the device reports in CSV format to the 'reports' subdirectory under the utility installation folder (the default report folder).
 ```sh
-cmdbc.exe -report -format json -console
-cmdbc.exe -report -format json -console -folder c:\reports
+cmdbc.exe -report -format nvp -folder c:\reports
 ```
-Both of the preceding commands write the device reports in JSON format to the console. The `folder` _option flag_ in the second command is ignored.
+The preceding command writes the device reports in NVP format to the c:\reports folder.
 ```sh
-cmdbc.exe -report -format xml -folder c:\reports
-cmdbc.exe -report -format xml -folder c:\reports -console
+cmdbc.exe -report -format xml -console
+cmdbc.exe -report -format xml -console -folder c:\reports
 ```
-Both of the preceding commands write the device reports in XML format to the c:\reports folder. The second command also writes the reports to the console.
+Both of the preceding commands write the device reports in XML format to the console. The `folder` _option flag_ in the second command is ignored because `console` _option flag_ was used.
 
 ### Device Resets
-Reset attached devices using the `reset` _action flag_.
-
-Depending on the device, this either does a host-side reset, refreshing the USB device descriptor, or a low-level hardware reset on the device.
-
-### Legacy Reports
-Write a legacy device report using the `legacy` _action flag_.
-
-This feature mimics the behavior of previous device inventory utilities for integration backward compatibility. It simply writes the hostname and device serial number in CSV format to a file named `usb_serials.txt` in the utility installation directory, then exits. It filters all but MagTek card readers, and if there is more than one card reader attached, it arbitrarily chooses one.
-
-Renaming the utility from **cmdbd.exe** to **magtek_inventory.exe** forces this behavior without command-line flags.
+Reset attached devices using the `reset` _action flag_.mDepending on the device, this either does a host-side reset, refreshing the USB device descriptor, or a low-level hardware reset on the device.
