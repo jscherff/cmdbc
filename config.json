@@ -77,7 +77,7 @@
 			}
 		},
 
-		"Default": true
+		"Default": false
 	},
 
 	"DebugLevel": 0
