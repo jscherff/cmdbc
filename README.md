@@ -47,57 +47,53 @@ The API section contains parameters for communicating with the **CMDBd** server 
     * **`/v1/usbmeta/protocol`** is the base path of the API on which the client obtains the USB class, subclass, and protocol descriptions by providing the class, subclass, and protocol IDs
 
 #### Path Settings
-Directories where logs, state files, and reports will be written:
+The Paths section contains directories where various files will be written.
 ```json
 "Paths": {
-    "LogDir": "log",
-    "StateDir": "state",
     "ReportDir": "report"
 }
 ```
-* **`LogDir`** is the directory where log files are written. When a relative path like `log` is provided, the directory will be created below the application directory. 
-* **`StateDir`** is where device state files are stored. State files are used in performing local audits.
 * **`ReportDir`** is where device reports are written.
 
-#### File Settings
-Filenames for logs and the legacy report file:
-```json
-"Files": {
-    "SystemLog": "system.log",
-    "ChangeLog": "change.log",
-    "ErrorLog": "error.log",
-    "Legacy": "usb_serial.txt"
-}
-```
-* **`SystemLog`** is the name of the file where **CMDBc** records significant, non-error events.
-* **`ChangeLog`** is the name of the file where **CMDBc** records changes found during audits. (It also reports changes to the **CMDBd** server.)
-* **`ErrorLog`** is the name of the file where **CMDBc** records errors.
-* **`Legacy`** is the name of the file where **CMDBc** writes the legacy inventory report.
+
 
 #### Logging Settings
 Granular logging options for the system, change, and error log:
 ```json
-"Logging": {
-    "System": {
-        "Logfile": true,
-        "Console": false,
-        "Syslog": false
-    },
-    "Change": {
-        "Logfile": true,
-        "Console": false,
-        "Syslog": false
-    },
-    "Error": {
-        "Logfile": true,
-        "Console": true,
-        "Syslog": false
+"Loggers": {
+
+    "LogDir": "log",
+    "Console": false,
+    "Syslog": false,
+    
+    "Logger": {
+        "system": {
+            "LogFile": "system.log",
+            "Console": false,
+            "Syslog": false,
+            "Prefix": ["date", "time"]
+        },
+        "change": {
+            "LogFile": "change.log",
+            "Console": false,
+            "Syslog": false,
+            "Prefix": ["date", "time"]
+        },
+        "error": {
+            "LogFile": "error.log",
+            "Console": true,
+            "Syslog": false,
+            "Prefix": ["date", "time", "file"]
+        }
     }
-},
+}
 ```
 * **`Logfile`** specifies whether or not events are written to log files.
 * **`Console`** specifies whether or not events are written to the console (stdout).
 * **`Syslog`** causes the utility to write events to a local or remote syslog daemon using the `Syslog` configuration settings, below.
+* **`SystemLog`** is the name of the file where **CMDBc** records significant, non-error events.
+* **`ChangeLog`** is the name of the file where **CMDBc** records changes found during audits. (It also reports changes to the **CMDBd** server.)
+* **`ErrorLog`** is the name of the file where **CMDBc** records errors.
 
 #### Syslog Settings
 Parameters for communicating with a local or remote syslog server:
