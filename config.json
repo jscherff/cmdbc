@@ -5,7 +5,7 @@
 
 	"API": {
 		"Server": "http://localhost:8080",
-		"Endpoint": {
+		"Endpoints": {
 			"usbCiCheckinV1": "v1/usbci/checkin",
 			"usbCiCheckoutV1": "v1/usbci/checkout",
 			"usbCiNewSnV1": "v1/usbci/newsn",
@@ -50,8 +50,8 @@
 
 	"Syslog": {
 		"Enabled": false,
-		"Protocol": "tcp",
-		"Port": "1468",
+		"Protocol": "udp",
+		"Port": "514",
 		"Host": "localhost",
 		"Tag": "usbci_cmdbc",
 		"Facility": "LOG_LOCAL7",
@@ -61,19 +61,16 @@
 	"Include": {
 
 		"VendorID": {
+			"0801": true
 		},
 
 		"ProductID": {
-			"0801": {
-				"0001": true,
-				"0002": true,
-				"0011": true,
-				"0013": true,
-				"0014": true
-			},
 			"0acd": {
 				"2010": true,
 				"2030": true
+			},
+			"046a": {
+				"0001": true
 			}
 		},
 

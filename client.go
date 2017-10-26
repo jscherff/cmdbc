@@ -95,7 +95,7 @@ func usbCiNewSnV1(dev usb.Serializer) (string, error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
 		conf.API.Server,
-		conf.API.Endpoint[`usbCiNewSnV1`],
+		conf.API.Endpoints[`usbCiNewSnV1`],
 		dev.Host(), dev.VID(), dev.PID(),
 	)
 
@@ -119,7 +119,7 @@ func usbCiCheckinV1(dev usb.Reporter) (error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
 		conf.API.Server,
-		conf.API.Endpoint[`usbCiCheckinV1`],
+		conf.API.Endpoints[`usbCiCheckinV1`],
 		dev.Host(), dev.VID(), dev.PID(),
 	)
 
@@ -146,7 +146,7 @@ func usbCiCheckoutV1(dev usb.Auditer) ([]byte, error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
 		conf.API.Server,
-		conf.API.Endpoint[`usbCiCheckoutV1`],
+		conf.API.Endpoints[`usbCiCheckoutV1`],
 		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
 	)
 
@@ -165,7 +165,7 @@ func usbCiAuditV1(dev usb.Auditer) (error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
 		conf.API.Server,
-		conf.API.Endpoint[`usbCiAuditV1`],
+		conf.API.Endpoints[`usbCiAuditV1`],
 		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
 	)
 
@@ -186,7 +186,7 @@ func usbMetaVendorV1(dev usb.Updater) (s string, err error) {
 
 	url := fmt.Sprintf(`%s/%s/%s`,
 		conf.API.Server,
-		conf.API.Endpoint[`usbMetaVendorV1`],
+		conf.API.Endpoints[`usbMetaVendorV1`],
 		dev.VID(),
 	)
 
@@ -207,7 +207,7 @@ func usbMetaProductV1(dev usb.Updater) (s string, err error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s`,
 		conf.API.Server,
-		conf.API.Endpoint[`usbMetaProductV1`],
+		conf.API.Endpoints[`usbMetaProductV1`],
 		dev.VID(), dev.PID(),
 	)
 

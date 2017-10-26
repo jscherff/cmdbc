@@ -48,7 +48,7 @@ type Config struct {
 
 	API struct {
 		Server string
-		Endpoint map[string]string
+		Endpoints map[string]string
 	}
 
 	Include struct {

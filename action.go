@@ -112,7 +112,7 @@ func report(dev usb.Reporter) (err error) {
 		return nil
 	}
 
-	f := fmt.Sprintf(`%s-%s.%s`, dev.SN(), dev.Conn(), *fReportFormat)
+	f := fmt.Sprintf(`%s-V%s-P%s.%s`, dev.Conn(), dev.VID(), dev.PID(), *fReportFormat)
 
 	if *fReportFolder != `` {
 		f = filepath.Join(*fReportFolder, f)
@@ -149,22 +149,6 @@ func serial(dev usb.Serializer) (err error) {
 
 	switch {
 
-	case *fSerialSet != ``:
-
-		sl.Printf(`device %s-%s setting serial to %q`,
-			dev.VID(), dev.PID(), *fSerialSet,
-		)
-
-		err = dev.SetDeviceSN(*fSerialSet)
-
-	case *fSerialDefault:
-
-		sl.Printf(`device %s-%s setting serial to default`,
-			dev.VID(), dev.PID(),
-		)
-
-		err = dev.SetDefaultSN()
-
 	case *fSerialFetch:
 
 		if s, err = usbCiNewSnV1(dev); err != nil {
@@ -184,6 +168,22 @@ func serial(dev usb.Serializer) (err error) {
 		)
 
 		err = usbCiCheckinV1(dev)
+
+	case *fSerialDefault:
+
+		sl.Printf(`device %s-%s setting serial to default`,
+			dev.VID(), dev.PID(),
+		)
+
+		err = dev.SetDefaultSN()
+
+	case *fSerialSet != ``:
+
+		sl.Printf(`device %s-%s setting serial to %q`,
+			dev.VID(), dev.PID(), *fSerialSet,
+		)
+
+		err = dev.SetDeviceSN(*fSerialSet)
 	}
 
 	return err
