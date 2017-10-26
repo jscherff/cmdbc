@@ -12,18 +12,16 @@ Save the appropriate executable file and the JSON configuration file to the desi
 * [**`config.json`**](https://github.com/jscherff/cmdbc/raw/master/config.json) (Configuration file)
 
 ### Configuration
-1. Obtain the **hostname** (or **IP address**) and listener **port** of the **CMDBd** server.
-1. In the **Server** section of the JSON configuration file, change the **URL** parameter to the URL and port of the **CMDBd** server.
+1. Obtain the hostname (or IP address) and listener port of the server.
+1. In the **API** section of the JSON configuration file, change the hostname and port components of the **Server** to the correct values.
     ```json
-    "Server": {
-        "URL": "http://sysadm-dev-01.24hourfit.com:8080",
-        "CheckinPath": "usbci/checkin",
-        "CheckoutPath": "usbci/checkout",
-        "NewSNPath": "usbci/newsn",
-        "AuditPath": "usbci/audit"
+    "API": {
+        "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",
+        "Endpoint": {
+        }
     }
     ```
-1. Ensure a firewall rule is in place allowing communication from managed workstations to the **CMDBd** server.
+1. Ensure a firewall rule is in place allowing communication from managed workstations to the IP address and port of the server.
 
 ### Operation
 Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
@@ -37,14 +35,6 @@ Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
     ```
 1. Schedule the following command to run once per month:
     ```sh
-    cmdbc.exe -audit -server
-    ```
-1. If legacy operation is required, schedule the following command to run once per week:
-    ```sh
-    cmdbc.exe -legacy
-    ```
-    Alternatvely, save a copy of the **cmdbc.exe** executable as **magtek_inventory.exe** and run it with no flags:
-    ```sh
-    magtek_inventory.exe
+    cmdbc.exe -audit
     ```
 1. Periodically parse the contents of `error.log` for issues.
