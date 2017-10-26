@@ -4,7 +4,6 @@ import (
 	`crypto/sha256`
 	`fmt`
 	`io/ioutil`
-	`os`
 	`path/filepath`
 	`reflect`
 	`strings`
@@ -16,7 +15,7 @@ func TestFuncSerial(t *testing.T) {
 
 	var err error
 
-	t.Run("GetNewSN() Function", func(t *testing.T) {
+	t.Run("serial() and usbCiNewSNV1() Must Obtain Serial Number (Magtek)", func(t *testing.T) {
 
 		resetFlags(t)
 		td.Mag[`mag1`].SerialNum = ``
@@ -24,7 +23,30 @@ func TestFuncSerial(t *testing.T) {
 		td.Mag[`mag1`].SerialNum, err = usbCiNewSnV1(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 		gotest.Assert(t, td.Mag[`mag1`].SerialNum != ``, `empty SN provided by server`)
+		//TODO: assert correct serial number format
 	})
+
+	t.Run("serial() and usbCiNewSNV1() Must Obtain Serial Number (IDTech)", func(t *testing.T) {
+
+		resetFlags(t)
+		td.Idt[`idt1`].SerialNum = ``
+
+		td.Idt[`idt1`].SerialNum, err = usbCiNewSnV1(td.Idt[`idt1`])
+		gotest.Ok(t, err)
+		gotest.Assert(t, td.Idt[`idt1`].SerialNum != ``, `empty SN provided by server`)
+		//TODO: assert correct serial number format
+	})
+
+	t.Run("serial() and usbCiNewSNV1() Must Not Obtain Serial Number (Bad IDTech)", func(t *testing.T) {
+
+		resetFlags(t)
+		td.Idt[`idt1`].SerialNum = ``
+		td.Idt[`idt1`].ObjectType = `*usb.Unknown`
+
+		td.Idt[`idt1`].SerialNum, err = usbCiNewSnV1(td.Idt[`idt1`])
+		gotest.Assert(t, err != nil, `attempt to obtain SN for unsupported device should fail`)
+	})
+
 
 	restoreState(t)
 }
@@ -33,60 +55,64 @@ func TestFuncReport(t *testing.T) {
 
 	var err error
 
-	t.Run("JSON Report", func(t *testing.T) {
+	t.Run("(*Device).JSON() Must Match SHA256 Signature", func(t *testing.T) {
 
 		resetFlags(t)
 		*fReportFormat = `json`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PJSN`][`mag1`], `unexpected hash signature of JSON report`)
 	})
 
-	t.Run("XML Report", func(t *testing.T) {
+	t.Run("(*Device).XML() Must Match SHA256 Signature", func(t *testing.T) {
 
 		resetFlags(t)
 		*fReportFormat = `xml`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PXML`][`mag1`], `unexpected hash signature of XML report`)
 	})
 
-	t.Run("CSV Report", func(t *testing.T) {
+	t.Run("(*Device).CSV() Must Match SHA256 Signature", func(t *testing.T) {
 
 		resetFlags(t)
 		*fReportFormat = `csv`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`CSV`][`mag1`], `unexpected hash signature of CSV report`)
 	})
 
-	t.Run("NVP Report", func(t *testing.T) {
+	t.Run("(*Device).NVP() Must Match SHA256 Signature", func(t *testing.T) {
 
 		resetFlags(t)
 		*fReportFormat = `nvp`
 
-		err = reportHandler(td.Mag[`mag1`])
+		err = report(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		fn := filepath.Join(conf.Paths.ReportDir, td.Mag[`mag1`].Filename() + `.` + *fReportFormat)
+		fn := fmt.Sprintf(`%s-%s.%s`, td.Mag[`mag1`].SN(), td.Mag[`mag1`].Conn(), *fReportFormat)
+		fn = filepath.Join(conf.Paths.ReportDir, fn)
 		b, err := ioutil.ReadFile(fn)
 		gotest.Ok(t, err)
 
@@ -99,7 +125,7 @@ func TestFuncCheckInOut(t *testing.T) {
 
 	var err error
 
-	t.Run("Checkin and Checkout Must Match", func(t *testing.T) {
+	t.Run("usbCiCheckinV1() and usbCiCheckoutV1() Devices Must Match", func(t *testing.T) {
 
 		resetFlags(t)
 
@@ -114,7 +140,7 @@ func TestFuncCheckInOut(t *testing.T) {
 		gotest.Assert(t, len(ss) == 0, `unmodified device should match last checkin`)
 	})
 
-	t.Run("Checkin and Checkout Must Not Match", func(t *testing.T) {
+	t.Run("usbCiCheckinV1() and usbCiCheckoutV1() Devices Must Not Match", func(t *testing.T) {
 
 		resetFlags(t)
 
@@ -138,56 +164,26 @@ func TestFuncAudit(t *testing.T) {
 
 	var err error
 
-	t.Run("Local Audit", func(t *testing.T) {
+	t.Run("audit() Must Show Changes", func(t *testing.T) {
 
 		resetFlags(t)
-		*fAuditLocal = true
-
-		af := fmt.Sprintf(`%s-%s-%s.json`, td.Mag[`mag1`].VID(), td.Mag[`mag1`].PID(), td.Mag[`mag1`].ID())
-		os.RemoveAll(filepath.Join(conf.Paths.StateDir, af))
-
-		err = auditHandler(td.Mag[`mag1`])
-		gotest.Assert(t, err != nil, `first run should result in file-not-found error`)
-
-		err = auditHandler(td.Mag[`mag1`])
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
-
-		err = auditHandler(td.Mag[`mag2`])
-		gotest.Ok(t, err)
-
-		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
-			`device change log does not contain known device differences`)
-
-		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
-		gotest.Ok(t, err)
-
-		fs := string(fb)
-		gotest.Assert(t, strings.Contains(fs, td.Clg[0]) && strings.Contains(fs, td.Clg[1]),
-			`application change log does not contain known device differences`)
-	})
-
-	t.Run("Server Audit", func(t *testing.T) {
-
-		resetFlags(t)
-		*fAuditServer = true
+		*fActionAudit = true
 
 		err = usbCiCheckinV1(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		err = auditHandler(td.Mag[`mag1`])
+		err = audit(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
 
-		err = auditHandler(td.Mag[`mag2`])
+		err = audit(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
 		gotest.Assert(t, reflect.DeepEqual(td.Mag[`mag2`].Changes, td.Chg),
 			`device change log does not contain known device differences`)
 
-		fb, err := ioutil.ReadFile(conf.Files.ChangeLog)
+		fb, err := ioutil.ReadFile(conf.Loggers.Logger[`change`].LogFile)
 		gotest.Ok(t, err)
 
 		fs := string(fb)
@@ -198,90 +194,43 @@ func TestFuncAudit(t *testing.T) {
 	restoreState(t)
 }
 
-func TestFuncFileIO(t *testing.T) {
-
-	// File Write Paths
-
-	wfn1 := `test1.txt`
-	wfn2 := `log/test2.txt`
-	wfn3 := filepath.Join(os.Getenv(`TEMP`), `test3.txt`)
-
-	// File Read Paths ('should')
-
-	rfn1 := filepath.Join(conf.Paths.AppDir, `test1.txt`)
-	rfn2 := `log/test2.txt`
-	rfn3 := filepath.Join(os.Getenv(`TEMP`), `test3.txt`)
-
-	// Generate file content
-
-	b, err := td.Mag[`mag1`].JSON()
-	gotest.Ok(t, err)
-
-	// File Write Tests
-
-	err = writeFile(b, wfn1)
-	gotest.Ok(t, err)
-
-	err = writeFile(b, wfn2)
-	gotest.Ok(t, err)
-
-	err = writeFile(b, wfn3)
-	gotest.Ok(t, err)
-
-	// File Read Tests
-
-	b, err = readFile(rfn1)
-	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
-
-	b, err = readFile(rfn2)
-	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
-
-	b, err = readFile(rfn3)
-	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
-
-	// File Read Test Validations
-
-	b, err = ioutil.ReadFile(rfn1)
-	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
-
-	b, err = ioutil.ReadFile(rfn2)
-	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
-
-	b, err = ioutil.ReadFile(rfn3)
-	gotest.Ok(t, err)
-	gotest.Assert(t, sha256.Sum256(b) == td.Sig[`JSN`][`mag1`], `unexpected hash signature of file contents`)
-
-	os.RemoveAll(wfn1)
-	os.RemoveAll(wfn2)
-	os.RemoveAll(wfn3)
-}
-
 /*
+TODO (OLD):
+	[ ] serial(o gocmdb.Configurable) (err error)
+	[ ] httpPost(url string, j []byte ) (b []byte, sc int, err error)
+	[ ] httpGet(url string) (b []byte, sc int, err error)
+	[ ] httpRequest(req *http.Request) (b []byte, sc int, err error)
+	[ ] newLoggers() (sl, cl, el *log.Logger)
+	[ ] magtekRouter(musb gocmdb.MagtekUSB) (err error)
+	[ ] genericRouter(gusb gocmdb.GenericUSB) (err error)
+	[X] newConfig(string) (*Config, error) - init()
+	[X] usbCiNewSnV1(o gocmdb.Registerable) (string, error) - TestGetNewSN()
+	[X] report(o gocmdb.Reportable) (error) - TestReporting()
+	[X] legacyHandler(o gocmdb.Reportable) (error) - TestReporting()
+	[X] usbCiCheckinV1(o gocmdb.Registerable) (error) - TestCheckinCheckout()
+	[X] usbCiCheckoutV1(o gocmdb.Auditable) ([]byte, error) - TestCheckinCheckout()
+	[X] audit(o gocmdb.Auditable) (error) - TestAuditing()
+	[X] usbCiAuditV1(o gocmdb.Auditable) (error) - TestAuditing()
+	[X] readFile(string, []byte) (error) - TestFileReadWrite()
+	[X] writeFile([]byte, string) (error) - TestFileReadWrite()
 
-TODO:
-	serialHandler(o gocmdb.Configurable) (err error)
-	httpPost(url string, j []byte ) (b []byte, sc int, err error)
-	httpGet(url string) (b []byte, sc int, err error)
-	httpRequest(req *http.Request) (b []byte, sc int, err error)
-	newLoggers() (sl, cl, el *log.Logger)
-	magtekRouter(musb gocmdb.MagtekUSB) (err error)
-	genericRouter(gusb gocmdb.GenericUSB) (err error)
-
-DONE:
-	newConfig(string) (*Config, error) - init()
-	usbCiNewSnV1(o gocmdb.Registerable) (string, error) - TestGetNewSN()
-	reportHandler(o gocmdb.Reportable) (error) - TestReporting()
-	legacyHandler(o gocmdb.Reportable) (error) - TestReporting()
-	usbCiCheckinV1(o gocmdb.Registerable) (error) - TestCheckinCheckout()
-	usbCiCheckoutV1(o gocmdb.Auditable) ([]byte, error) - TestCheckinCheckout()
-	auditHandler(o gocmdb.Auditable) (error) - TestAuditing()
-	usbCiAuditV1(o gocmdb.Auditable) (error) - TestAuditing()
-	readFile(string, []byte) (error) - TestFileReadWrite()
-	writeFile([]byte, string) (error) - TestFileReadWrite()
-
+TODO (NEW):
+	[ ] audit(dev usb.Auditer) (err error)
+	[X] report(dev usb.Reporter) (err error)
+	[X] serial(dev usb.Serializer) (err error)
+	[X] usbCiNewSnV1(dev usb.Serializer) (string, error)
+	[X] usbCiCheckinV1(dev usb.Reporter) (error)
+	[X] usbCiCheckoutV1(dev usb.Auditer) ([]byte, error)
+	[ ] usbCiAuditV1(dev usb.Auditer) (error)
+	[ ] usbMetaVendorV1(dev usb.Updater) (s string, err error)
+	[ ] usbMetaProductV1(dev usb.Updater) (s string, err error)
+	[ ] httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error)
+	[ ] httpGet(url string) (b []byte, hs httpStatus, err error)
+	[ ] httpRequest(req *http.Request) (b []byte, hs httpStatus, err error)
+	[ ] newConfig(cf string) (*Config, error)
+	[ ] loadConfig(t interface{}, cf string) error
+	[ ] makePath(path string) (string, error)
+	[X] route(i interface{}) (err error)
+	[X] convert(i interface{}) (interface{}, error)
+	[ ] update(i interface{}) (interface{})
 */

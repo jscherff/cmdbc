@@ -27,17 +27,13 @@ var (
 
 	fsReport = flag.NewFlagSet("report", flag.ExitOnError)
 	fReportFolder = fsReport.String("folder", "", "Write reports to `<path>`")
+	fReportFormat = fsReport.String("format", "json", "Report `<format>` {csv|nvp|xml|json}")
 	fReportConsole = fsReport.Bool("console", false, "Write reports to console")
-	fReportFormat = fsReport.String("format", "csv", "Report `<format>` {csv|nvp|xml|json}")
 
 	fsSerial = flag.NewFlagSet("serial", flag.ExitOnError)
-	fSerialCopy = fsSerial.Bool("copy", false, "Copy factory serial number")
+	fSerialDefault = fsSerial.Bool("default", false, "Set serial number to default")
 	fSerialErase = fsSerial.Bool("erase", false, "Erase current serial number")
 	fSerialForce = fsSerial.Bool("force", false, "Force serial number change")
 	fSerialFetch = fsSerial.Bool("fetch", false, "Fetch serial number from server")
 	fSerialSet = fsSerial.String("set", "", "Set serial number to `<string>`")
-
-	fsAudit = flag.NewFlagSet("audit", flag.ExitOnError)
-	fAuditLocal = fsAudit.Bool("local", false, "Audit against local state")
-	fAuditServer = fsAudit.Bool("server", false, "Audit against server state")
 )

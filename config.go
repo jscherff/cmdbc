@@ -21,9 +21,21 @@ import (
 	`os`
 )
 
+const (
+	FileAppend = os.O_APPEND|os.O_CREATE|os.O_WRONLY
+	FileMode = 0640
+	DirMode = 0750
+)
+
 var (
-	program = filepath.Base(os.Args[0])
+	// Program name and version.
+
+	progName = filepath.Base(os.Args[0])
 	version = `undefined`
+
+	// Configuration aliases.
+
+	sl, cl, el *Logger
 )
 
 // Config holds the application configuration settings. The struct tags
@@ -31,145 +43,108 @@ var (
 type Config struct {
 
 	Paths struct {
-		AppDir          string
-		LogDir          string
-		StateDir        string
-		ReportDir       string
+		ReportDir string
 	}
 
-	Files struct {
-		SystemLog       string
-		ChangeLog       string
-		ErrorLog        string
-		Legacy          string
-	}
-
-	Server struct {
-		URL             string
-		Endpoint        map[string]string
-	}
-
-
-	Logging struct {
-
-		System struct {
-			Logfile bool
-			Console bool
-			Syslog  bool
-		}
-
-		Change struct {
-			Logfile bool
-			Console bool
-			Syslog  bool
-		}
-
-		Error struct {
-			Logfile bool
-			Console bool
-			Syslog  bool
-		}
-	}
-
-	Syslog struct {
-		Protocol        string
-		Port            string
-		Host            string
+	API struct {
+		Server string
+		Endpoint map[string]string
 	}
 
 	Include struct {
-		VendorID        map[string]bool
-		ProductID       map[string]map[string]bool
-		Default         bool
+		VendorID map[string]bool
+		ProductID map[string]map[string]bool
+		Default bool
 	}
 
-	Format struct {
-		Report          string
-		Default         string
-	}
+	Syslog *Syslog
+	Loggers *Loggers
 
-	DebugLevel              int
+	DebugLevel int
 }
 
 // newConfig retrieves the settings in the JSON configuration file and
 // populates the fields in the runtime configuration. It also creates
 // directories if they do not already exist.
-func newConfig(cf string) (this *Config, err error) {
+func newConfig(cf string) (*Config, error) {
 
-	this = &Config{}
-	ad := filepath.Dir(os.Args[0])
+	this := &Config{}
 
-	if dn := filepath.Dir(cf); len(dn) == 0 {
-		cf = filepath.Join(ad, cf)
+	if dn := filepath.Dir(cf); dn == `` {
+		cf = filepath.Join(filepath.Dir(os.Args[0]), cf)
 	}
 
-	fh, err := os.Open(cf)
+	// Load the configuration.
 
-	if err != nil {
+	if err := loadConfig(this, cf); err != nil {
 		return nil, err
 	}
 
-	defer fh.Close()
-	jd := json.NewDecoder(fh)
+	// Create and initialize the Syslog object.
 
-	if err = jd.Decode(&this); err != nil {
+	if err := this.Syslog.Init(); err != nil {
 		return nil, err
 	}
 
-	this.Paths.AppDir = ad
+	// Create and initialize the Loggers object.
 
-	// Helpers to prepend and/or create paths as necessary.
-
-	var mkd = func(pd, d string) (string, error) {
-		if dn := filepath.Dir(d); dn == `` || dn == `.` {
-			d = filepath.Join(pd, d)
-		}
-		return d, os.MkdirAll(d, DirMode)
-	}
-
-	var mkf = func(pd, f string) (string, error) {
-
-		if dn := filepath.Dir(f); dn == `` || dn == `.` {
-			f = filepath.Join(pd, f)
-			return f, os.MkdirAll(pd, DirMode)
-		} else {
-			return f, os.MkdirAll(dn, DirMode)
-		}
-	}
-
-	// Build directory names and create paths as necessary. If a directory
-	// is relative, prepend the application directory.
-
-	if this.Paths.LogDir, err = mkd(this.Paths.AppDir, this.Paths.LogDir); err != nil {
-		return nil, err
-	}
-	if this.Paths.StateDir, err = mkd(this.Paths.AppDir, this.Paths.StateDir); err != nil {
-		return nil, err
-	}
-	if this.Paths.ReportDir, err = mkd(this.Paths.AppDir, this.Paths.ReportDir); err != nil {
+	if err := this.Loggers.Init(this.Syslog); err != nil {
 		return nil, err
 	}
 
-	// Build file names and create paths as necessary. If a filename is 
-	// relative, prepend the appropriate application directory.
+	// Ensure required loggers are present and create aliases.
 
-	if this.Files.SystemLog, err = mkf(this.Paths.LogDir, this.Files.SystemLog); err != nil {
+        var ok bool
+
+        if sl, ok = this.Loggers.Logger[`system`]; !ok {
+                return nil, fmt.Errorf(`missing "system" log config`)
+        }
+        if cl, ok = this.Loggers.Logger[`change`]; !ok {
+                return nil, fmt.Errorf(`missing "change" log config`)
+        }
+        if el, ok = this.Loggers.Logger[`error`]; !ok {
+                return nil, fmt.Errorf(`missing "error" log config`)
+        }
+
+	// Create report directory.
+
+	if dn, err := makePath(this.Paths.ReportDir); err != nil {
 		return nil, err
-	}
-	if this.Files.ChangeLog, err = mkf(this.Paths.LogDir, this.Files.ChangeLog); err != nil {
-		return nil, err
-	}
-	if this.Files.ErrorLog, err = mkf(this.Paths.LogDir, this.Files.ErrorLog); err != nil {
-		return nil, err
-	}
-	if this.Files.Legacy, err = mkf(this.Paths.AppDir, this.Files.Legacy); err != nil {
-		return nil, err
+	} else {
+		this.Paths.ReportDir = dn
 	}
 
 	return this, nil
 }
 
-// displayVersion displays the program version.
+// loadConfig loads a JSON configuration file into an object.
+func loadConfig(t interface{}, cf string) error {
+
+	if fh, err := os.Open(cf); err != nil {
+		return err
+	} else {
+		defer fh.Close()
+		jd := json.NewDecoder(fh)
+		err = jd.Decode(&t)
+		return err
+	}
+}
+
+// makePath creates a directory and all intermediate path components.
+// It prepends the program path if the given path is relative and 
+// returns the resulting absolute path.
+func makePath(path string) (string, error) {
+
+	path = filepath.Clean(path)
+
+	if dn := filepath.Dir(path); dn == `` {
+		path = filepath.Join(filepath.Dir(os.Args[0]), path)
+	}
+
+	return path, os.MkdirAll(path, DirMode)
+}
+
+// displayVersion displays the progName version.
 func displayVersion() {
-        fmt.Fprintf(os.Stderr, "%s version %s\n", program, version)
+        fmt.Fprintf(os.Stderr, "%s version %s\n", progName, version)
 }

@@ -15,20 +15,21 @@
 package main
 
 import (
-	`encoding/json`
 	`flag`
+	`fmt`
 	`log`
 	`os`
 	`sync`
 	`testing`
 	`github.com/google/gousb`
-	`github.com/jscherff/gocmdb/usbci`
+	`github.com/jscherff/cmdb/ci/peripheral/usb`
 )
 
 type TestData struct {
 	Jsn map[string][]byte
-	Mag map[string]*usbci.Magtek
-	Gen map[string]*usbci.Generic
+	Mag map[string]*usb.Magtek
+	Gen map[string]*usb.Generic
+	Idt map[string]*usb.IDTech
 	Sig map[string]map[string][32]byte
 	Chg [][]string
 	Clg []string
@@ -37,48 +38,28 @@ type TestData struct {
 var (
 	td *TestData
 	mux sync.Mutex
+	testConfFile = `config.json`
+	testDataFile = `tdata.json`
 )
 
 func init() {
 
-	td = new(TestData)
+	var err error
 
-	if err := createObjects(); err != nil {
+	if conf, err = newConfig(testConfFile); err != nil {
+		log.Fatal(err)
+	}
+
+	td = &TestData{}
+
+	if err = loadConfig(td, testDataFile); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func TestMain(m *testing.M) {
-
-	var err error
-
 	flag.Parse()
-
-	if conf, err = newConfig(`config.json`); err != nil {
-		log.Fatal(err)
-	}
-
-	conf.Logging.System.Console = false
-	conf.Logging.Change.Console = false
-	conf.Logging.Error.Console = false
-
-	slog, clog, elog = newLoggers()
-
-	if err = createObjects(); err != nil {
-		log.Fatal(err)
-	}
-
 	os.Exit(m.Run())
-}
-
-func createObjects() error {
-
-	if fh, err := os.Open(`testdata.json`); err != nil {
-		return err
-	} else {
-		defer fh.Close()
-		return json.NewDecoder(fh).Decode(&td)
-	}
 }
 
 func resetFlags(tb testing.TB) {
@@ -90,40 +71,36 @@ func resetFlags(tb testing.TB) {
 	*fActionReport = false
 	*fActionReset = false
 	*fActionSerial = false
+	*fActionVersion = false
 
-	*fReportFolder = conf.Paths.ReportDir
 	*fReportConsole = false
+	*fReportFolder = conf.Paths.ReportDir
 	*fReportFormat = ``
 
-	*fSerialCopy = false
+	*fSerialDefault = false
 	*fSerialErase = false
 	*fSerialForce = false
 	*fSerialFetch = false
 	*fSerialSet = ``
-
-	*fAuditLocal = false
-	*fAuditServer = false
 }
 
 func restoreState(tb testing.TB) {
 
 	tb.Helper()
 
-	if err := createObjects(); err != nil {
+	if err := loadConfig(td, testDataFile); err != nil {
 		tb.Fatal(err)
 	}
 }
 
-func getMagtekDevice(tb testing.TB, c *gousb.Context) (mdev *usbci.Magtek, err error) {
+func getMagtekDevice(tb testing.TB, c *gousb.Context) (*usb.Magtek, error) {
 
 	tb.Helper()
 
-	dev, err := c.OpenDeviceWithVIDPID(0x0801, 0x0001)
-
-	if dev != nil {
-		mdev, err = usbci.NewMagtek(dev)
+	if dev, _ := c.OpenDeviceWithVIDPID(0x0801, 0x0001); dev != nil {
+		return usb.NewMagtek(dev)
+	} else {
+		return nil, fmt.Errorf(`device not found`)
 	}
-
-	return mdev, err
 }
 

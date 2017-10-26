@@ -15,40 +15,116 @@
 package main
 
 import (
-	`github.com/jscherff/gocmdb`
+	`fmt`
+	`github.com/google/gousb`
+	`github.com/jscherff/cmdb/ci/peripheral/usb`
 )
 
-func magtekRouter(musb gocmdb.MagtekUSB) (err error) {
+var checkin = usbCiCheckinV1 // Alias
 
-	switch {
+func route(i interface{}) (err error) {
 
-	case *fActionSerial:
-		err = serialHandler(musb)
-		if err == nil {defer musb.Reset()}
+	if i, err = convert(i); err != nil {
+		return err
+	}
 
-	default:
-		err = genericRouter(musb)
+	i = update(i)
+
+	if d, ok := i.(usb.Serializer); ok {
+
+		switch {
+
+		case *fActionSerial:
+			if err = serial(d); err != nil {
+				return err
+			}
+			*fActionReset = true
+		}
+	}
+
+	if d, ok := i.(usb.Auditer); ok {
+
+		switch {
+
+		case *fActionReport:
+			err = report(d)
+
+		case *fActionCheckin:
+			err = checkin(d)
+
+		case *fActionAudit:
+			err = audit(d)
+
+		case *fActionReset:
+			err = d.Reset()
+		}
 	}
 
 	return err
 }
 
-func genericRouter(gusb gocmdb.GenericUSB) (err error) {
+func convert(i interface{}) (interface{}, error) {
+
+	var v, p gousb.ID
+
+	switch t := i.(type) {
+
+	case *gousb.Device:
+		v = t.Desc.Vendor
+		p = t.Desc.Product
+
+	case *gousb.DeviceDesc:
+		v = t.Vendor
+		p = t.Product
+
+	case *usb.Device:
+		return t, nil
+
+	case *usb.Generic:
+		return t, nil
+
+	case *usb.Magtek:
+		return t, nil
+
+	case *usb.IDTech:
+		return t, nil
+
+	default:
+		return nil, fmt.Errorf(`unsupported type %T`, t)
+	}
 
 	switch {
 
-	case *fActionAudit:
-		err = auditHandler(gusb)
+	case usb.IsMagtek(v, p):
+		return usb.NewMagtek(i)
 
-	case *fActionCheckin:
-		err = usbCiCheckinV1(gusb)
+	case usb.IsIDTech(v, p):
+		return usb.NewIDTech(i)
 
-	case *fActionReport:
-		err = reportHandler(gusb)
+	default:
+		return usb.NewGeneric(i)
+	}
+}
 
-	case *fActionReset:
-		defer gusb.Reset()
+func update(i interface{}) (interface{}) {
+
+	d, ok := i.(usb.Updater)
+
+	if !ok {
+		return i
 	}
 
-	return err
+	if d.GetVendorName() == `` {
+		if s, err := usbMetaVendorV1(d); err == nil {
+			d.SetVendorName(s)
+		}
+	}
+
+	if d.GetProductName() == `` {
+		if s, err := usbMetaProductV1(d); err == nil {
+			d.SetProductName(s)
+		}
+	}
+
+	return i
 }
