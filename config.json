@@ -3,20 +3,8 @@
 		"ReportDir": "report"
 	},
 
-<<<<<<< HEAD
-	"Files": {
-		"SystemLog": "system.log",
-		"ChangeLog": "change.log",
-		"ErrorLog": "error.log",
-		"Legacy": "usb_serial.txt"
-	},
-
-	"Server": {
-		"URL": "http://sysadm-dev-01.24hourfit.com:8080",
-=======
 	"API": {
 		"Server": "http://localhost:8080",
->>>>>>> newlib
 		"Endpoint": {
 			"usbCiCheckinV1": "v1/usbci/checkin",
 			"usbCiCheckoutV1": "v1/usbci/checkout",
@@ -89,7 +77,7 @@
 			}
 		},
 
-		"Default": false
+		"Default": true
 	},
 
 	"DebugLevel": 0

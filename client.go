@@ -139,17 +139,9 @@ func usbCiCheckinV1(dev usb.Reporter) (error) {
 // from the server using the unique key combination VID+PID+SN.
 func usbCiCheckoutV1(dev usb.Auditer) ([]byte, error) {
 
-<<<<<<< HEAD:httpio.go
-	if o.ID() == `` {
-		slog.Printf(`device %s-%s fetch: skipping, no SN`,
-			o.VID(), o.PID(),
-		)
-		return j, err
-=======
 	if dev.SN() == `` {
 		sl.Printf(`device %s-%s skipping fetch, no SN`, dev.VID(), dev.PID())
 		return nil, nil
->>>>>>> newlib:client.go
 	}
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
