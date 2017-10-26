@@ -22,7 +22,6 @@ import (
 	`sync`
 	`testing`
 	`github.com/google/gousb`
-	`github.com/jscherff/cmdbc_ng`
 	`github.com/jscherff/cmdb/ci/peripheral/usb`
 )
 

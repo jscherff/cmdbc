@@ -219,8 +219,8 @@ TODO (NEW):
 	[X] report(dev usb.Reporter) (err error)
 	[X] serial(dev usb.Serializer) (err error)
 	[X] usbCiNewSnV1(dev usb.Serializer) (string, error)
-	[ ] usbCiCheckinV1(dev usb.Reporter) (error)
-	[ ] usbCiCheckoutV1(dev usb.Auditer) ([]byte, error)
+	[X] usbCiCheckinV1(dev usb.Reporter) (error)
+	[X] usbCiCheckoutV1(dev usb.Auditer) ([]byte, error)
 	[ ] usbCiAuditV1(dev usb.Auditer) (error)
 	[ ] usbMetaVendorV1(dev usb.Updater) (s string, err error)
 	[ ] usbMetaProductV1(dev usb.Updater) (s string, err error)
@@ -230,8 +230,7 @@ TODO (NEW):
 	[ ] newConfig(cf string) (*Config, error)
 	[ ] loadConfig(t interface{}, cf string) error
 	[ ] makePath(path string) (string, error)
-	[ ] displayVersion()
-	[ ] route(i interface{}) (err error)
-	[ ] convert(i interface{}) (interface{}, error)
+	[X] route(i interface{}) (err error)
+	[X] convert(i interface{}) (interface{}, error)
 	[ ] update(i interface{}) (interface{})
 */
