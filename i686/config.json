@@ -1,0 +1,81 @@
+{
+	"Paths": {
+		"ReportDir": "report"
+	},
+
+	"API": {
+		"Server": "http://localhost:8080",
+		"Endpoints": {
+			"usbCiCheckinV1": "v1/usbci/checkin",
+			"usbCiCheckoutV1": "v1/usbci/checkout",
+			"usbCiNewSnV1": "v1/usbci/newsn",
+			"usbCiAuditV1": "v1/usbci/audit",
+			"usbMetaVendorV1": "v1/usbmeta/vendor",
+			"usbMetaProductV1": "v1/usbmeta/product",
+			"usbMetaClassV1": "v1/usbmeta/class",
+			"usbMetaSubClassV1": "v1/usbmeta/subclass",
+			"usbMetaProtocolV1": "v1/usbmeta/protocol"
+		}
+	},
+
+	"Loggers": {
+
+		"LogDir": "log",
+		"Console": false,
+		"Syslog": false,
+
+		"Logger": {
+			"system": {
+				"LogFile": "system.log",
+				"Console": false,
+				"Syslog": false,
+				"Prefix": ["date", "time"]
+			},
+
+			"change": {
+				"LogFile": "change.log",
+				"Console": false,
+				"Syslog": false,
+				"Prefix": ["date", "time"]
+			},
+
+			"error": {
+				"LogFile": "error.log",
+				"Console": true,
+				"Syslog": false,
+				"Prefix": ["date", "time", "file"]
+			}
+		}
+	},
+
+	"Syslog": {
+		"Enabled": false,
+		"Protocol": "udp",
+		"Port": "514",
+		"Host": "localhost",
+		"Tag": "usbci_cmdbc",
+		"Facility": "LOG_LOCAL7",
+		"Severity": "LOG_INFO"
+	},
+
+	"Include": {
+
+		"VendorID": {
+			"0801": true
+		},
+
+		"ProductID": {
+			"0acd": {
+				"2010": true,
+				"2030": true
+			},
+			"046a": {
+				"0001": true
+			}
+		},
+
+		"Default": true
+	},
+
+	"DebugLevel": 0
+}
