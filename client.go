@@ -88,8 +88,8 @@ func (this httpStatus) StatusText() (s string) {
 	return http.StatusText(int(this))
 }
 
-// usbCiNewSnV1 obtains a serial number from the cmdbd server.
-func usbCiNewSnV1(dev usb.Serializer) (string, error) {
+// newSn obtains a serial number from the cmdbd server.
+func newSn(dev usb.Serializer) (string, error) {
 
 	var s string
 
@@ -114,8 +114,8 @@ func usbCiNewSnV1(dev usb.Serializer) (string, error) {
 
 }
 
-// usbCiCheckinV1 checks a device in with the cmdbd server.
-func usbCiCheckinV1(dev usb.Reporter) (error) {
+// checkin checks a device in with the cmdbd server.
+func checkin(dev usb.Reporter) (error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
 		conf.API.Server,
@@ -135,9 +135,9 @@ func usbCiCheckinV1(dev usb.Reporter) (error) {
 	}
 }
 
-// usbCiCheckoutV1 obtains the JSON representation of a serialized device object
+// checkout obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
-func usbCiCheckoutV1(dev usb.Auditer) ([]byte, error) {
+func checkout(dev usb.Auditer) ([]byte, error) {
 
 	if dev.SN() == `` {
 		sl.Printf(`device %s-%s skipping fetch, no SN`, dev.VID(), dev.PID())
@@ -160,8 +160,8 @@ func usbCiCheckoutV1(dev usb.Auditer) ([]byte, error) {
 	}
 }
 
-// usbCiAuditV1 submits changes from audit to the server in JSON format.
-func usbCiAuditV1(dev usb.Auditer) (error) {
+// sendAudit submits changes from audit to the server in JSON format.
+func sendAudit(dev usb.Auditer) (error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
 		conf.API.Server,
@@ -181,8 +181,8 @@ func usbCiAuditV1(dev usb.Auditer) (error) {
 	}
 }
 
-//usbMetaVendorV1 retrieves the vendor name given the vid.
-func usbMetaVendorV1(dev usb.Updater) (s string, err error) {
+// vendor retrieves the vendor name given the vid.
+func vendor(dev usb.Updater) (s string, err error) {
 
 	url := fmt.Sprintf(`%s/%s/%s`,
 		conf.API.Server,
@@ -202,8 +202,8 @@ func usbMetaVendorV1(dev usb.Updater) (s string, err error) {
 	}
 }
 
-//usbMetaProductV1 retrieves the product name given the vid and pid.
-func usbMetaProductV1(dev usb.Updater) (s string, err error) {
+// product retrieves the product name given the vid and pid.
+func product(dev usb.Updater) (s string, err error) {
 
 	url := fmt.Sprintf(`%s/%s/%s/%s`,
 		conf.API.Server,

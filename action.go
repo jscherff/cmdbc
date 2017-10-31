@@ -38,7 +38,11 @@ func audit(dev usb.Auditer) (err error) {
 
 	var j []byte
 
-	if j, err = usbCiCheckoutV1(dev); err != nil {
+	if j, err = checkout(dev); err != nil {
+		j, err = dev.Clone().(usb.Auditer).JSON()
+	}
+
+	if err != nil {
 		return err
 	}
 
@@ -50,8 +54,8 @@ func audit(dev usb.Auditer) (err error) {
 		dev.VID(), dev.PID(), dev.SN(),
 	)
 
-	if err := usbCiCheckinV1(dev); err != nil {
-		el.Print(err)
+	if err := checkin(dev); err != nil {
+		el.Print(err) // err occluded later by sendAudit()
 	}
 
 	if len(ch) == 0 {
@@ -77,7 +81,7 @@ func audit(dev usb.Auditer) (err error) {
 
 	dev.SetChanges(ch)
 
-	return usbCiAuditV1(dev)
+	return sendAudit(dev)
 }
 
 // report processes options and writes report to the selected destination.
@@ -151,7 +155,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	case *fSerialFetch:
 
-		if s, err = usbCiNewSnV1(dev); err != nil {
+		if s, err = newSn(dev); err != nil {
 			break
 		}
 
@@ -167,7 +171,7 @@ func serial(dev usb.Serializer) (err error) {
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 
-		err = usbCiCheckinV1(dev)
+		err = checkin(dev)
 
 	case *fSerialDefault:
 
@@ -187,4 +191,16 @@ func serial(dev usb.Serializer) (err error) {
 	}
 
 	return err
+}
+
+// showState displays any available diagnostic information about the device.
+func showState(dev usb.Analyzer) (error) {
+
+	if state, err := dev.GetState(); err != nil {
+		return err
+	} else {
+		fmt.Println(state)
+	}
+
+	return nil
 }

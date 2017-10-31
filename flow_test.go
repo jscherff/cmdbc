@@ -54,16 +54,34 @@ func TestFlowAudit(t *testing.T) {
 	// Check device in with the database to ensure there is at least one record
 	// to use for comparison.
 
-	err = usbCiCheckinV1(td.Mag[`mag1`])
+	err = checkin(td.Mag[`mag1`])
 	gotest.Ok(t, err)
 
-	err = usbCiCheckinV1(td.Idt[`idt1`])
+	err = checkin(td.Idt[`idt1`])
 	gotest.Ok(t, err)
 
-	err = usbCiCheckinV1(td.Gen[`gen1`])
+	err = checkin(td.Gen[`gen1`])
 	gotest.Ok(t, err)
 
-	t.Run(`Flags: -audit`, func(t *testing.T) {
+	t.Run(`Flags: -audit (no changes)`, func(t *testing.T) {
+
+		resetFlags(t)
+		*fActionAudit = true
+
+		// Send device to router.
+
+		err = route(td.Mag[`mag1`])
+		gotest.Ok(t, err)
+
+		// Determine whether there are no changes recorded when auditing same device.
+
+		err = route(td.Mag[`mag1`])
+		gotest.Ok(t, err)
+
+		gotest.Assert(t, len(td.Mag[`mag1`].Changes) == 0, `device change log should be empty`)
+	})
+
+	t.Run(`Flags: -audit (with changes)`, func(t *testing.T) {
 
 		resetFlags(t)
 		*fActionAudit = true
@@ -119,7 +137,7 @@ func TestFlowCheckin(t *testing.T) {
 
 		// Checkout device and test if property change persisted.
 
-		b, err := usbCiCheckoutV1(td.Mag[`mag2`])
+		b, err := checkout(td.Mag[`mag2`])
 		gotest.Ok(t, err)
 
 		err = td.Mag[`mag2`].RestoreJSON(b)

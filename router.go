@@ -20,8 +20,6 @@ import (
 	`github.com/jscherff/cmdb/ci/peripheral/usb`
 )
 
-var checkin = usbCiCheckinV1 // Alias
-
 func route(i interface{}) (err error) {
 
 	if i, err = convert(i); err != nil {
@@ -39,6 +37,17 @@ func route(i interface{}) (err error) {
 				return err
 			}
 			*fActionReset = true
+		}
+	}
+
+	if d, ok := i.(usb.Analyzer); ok {
+
+		switch {
+
+		case *fActionState:
+			if err = showState(d); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -115,13 +124,13 @@ func update(i interface{}) (interface{}) {
 	}
 
 	if d.GetVendorName() == `` {
-		if s, err := usbMetaVendorV1(d); err == nil {
+		if s, err := vendor(d); err == nil {
 			d.SetVendorName(s)
 		}
 	}
 
 	if d.GetProductName() == `` {
-		if s, err := usbMetaProductV1(d); err == nil {
+		if s, err := product(d); err == nil {
 			d.SetProductName(s)
 		}
 	}

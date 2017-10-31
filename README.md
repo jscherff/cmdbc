@@ -182,7 +182,7 @@ The **Include** section specifies device vendors and products to include (_true_
 * **`Default`** specifies the default behavior for products that are not specifically included or excluded by _Vendor ID_ or _Product ID_. Here the default is to include, which effectively renders previous inclusions redundant; however, specific _VendorID_ and _ProductID_ inclusions ensure that those devices will be inventoried even if the _Default_ setting is changed to 'exclude' (_false_).
 
 ### Command-Line Flags
-Client operation is controlled through command-line _flags_. There are seven top-level _action flags_ -- `audit`, `checkin`, `report`, `reset`, `serial`, `version`, and `help`.  Some of these require (or offer) additional _option flags_.
+Client operation is controlled through command-line _flags_. There are eight top-level _action flags_ -- `audit`, `checkin`, `report`, `reset`, `serial`, `state`, `version`, and `help`.  Some of these require (or offer) additional _option flags_.
 * **`-audit`** performs a device configuration change audit.
 * **`-checkin`** checks devices in with the server, which stores device information in the database along with the check-in date.
 * **`-report`** generates device configuration reports.
@@ -195,13 +195,14 @@ Client operation is controlled through command-line _flags_. There are seven top
         * **`json`** specifies JavaScript object notation format (default).
     * **`-help`** lists _report option flags_ and their descriptions.
 * **`-reset`** resets the device.
-* **`-serial`** performs serial number operations. (By default, the utility will not configure a serial number on a device that already has one.)
+* **`-serial`** performs serial number operations, if supported. (By default, the utility will not configure a serial number on a device that already has one.)
     * **`-default`** sets the serial number to the factory default (if present).
     * **`-erase`** erases the current serial number.
     * **`-fetch`** fetches a unique serial number from the server.
     * **`-force`** forces a serial number change, even if the device already has one.
     * **`-set`** _`<value>`_ sets serial number to the specified _`<value>`_.
     * **`-help`** lists _serial option flags_ and their descriptions.
+* **`-state`** shows the current operating state of the device, if supported.
 * **`-help`** lists top-level _action flags_ and their descriptions.
 
 ### Serial Number Configuration

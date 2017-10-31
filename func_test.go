@@ -34,12 +34,12 @@ import (
 
 	API Client Functions:
 
-	[X] usbCiNewSnV1(dev usb.Serializer) (string, error)
-	[X] usbCiCheckinV1(dev usb.Reporter) (error)
-	[X] usbCiCheckoutV1(dev usb.Auditer) ([]byte, error)
-	[ ] usbCiAuditV1(dev usb.Auditer) (error)
-	[ ] usbMetaVendorV1(dev usb.Updater) (s string, err error)
-	[ ] usbMetaProductV1(dev usb.Updater) (s string, err error)
+	[X] newSn(dev usb.Serializer) (string, error)
+	[X] checkin(dev usb.Reporter) (error)
+	[X] checkout(dev usb.Auditer) ([]byte, error)
+	[ ] sendAudit(dev usb.Auditer) (error)
+	[ ] vendor(dev usb.Updater) (s string, err error)
+	[ ] product(dev usb.Updater) (s string, err error)
 
 	HTTP Helper Functions:
 
@@ -57,7 +57,7 @@ func TestFuncSerial(t *testing.T) {
 		resetFlags(t)
 		td.Mag[`mag1`].SerialNum = ``
 
-		td.Mag[`mag1`].SerialNum, err = usbCiNewSnV1(td.Mag[`mag1`])
+		td.Mag[`mag1`].SerialNum, err = newSn(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 		gotest.Assert(t, td.Mag[`mag1`].SerialNum != ``, `empty SN provided by server`)
 		//TODO: assert correct serial number format
@@ -68,7 +68,7 @@ func TestFuncSerial(t *testing.T) {
 		resetFlags(t)
 		td.Idt[`idt1`].SerialNum = ``
 
-		td.Idt[`idt1`].SerialNum, err = usbCiNewSnV1(td.Idt[`idt1`])
+		td.Idt[`idt1`].SerialNum, err = newSn(td.Idt[`idt1`])
 		gotest.Ok(t, err)
 		gotest.Assert(t, td.Idt[`idt1`].SerialNum != ``, `empty SN provided by server`)
 		//TODO: assert correct serial number format
@@ -80,7 +80,7 @@ func TestFuncSerial(t *testing.T) {
 		td.Idt[`idt1`].SerialNum = ``
 		td.Idt[`idt1`].ObjectType = `*usb.Unknown`
 
-		td.Idt[`idt1`].SerialNum, err = usbCiNewSnV1(td.Idt[`idt1`])
+		td.Idt[`idt1`].SerialNum, err = newSn(td.Idt[`idt1`])
 		gotest.Assert(t, err != nil, `attempt to obtain SN for unsupported device should fail`)
 	})
 
@@ -182,14 +182,14 @@ func TestFuncCheckInOut(t *testing.T) {
 
 	var err error
 
-	t.Run("usbCiCheckinV1() and usbCiCheckoutV1() Devices Must Match", func(t *testing.T) {
+	t.Run("checkin() and checkout() Devices Must Match", func(t *testing.T) {
 
 		resetFlags(t)
 
-		err = usbCiCheckinV1(td.Mag[`mag1`])
+		err = checkin(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
-		j, err := usbCiCheckoutV1(td.Mag[`mag1`])
+		j, err := checkout(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		ss, err := td.Mag[`mag1`].CompareJSON(j)
@@ -197,16 +197,16 @@ func TestFuncCheckInOut(t *testing.T) {
 		gotest.Assert(t, len(ss) == 0, `unmodified device should match last checkin`)
 	})
 
-	t.Run("usbCiCheckinV1() and usbCiCheckoutV1() Devices Must Not Match", func(t *testing.T) {
+	t.Run("checkin() and checkout() Devices Must Not Match", func(t *testing.T) {
 
 		resetFlags(t)
 
-		err = usbCiCheckinV1(td.Mag[`mag1`])
+		err = checkin(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		td.Mag[`mag1`].SoftwareID = `21042818B02`
 
-		j, err := usbCiCheckoutV1(td.Mag[`mag1`])
+		j, err := checkout(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		ss, err := td.Mag[`mag1`].CompareJSON(j)
@@ -226,7 +226,7 @@ func TestFuncAudit(t *testing.T) {
 		resetFlags(t)
 		*fActionAudit = true
 
-		err = usbCiCheckinV1(td.Mag[`mag1`])
+		err = checkin(td.Mag[`mag1`])
 		gotest.Ok(t, err)
 
 		err = audit(td.Mag[`mag1`])
