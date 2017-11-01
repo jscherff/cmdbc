@@ -24,15 +24,15 @@ The **API** section of the configuration file contains parameters for communicat
 "API": {
     "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",
     "Endpoint": {
-        "usbCiCheckinV1": "v1/usbci/checkin",
-        "usbCiCheckoutV1": "v1/usbci/checkout",
-        "usbCiNewSnV1": "v1/usbci/newsn",
-        "usbCiAuditV1": "v1/usbci/audit",
-        "usbMetaVendorV1": "v1/usbmeta/vendor",
-        "usbMetaProductV1": "v1/usbmeta/product",
-        "usbMetaClassV1": "v1/usbmeta/class",
-        "usbMetaSubClassV1": "v1/usbmeta/subclass",
-        "usbMetaProtocolV1": "v1/usbmeta/protocol"
+        "usb_ci_checkin": "v1/usbci/checkin",
+        "usb_ci_checkout": "v1/usbci/checkout",
+        "usb_ci_newsn": "v1/usbci/newsn",
+        "usb_ci_audit": "v1/usbci/audit",
+        "usb_meta_vendor": "v1/usbmeta/vendor",
+        "usb_meta_product": "v1/usbmeta/product",
+        "usb_meta_class": "v1/usbmeta/class",
+        "usb_meta_subclass": "v1/usbmeta/subclass",
+        "usb_meta_protocol": "v1/usbmeta/protocol"
     }
 }
 ```
