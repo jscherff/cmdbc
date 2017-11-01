@@ -4,7 +4,7 @@
 	},
 
 	"API": {
-		"Server": "http://cmdbsvcs-prd-vip.24hourfit.com:8080",
+		"Server": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
 		"Endpoints": {
 			"usb_ci_newsn": "v1/usbci/newsn",
 			"usb_ci_audit": "v1/usbci/audit",
@@ -52,8 +52,8 @@
 		"Enabled": false,
 		"Protocol": "udp",
 		"Port": "514",
-		"Host": "cmdbsvcs-prd-vip.24hourfit.com",
-		"Tag": "usbci_cmdbc",
+		"Host": "sysadm-dev-01.24hourfit.com",
+		"Tag": "cmdbc",
 		"Facility": "LOG_LOCAL7",
 		"Severity": "LOG_INFO"
 	},
