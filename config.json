@@ -4,7 +4,7 @@
 	},
 
 	"API": {
-		"Server": "http://localhost:8080",
+		"Server": "http://sysadm-dev-01:8080",
 		"Endpoints": {
 			"cmdb_auth": "v1/cmdbauth",
 			"usb_ci_newsn": "v1/usbci/newsn",
