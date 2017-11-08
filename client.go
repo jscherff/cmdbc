@@ -20,13 +20,7 @@ import (
 	`fmt`
 	`io/ioutil`
 	`net/http`
-	`time`
 	`github.com/jscherff/cmdb/ci/peripheral/usb`
-)
-
-var (
-	httpTransp = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
-	httpClient = &http.Client{Transport: httpTransp}
 )
 
 type httpStatus int
@@ -88,6 +82,34 @@ func (this httpStatus) StatusText() (s string) {
 	return http.StatusText(int(this))
 }
 
+// auth authenticates with the server using basic authentication and, if
+// successful, obtains JWT for API authentication in a cookie.
+func auth() error {
+
+	url := fmt.Sprintf(`%s/%s`,
+		conf.API.Server,
+		conf.API.Endpoints[`cmdb_auth`],
+	)
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+
+	if err != nil {
+		return err
+	}
+
+	req.SetBasicAuth(conf.API.Auth.Username, conf.API.Auth.Password)
+
+	if _, hs, err := httpRequest(req); err != nil {
+		return err
+	} else if !hs.Accepted() {
+		return fmt.Errorf(`authentication failure - %s`, hs)
+	} else {
+		sl.Printf(`authentication success - %s`, hs)
+	}
+
+	return nil
+}
+
 // newSn obtains a serial number from the cmdbd server.
 func newSn(dev usb.Serializer) (string, error) {
 
@@ -111,7 +133,6 @@ func newSn(dev usb.Serializer) (string, error) {
 		sl.Printf(`serial number %q generated - %s`, s, hs)
 		return s, nil
 	}
-
 }
 
 // checkin checks a device in with the cmdbd server.

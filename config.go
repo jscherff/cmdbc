@@ -17,8 +17,12 @@ package main
 import (
 	`encoding/json`
 	`fmt`
+	`net/http`
+	`net/http/cookiejar`
 	`path/filepath`
 	`os`
+	`time`
+	`golang.org/x/net/publicsuffix`
 )
 
 const (
@@ -30,8 +34,13 @@ const (
 var (
 	// Program name and version.
 
-	progName = filepath.Base(os.Args[0])
+	program = filepath.Base(os.Args[0])
 	version = `undefined`
+
+	// HTTP Transport and Client.
+
+	httpTransp = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
+	httpClient = &http.Client{Transport: httpTransp}
 
 	// Configuration aliases.
 
@@ -49,6 +58,10 @@ type Config struct {
 	API struct {
 		Server string
 		Endpoints map[string]string
+		Auth struct {
+			Username string
+			Password string
+		}
 	}
 
 	Include struct {
@@ -114,6 +127,14 @@ func newConfig(cf string) (*Config, error) {
 		this.Paths.ReportDir = dn
 	}
 
+	// Create http client cookie jar.
+
+	if jar, err := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List}); err != nil {
+		return nil, err
+	} else {
+		httpClient.Jar = jar
+	}
+
 	return this, nil
 }
 
@@ -144,7 +165,7 @@ func makePath(path string) (string, error) {
 	return path, os.MkdirAll(path, DirMode)
 }
 
-// displayVersion displays the progName version.
+// displayVersion displays the program version.
 func displayVersion() {
-        fmt.Fprintf(os.Stderr, "%s version %s\n", progName, version)
+        fmt.Fprintf(os.Stderr, "%s version %s\n", program, version)
 }

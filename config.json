@@ -4,8 +4,9 @@
 	},
 
 	"API": {
-		"Server": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
+		"Server": "http://localhost:8080",
 		"Endpoints": {
+			"cmdb_auth": "v1/cmdbauth",
 			"usb_ci_newsn": "v1/usbci/newsn",
 			"usb_ci_audit": "v1/usbci/audit",
 			"usb_ci_checkin": "v1/usbci/checkin",
@@ -15,6 +16,10 @@
 			"usb_meta_class": "v1/usbmeta/class",
 			"usb_meta_subclass": "v1/usbmeta/subclass",
 			"usb_meta_protocol": "v1/usbmeta/protocol"
+		},
+		"Auth": {
+			"Username": "clubpc",
+			"Password": "rfYDB9SL9bgqz6uy"
 		}
 	},
 
