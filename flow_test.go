@@ -20,10 +20,10 @@ import (
 	Actions:
 
 	[X]  -audit
-	[ ]  -checkin
-	[ ]  -report
-	[ ]  -reset
-	[ ]  -serial
+	[X]  -checkin
+	[X]  -report
+	[X]  -reset
+	[X]  -serial
 	[ ]  -version
 
 	Report Options:
@@ -153,7 +153,7 @@ func TestFlowReport(t *testing.T) {
 
 	var err error
 
-	t.Run(`Flags: -report -folder -format csv`, func(t *testing.T) {
+	t.Run(`Flags: -report -format csv`, func(t *testing.T) {
 
 		resetFlags(t)
 		*fActionReport = true
@@ -179,7 +179,7 @@ func TestFlowReport(t *testing.T) {
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`CSV`][`mag1`], `unexpected hash signature of CSV report`)
 	})
 
-	t.Run(`Flags: -report -folder -format nvp`, func(t *testing.T) {
+	t.Run(`Flags: -report -format nvp`, func(t *testing.T) {
 
 		resetFlags(t)
 		*fActionReport = true
@@ -205,7 +205,7 @@ func TestFlowReport(t *testing.T) {
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`NVP`][`mag1`], `unexpected hash signature of NVP report`)
 	})
 
-	t.Run(`Flags: -report -folder -format xml`, func(t *testing.T) {
+	t.Run(`Flags: -report -format xml`, func(t *testing.T) {
 
 		resetFlags(t)
 		*fActionReport = true
@@ -231,7 +231,7 @@ func TestFlowReport(t *testing.T) {
 		gotest.Assert(t, sha256.Sum256(b) == td.Sig[`PXML`][`mag1`], `unexpected hash signature of XML report`)
 	})
 
-	t.Run(`Flags: -report -folder -format json`, func(t *testing.T) {
+	t.Run(`Flags: -report -format json`, func(t *testing.T) {
 
 		resetFlags(t)
 		*fActionReport = true
