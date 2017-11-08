@@ -66,7 +66,7 @@ func main() {
 	// Authenticate with the server to obtain JWT for API auth.
 
 	if err = auth(); err != nil {
-		el.Print(err)
+		el.Fatal(err)
 	}
 
 	// Instantiate context to enumerate devices.
