@@ -23,6 +23,12 @@ import (
 	`github.com/jscherff/cmdb/ci/peripheral/usb`
 )
 
+// authenticated tracks whether or not client has authenbticated
+// with server so that functions calling protected API endpoints
+// can determine whether or not they need to call auth().
+var authenticated = false
+
+// httpStatus represents an http response status code.
 type httpStatus int
 
 // Accepted returns true for a successful http response status.
@@ -86,6 +92,10 @@ func (this httpStatus) StatusText() (s string) {
 // successful, obtains JWT for API authentication in a cookie.
 func auth() error {
 
+	if authenticated {
+		return nil
+	}
+
 	url := fmt.Sprintf(`%s/%s`,
 		conf.API.Server,
 		conf.API.Endpoints[`cmdb_auth`],
@@ -107,6 +117,7 @@ func auth() error {
 		sl.Printf(`authentication success - %s`, hs)
 	}
 
+	authenticated = true
 	return nil
 }
 
@@ -114,6 +125,10 @@ func auth() error {
 func newSn(dev usb.Serializer) (string, error) {
 
 	var s string
+
+	if err := auth(); err != nil {
+		return ``, err
+	}
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
 		conf.API.Server,
@@ -138,6 +153,10 @@ func newSn(dev usb.Serializer) (string, error) {
 // checkin checks a device in with the cmdbd server.
 func checkin(dev usb.Reporter) (error) {
 
+	if err := auth(); err != nil {
+		return err
+	}
+
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
 		conf.API.Server,
 		conf.API.Endpoints[`usb_ci_checkin`],
@@ -159,6 +178,10 @@ func checkin(dev usb.Reporter) (error) {
 // checkout obtains the JSON representation of a serialized device object
 // from the server using the unique key combination VID+PID+SN.
 func checkout(dev usb.Auditer) ([]byte, error) {
+
+	if err := auth(); err != nil {
+		return nil, err
+	}
 
 	if dev.SN() == `` {
 		sl.Printf(`device %s-%s skipping fetch, no SN`, dev.VID(), dev.PID())
@@ -183,6 +206,10 @@ func checkout(dev usb.Auditer) ([]byte, error) {
 
 // sendAudit submits changes from audit to the server in JSON format.
 func sendAudit(dev usb.Auditer) (error) {
+
+	if err := auth(); err != nil {
+		return err
+	}
 
 	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
 		conf.API.Server,

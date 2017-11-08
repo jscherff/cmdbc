@@ -63,12 +63,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Authenticate with the server to obtain JWT for API auth.
-
-	if err = auth(); err != nil {
-		el.Fatal(err)
-	}
-
 	// Instantiate context to enumerate devices.
 
 	ctx := gousb.NewContext()
