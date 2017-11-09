@@ -24,6 +24,7 @@ The **API** section of the configuration file contains parameters for communicat
 "API": {
     "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",
     "Endpoint": {
+        "cmdb_auth": "v1/cmdbauth",
         "usb_ci_checkin": "v1/usbci/checkin",
         "usb_ci_checkout": "v1/usbci/checkout",
         "usb_ci_newsn": "v1/usbci/newsn",
@@ -33,20 +34,28 @@ The **API** section of the configuration file contains parameters for communicat
         "usb_meta_class": "v1/usbmeta/class",
         "usb_meta_subclass": "v1/usbmeta/subclass",
         "usb_meta_protocol": "v1/usbmeta/protocol"
+    },
+    "Auth": {
+        "Username": "clubpc",
+        "Password": "****************"
     }
 }
 ```
 * **`Server`** is the base URL for the server hosting the REST API.
 * **`Endpoints`** is a collection of URL paths that represent the base of the REST API endpoints on the server. The API endpoints and their parameters are described more fully in the [API Endpoints](https://github.com/jscherff/cmdbd/blob/master/README.md#api-endpoints) section of the server documentation. You should not modify anything in this section unless asked to do so by a systems administrator or application designer.
-    * **`v1/usbci/checkin`** is the base path of the API on which the client submits configuration information for a new device or update information for an existing device.
-    * **`v1/usbci/checkout`** is the base path of the API on which the client obtains configuration information for a previously-registered, serialized device in order to perform a change audit.
-    * **`v1/usbci/newsn`** is the base path of the API on which the client obtains a new unique serial number from the server for assignment to the attached device.
-    * **`v1/usbci/audit`** is the base path of the API on which the client submit the results of a change audit on a serialized device. Results include the attribute name, previous value, and new value for each modified attribute.
-    * **`v1/usbmeta/vendor`** is the base path of the API on which the client obtains the USB vendor name by providing the vendor ID.
-    * **`v1/usbmeta/product`** is the base path of the API on which the client obtains the USB vendor and product names by providing the vendor and product IDs.
-    * **`v1/usbmeta/class`** is the base path of the API on which the client obtains the USB class description by providing the class ID.
-    * **`v1/usbmeta/subclass`** is the base path of the API on which the client obtains the USB class and subclass descriptions by providing the class and subclass IDs.
-    * **`v1/usbmeta/protocol`** is the base path of the API on which the client obtains the USB class, subclass, and protocol descriptions by providing the class, subclass, and protocol IDs.
+    * **`cmdb_auth`** is the base path of the API on which the client authenticates using basic authentication (see `Auth`, below). On successful authentication, the server will issue token (JWT) that the client will use to access protected endpoints for the remainder of the session.
+    * **`usb_ci_checkin`** is the base path of the API on which the client submits configuration information for a new device or update information for an existing device.
+    * **`usb_ci_checkout`** is the base path of the API on which the client obtains configuration information for a previously-registered, serialized device in order to perform a change audit.
+    * **`usb_ci_newsn`** is the base path of the API on which the client obtains a new unique serial number from the server for assignment to the attached device.
+    * **`usb_ci_audit`** is the base path of the API on which the client submit the results of a change audit on a serialized device. Results include the attribute name, previous value, and new value for each modified attribute.
+    * **`usb_meta_vendor`** is the base path of the API on which the client obtains the USB vendor name by providing the vendor ID.
+    * **`usb_meta_product`** is the base path of the API on which the client obtains the USB vendor and product names by providing the vendor and product IDs.
+    * **`usb_meta_class`** is the base path of the API on which the client obtains the USB class description by providing the class ID.
+    * **`usb_meta_subclass`** is the base path of the API on which the client obtains the USB class and subclass descriptions by providing the class and subclass IDs.
+    * **`usb_meta_protocol`** is the base path of the API on which the client obtains the USB class, subclass, and protocol descriptions by providing the class, subclass, and protocol IDs.
+* **`Auth`** contains the credentials the client will use to authenticate with the server using basic authentication.
+    * **`Username`** is the username component of the client credentials. The default is shown.
+    * **`Password`** is the password component of the client credentials.
 
 #### Path Settings
 The **Paths** section of the configuration file specifies directories where various files will be written. Relative paths are prepended with the installation directory.
@@ -203,6 +212,7 @@ Client operation is controlled through command-line _flags_. There are eight top
     * **`-set`** _`<value>`_ sets serial number to the specified _`<value>`_.
     * **`-help`** lists _serial option flags_ and their descriptions.
 * **`-state`** shows the current operating state of the device, if supported.
+* **`-version`** displays the version of the client utility.
 * **`-help`** lists top-level _action flags_ and their descriptions.
 
 ### Serial Number Configuration
