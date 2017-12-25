@@ -4,7 +4,9 @@
 	},
 
 	"API": {
-		"Server": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
+		"Server_DEV": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
+		"Server_LOC": "http://localhost:8080",
+		"Server": "http://localhost:8080",
 		"Endpoints": {
 			"cmdb_auth": "v1/cmdbauth",
 			"usb_ci_newsn": "v1/usbci/newsn",
@@ -19,6 +21,7 @@
 		},
 		"Auth": {
 			"Username": "clubpc",
+			"Password_LOC": "rfYDB9SL9bgqz6uy",
 			"Password": "rfYDB9SL9bgqz6uy"
 		}
 	},
