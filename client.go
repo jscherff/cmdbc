@@ -28,6 +28,27 @@ import (
 // can determine whether or not they need to call auth().
 var authenticated = false
 
+// httpResult contains the results of an http request/response.
+type httpResult struct {
+	status httpStatus
+	content httpContent
+}
+
+// Status returns the status of the http response.
+func (this *httpResult) Status() (httpStatus) {
+	return this.status
+}
+
+// Content returns the body of the http response.
+func (this *httpResult) Content() (httpContent) {
+	return this.content
+}
+
+// String implements the Stringer interface for httpResult.
+func (this *httpResult) String() (s string) {
+	return fmt.Sprintf(`%s: %s`, this.status, this.content)
+}
+
 // httpStatus represents an http response status code.
 type httpStatus int
 
@@ -75,7 +96,7 @@ func (this httpStatus) String() (s string) {
 	case http.StatusInternalServerError:
 		s = `unable to process request`
 	case http.StatusNotFound:
-		s = `api endpoint not found`
+		s = `object not found`
 	default:
 		s = this.StatusText()
 	}
@@ -86,6 +107,18 @@ func (this httpStatus) String() (s string) {
 // StatusText returns the HTTP status text associated with the status code.
 func (this httpStatus) StatusText() (s string) {
 	return http.StatusText(int(this))
+}
+
+// httpContent represents the body of an http response.
+type httpContent []byte
+
+// String implements the Stringer interface for httpStatus.
+func (this httpContent) String() (s string) {
+	if err := json.Unmarshal(this, &s); err != nil {
+		return string(this)
+	} else {
+		return s
+	}
 }
 
 // auth authenticates with the server using basic authentication and, if
@@ -272,10 +305,10 @@ func product(dev usb.Updater) (s string, err error) {
 }
 
 // httpPost sends http POST requests to cmdbd server endpoints for other functions.
-func httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error) {
+func httpPost(url string, data []byte ) (body []byte, stat httpStatus, err error) {
 
-	if req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(j)); err != nil {
-		return b, hs, err
+	if req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data)); err != nil {
+		return body, stat, err
 	} else {
 		req.Header.Add(`Content-Type`, `application/json; charset=UTF8`)
 		return httpRequest(req)
@@ -283,17 +316,17 @@ func httpPost(url string, j []byte ) (b []byte, hs httpStatus, err error) {
 }
 
 // httpGet sends http GET requests to cmdbd server endpoints for other functions.
-func httpGet(url string) (b []byte, hs httpStatus, err error) {
+func httpGet(url string) (body []byte, stat httpStatus, err error) {
 
 	if req, err := http.NewRequest(http.MethodGet, url, nil); err != nil {
-		return b, hs, err
+		return body, stat, err
 	} else {
 		return httpRequest(req)
 	}
 }
 
 // httpRequest sends http requests to cmdbd server endpoints for other functions.
-func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
+func httpRequest(req *http.Request) (body []byte, stat httpStatus, err error) {
 
 	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
 	req.Header.Add(`X-Custom-Header`, `cmdbc`)
@@ -303,13 +336,13 @@ func httpRequest(req *http.Request) (b []byte, hs httpStatus, err error) {
 	resp, err := httpClient.Do(req)
 
 	if err != nil {
-		return b, hs, err
+		return body, stat, err
 	}
 
 	defer resp.Body.Close()
 
-	hs = httpStatus(resp.StatusCode)
-	b, err = ioutil.ReadAll(resp.Body)
+	stat = httpStatus(resp.StatusCode)
+	body, err = ioutil.ReadAll(resp.Body)
 
-	return b, hs, err
+	return body, stat, err
 }

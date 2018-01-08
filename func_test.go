@@ -52,7 +52,7 @@ func TestFuncSerial(t *testing.T) {
 
 	var err error
 
-	t.Run("serial() and usbCiNewSNV1() Must Obtain Serial Number (Magtek)", func(t *testing.T) {
+	t.Run("serial() and newSn() Must Obtain Serial Number (Magtek)", func(t *testing.T) {
 
 		resetFlags(t)
 		td.Mag[`mag1`].SerialNum = ``
@@ -63,7 +63,7 @@ func TestFuncSerial(t *testing.T) {
 		//TODO: assert correct serial number format
 	})
 
-	t.Run("serial() and usbCiNewSNV1() Must Obtain Serial Number (IDTech)", func(t *testing.T) {
+	t.Run("serial() and newSn() Must Obtain Serial Number (IDTech)", func(t *testing.T) {
 
 		resetFlags(t)
 		td.Idt[`idt1`].SerialNum = ``
@@ -74,14 +74,16 @@ func TestFuncSerial(t *testing.T) {
 		//TODO: assert correct serial number format
 	})
 
-	t.Run("serial() and usbCiNewSNV1() Must Not Obtain Serial Number (Bad IDTech)", func(t *testing.T) {
+	t.Run("serial() and newSn() Must Obtain Serial Number (Unknown)", func(t *testing.T) {
 
 		resetFlags(t)
 		td.Idt[`idt1`].SerialNum = ``
 		td.Idt[`idt1`].ObjectType = `*usb.Unknown`
 
 		td.Idt[`idt1`].SerialNum, err = newSn(td.Idt[`idt1`])
-		gotest.Assert(t, err != nil, `attempt to obtain SN for unsupported device should fail`)
+		gotest.Ok(t, err)
+		gotest.Assert(t, td.Idt[`idt1`].SerialNum != ``, `empty SN provided by server`)
+		//TODO: assert correct serial number format
 	})
 
 
