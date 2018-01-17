@@ -5,7 +5,8 @@
 
 	"API": {
 		"Server_LOCAL": "http://localhost:8080",
-		"Server_SBOX": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
+		"Server_SBOX": "http://sysadm-dev-01.24hourfit.com:8080",
+		"Server_DEV": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
 		"Server": "http://localhost:8080",
 		"Endpoints": {
 			"cmdb_auth": "v1/cmdbauth",
