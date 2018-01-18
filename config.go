@@ -51,6 +51,8 @@ var (
 // must match the field names in the JSON configuration file.
 type Config struct {
 
+	HostName string
+
 	Paths struct {
 		ReportDir string
 	}
@@ -91,6 +93,14 @@ func newConfig(cf string) (*Config, error) {
 
 	if err := loadConfig(this, cf); err != nil {
 		return nil, err
+	}
+
+	// Set the hostname.
+
+	if hn, err := os.Hostname(); err != nil {
+		return nil, err
+	} else {
+		this.HostName = hn
 	}
 
 	// Create and initialize the Syslog object.

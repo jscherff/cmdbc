@@ -8,18 +8,32 @@
 		"Server_SBOX": "http://sysadm-dev-01.24hourfit.com:8080",
 		"Server_DEV": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
 		"Server": "http://localhost:8080",
+
 		"Endpoints": {
-			"cmdb_auth": "v1/cmdbauth",
-			"usb_ci_newsn": "v1/usbci/newsn",
-			"usb_ci_audit": "v1/usbci/audit",
-			"usb_ci_checkin": "v1/usbci/checkin",
-			"usb_ci_checkout": "v1/usbci/checkout",
-			"usb_meta_vendor": "v1/usbmeta/vendor",
-			"usb_meta_product": "v1/usbmeta/product",
-			"usb_meta_class": "v1/usbmeta/class",
-			"usb_meta_subclass": "v1/usbmeta/subclass",
-			"usb_meta_protocol": "v1/usbmeta/protocol"
+
+			"old_cmdb_auth": "/v1/cmdbauth",
+			"old_usb_ci_checkin": "/v1/usbci/checkin/%s/%s/%s",
+			"old_usb_ci_checkout": "/v1/usbci/checkout/%s/%s/%s/%s",
+			"old_usb_ci_newsn": "/v1/usbci/newsn/%s/%s/%s",
+			"old_usb_ci_audit": "/v1/usbci/audit/%s/%s/%s/%s",
+			"old_usb_meta_vendor": "/v1/usbmeta/vendor/%s",
+			"old_usb_meta_product": "/v1/usbmeta/product/%s/%s",
+			"old_usb_meta_class": "/v1/usbmeta/class/%s",
+			"old_usb_meta_subclass": "/v1/usbmeta/subclass/%s/%s",
+			"old_usb_meta_protocol": "/v1/usbmeta/protocol/%s/%s/%s",
+
+			"cmdb_auth": "/v2/cmdb/authenticate/%s",
+			"usb_ci_checkin": "/v2/cmdb/ci/usb/checkin/%s/%s/%s",
+			"usb_ci_checkout": "/v2/cmdb/ci/usb/checkout/%s/%s/%s/%s",
+			"usb_ci_newsn": "/v2/cmdb/ci/usb/newsn/%s/%s/%s",
+			"usb_ci_audit": "/v2/cmdb/ci/usb/audit/%s/%s/%s/%s",
+			"usb_meta_vendor": "/v2/cmdb/meta/usb/vendor/%s",
+			"usb_meta_product": "/v2/cmdb/meta/usb/product/%s/%s",
+			"usb_meta_class": "/v2/cmdb/meta/usb/class/%s",
+			"usb_meta_subclass": "/v2/cmdb/meta/usb/subclass/%s/%s",
+			"usb_meta_protocol": "/v2/cmdb/meta/usb/protocol/%s/%s/%s"
 		},
+
 		"Auth": {
 			"Username": "clubpc",
 			"Password_LOCAL": "rfYDB9SL9bgqz6uy",

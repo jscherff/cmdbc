@@ -96,7 +96,7 @@ func (this httpStatus) String() (s string) {
 	case http.StatusInternalServerError:
 		s = `unable to process request`
 	case http.StatusNotFound:
-		s = `object not found`
+		s = `object not found` //TODO: deconflict this with wrong endpoint URL.
 	default:
 		s = this.StatusText()
 	}
@@ -129,9 +129,9 @@ func auth() error {
 		return nil
 	}
 
-	url := fmt.Sprintf(`%s/%s`,
-		conf.API.Server,
+	url := conf.API.Server + fmt.Sprintf(
 		conf.API.Endpoints[`cmdb_auth`],
+		conf.HostName,
 	)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -163,10 +163,9 @@ func newSn(dev usb.Serializer) (string, error) {
 		return ``, err
 	}
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
-		conf.API.Server,
+	url := conf.API.Server + fmt.Sprintf(
 		conf.API.Endpoints[`usb_ci_newsn`],
-		dev.Host(), dev.VID(), dev.PID(),
+		conf.HostName, dev.VID(), dev.PID(),
 	)
 
 	if j, err := dev.JSON(); err != nil {
@@ -190,10 +189,9 @@ func checkin(dev usb.Reporter) (error) {
 		return err
 	}
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s`,
-		conf.API.Server,
+	url := conf.API.Server + fmt.Sprintf(
 		conf.API.Endpoints[`usb_ci_checkin`],
-		dev.Host(), dev.VID(), dev.PID(),
+		conf.HostName, dev.VID(), dev.PID(),
 	)
 
 	if j, err := dev.JSON(); err != nil {
@@ -221,10 +219,9 @@ func checkout(dev usb.Auditer) ([]byte, error) {
 		return nil, nil
 	}
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
-		conf.API.Server,
+	url := conf.API.Server + fmt.Sprintf(
 		conf.API.Endpoints[`usb_ci_checkout`],
-		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
+		conf.HostName, dev.VID(), dev.PID(), dev.SN(),
 	)
 
 	if j, hs, err := httpGet(url); err != nil {
@@ -244,10 +241,9 @@ func sendAudit(dev usb.Auditer) (error) {
 		return err
 	}
 
-	url := fmt.Sprintf(`%s/%s/%s/%s/%s/%s`,
-		conf.API.Server,
+	url := conf.API.Server + fmt.Sprintf(
 		conf.API.Endpoints[`usb_ci_audit`],
-		dev.Host(), dev.VID(), dev.PID(), dev.SN(),
+		conf.HostName, dev.VID(), dev.PID(), dev.SN(),
 	)
 
 	if j, err := json.Marshal(dev.GetChanges()); err != nil {
@@ -265,8 +261,7 @@ func sendAudit(dev usb.Auditer) (error) {
 // vendor retrieves the vendor name given the vid.
 func vendor(dev usb.Updater) (s string, err error) {
 
-	url := fmt.Sprintf(`%s/%s/%s`,
-		conf.API.Server,
+	url := conf.API.Server + fmt.Sprintf(
 		conf.API.Endpoints[`usb_meta_vendor`],
 		dev.VID(),
 	)
@@ -286,8 +281,7 @@ func vendor(dev usb.Updater) (s string, err error) {
 // product retrieves the product name given the vid and pid.
 func product(dev usb.Updater) (s string, err error) {
 
-	url := fmt.Sprintf(`%s/%s/%s/%s`,
-		conf.API.Server,
+	url := conf.API.Server + fmt.Sprintf(
 		conf.API.Endpoints[`usb_meta_product`],
 		dev.VID(), dev.PID(),
 	)
