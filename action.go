@@ -70,7 +70,7 @@ func audit(dev usb.Auditer) (err error) {
 	)
 
 	for _, c := range ch {
-		cl.Printf(`device %s-%s-%s modified: %q was %q, now %q`,
+		cl.Printf(`device %s-%s-%s modified: '%s' was '%s', now '%s'`,
 			dev.VID(), dev.PID(), dev.SN(), c[0], c[1], c[2],
 		)
 	}
@@ -104,7 +104,7 @@ func report(dev usb.Reporter) (err error) {
 		b, err = dev.PrettyJSON()
 
 	default:
-		err = fmt.Errorf(`invalid format %q`, *fReportFormat)
+		err = fmt.Errorf(`invalid format '%s'`, *fReportFormat)
 	}
 
 	if err != nil {
@@ -134,7 +134,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	if *fSerialErase {
 
-		sl.Printf(`device %s-%s erasing serial %q`,
+		sl.Printf(`device %s-%s erasing serial '%s'`,
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 
@@ -145,7 +145,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	if !*fSerialForce && dev.SN() != `` {
 
-		return fmt.Errorf(`device %s-%s serial already set to %q`,
+		return fmt.Errorf(`device %s-%s serial already set to '%s'`,
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 
@@ -159,7 +159,7 @@ func serial(dev usb.Serializer) (err error) {
 			break
 		}
 
-		sl.Printf(`device %s-%s setting serial to %q`,
+		sl.Printf(`device %s-%s setting serial to '%s'`,
 			dev.VID(), dev.PID(), s,
 		)
 
@@ -183,7 +183,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	case *fSerialSet != ``:
 
-		sl.Printf(`device %s-%s setting serial to %q`,
+		sl.Printf(`device %s-%s setting serial to '%s'`,
 			dev.VID(), dev.PID(), *fSerialSet,
 		)
 

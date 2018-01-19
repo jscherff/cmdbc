@@ -46,7 +46,7 @@
 	"Loggers": {
 
 		"LogDir": "log",
-		"Console": false,
+		"Console": true,
 		"Syslog": false,
 
 		"Logger": {

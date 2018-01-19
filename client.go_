@@ -67,11 +67,6 @@ func (this httpStatus) Accepted() (bool) {
 	return true
 }
 
-// Rejected returns true for an unsuccessful http response status.
-func (this httpStatus) Rejected() (bool) {
-	return !this.Accepted()
-}
-
 // String implements the Stringer interface for httpStatus.
 func (this httpStatus) String() (string) {
 	return this.StatusText()
@@ -85,14 +80,9 @@ func (this httpStatus) StatusText() (string) {
 // httpContent represents the body of an http response.
 type httpContent []byte
 
-// Decode unmarshals content into the provided object.
-func (this httpContent) Decode(t interface{}) (error) {
-	return json.Unmarshal(this, t)
-}
-
 // String implements the Stringer interface for httpStatus.
 func (this httpContent) String() (s string) {
-	if err := this.Decode(&s); err != nil {
+	if err := json.Unmarshal(this, &s); err != nil {
 		return string(this)
 	} else {
 		return s
@@ -108,7 +98,8 @@ func auth() error {
 	}
 
 	url := conf.API.Server + fmt.Sprintf(
-		conf.API.Endpoints[`cmdb_auth`], conf.HostName,
+		conf.API.Endpoints[`cmdb_auth`],
+		conf.HostName,
 	)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -119,12 +110,12 @@ func auth() error {
 
 	req.SetBasicAuth(conf.API.Auth.Username, conf.API.Auth.Password)
 
-	if hr, err := httpRequest(req); err != nil {
+	if _, hs, err := httpRequest(req); err != nil {
 		return err
-	} else if hr.Status().Rejected() {
-		return fmt.Errorf(`authentication failure - %s`, hr)
+	} else if !hs.Accepted() {
+		return fmt.Errorf(`authentication failure - %s`, hs)
 	} else {
-		sl.Printf(`authentication success - %s`, hr.Status())
+		sl.Printf(`authentication success - %s`, hs)
 	}
 
 	authenticated = true
@@ -134,26 +125,27 @@ func auth() error {
 // newSn obtains a serial number from the cmdbd server.
 func newSn(dev usb.Serializer) (string, error) {
 
+	var s string
+
 	if err := auth(); err != nil {
 		return ``, err
 	}
 
 	url := conf.API.Server + fmt.Sprintf(
-		conf.API.Endpoints[`usb_ci_newsn`], conf.HostName, dev.VID(), dev.PID(),
+		conf.API.Endpoints[`usb_ci_newsn`],
+		conf.HostName, dev.VID(), dev.PID(),
 	)
-
-	var s string
 
 	if j, err := dev.JSON(); err != nil {
 		return ``, err
-	} else if hr, err := httpPost(url, j); err != nil {
+	} else if j, hs, err := httpPost(url, j); err != nil {
 		return ``, err
-	} else if hr.Status().Rejected() {
-		return ``, fmt.Errorf(`serial number not generated - %s`, hr)
-	} else if err := hr.Content().Decode(&s); err != nil {
+	} else if !hs.Accepted() {
+		return ``, fmt.Errorf(`serial number not generated - %s`, hs)
+	} else if err = json.Unmarshal(j, &s); err != nil {
 		return ``, err
 	} else {
-		sl.Printf(`serial number '%s' generated - %s`, s, hr.Status())
+		sl.Printf(`serial number %q generated - %s`, s, hs)
 		return s, nil
 	}
 }
@@ -166,17 +158,18 @@ func checkin(dev usb.Reporter) (error) {
 	}
 
 	url := conf.API.Server + fmt.Sprintf(
-		conf.API.Endpoints[`usb_ci_checkin`], conf.HostName, dev.VID(), dev.PID(),
+		conf.API.Endpoints[`usb_ci_checkin`],
+		conf.HostName, dev.VID(), dev.PID(),
 	)
 
 	if j, err := dev.JSON(); err != nil {
 		return err
-	} else if hr, err := httpPost(url, j); err != nil {
+	} else if _, hs, err := httpPost(url, j); err != nil {
 		return err
-	} else if hr.Status().Rejected() {
-		return fmt.Errorf(`checkin not accepted - %s`, hr)
+	} else if !hs.Accepted() {
+		return fmt.Errorf(`checkin not accepted - %s`, hs)
 	} else {
-		sl.Printf(`checkin accepted - %s`, hr.Status())
+		sl.Printf(`checkin accepted - %s`, hs)
 		return nil
 	}
 }
@@ -195,16 +188,17 @@ func checkout(dev usb.Auditer) ([]byte, error) {
 	}
 
 	url := conf.API.Server + fmt.Sprintf(
-		conf.API.Endpoints[`usb_ci_checkout`], conf.HostName, dev.VID(), dev.PID(), dev.SN(),
+		conf.API.Endpoints[`usb_ci_checkout`],
+		conf.HostName, dev.VID(), dev.PID(), dev.SN(),
 	)
 
-	if hr, err := httpGet(url); err != nil {
+	if j, hs, err := httpGet(url); err != nil {
 		return nil, err
-	} else if hr.Status().Rejected() {
-		return nil, fmt.Errorf(`device not retreived - %s`, hr)
+	} else if !hs.Accepted() {
+		return nil, fmt.Errorf(`device not retreived - %s`, hs)
 	} else {
-		sl.Printf(`device retrieved - %s`, hr.Status())
-		return hr.Content(), nil
+		sl.Printf(`device retrieved - %s`, hs)
+		return j, nil
 	}
 }
 
@@ -216,68 +210,67 @@ func sendAudit(dev usb.Auditer) (error) {
 	}
 
 	url := conf.API.Server + fmt.Sprintf(
-		conf.API.Endpoints[`usb_ci_audit`], conf.HostName, dev.VID(), dev.PID(), dev.SN(),
+		conf.API.Endpoints[`usb_ci_audit`],
+		conf.HostName, dev.VID(), dev.PID(), dev.SN(),
 	)
 
 	if j, err := json.Marshal(dev.GetChanges()); err != nil {
 		return err
-	} else if hr, err := httpPost(url, j); err != nil {
+	} else if _, hs, err := httpPost(url, j); err != nil {
 		return err
-	} else if hr.Status().Rejected() {
-		return fmt.Errorf(`audit not accepted - %s`, hr)
+	} else if !hs.Accepted() {
+		return fmt.Errorf(`audit not accepted - %s`, hs)
 	} else {
-		sl.Printf(`audit accepted - %s`, hr.Status())
+		sl.Printf(`audit accepted - %s`, hs)
 		return nil
 	}
 }
 
 // vendor retrieves the vendor name given the vid.
-func vendor(dev usb.Updater) (string, error) {
+func vendor(dev usb.Updater) (s string, err error) {
 
 	url := conf.API.Server + fmt.Sprintf(
-		conf.API.Endpoints[`usb_meta_vendor`], dev.VID(),
+		conf.API.Endpoints[`usb_meta_vendor`],
+		dev.VID(),
 	)
 
-	var s string
-
-	if hr, err := httpGet(url); err != nil {
+	if j, hs, err := httpGet(url); err != nil {
 		return ``, err
-	} else if hr.Status().Rejected() {
-		return ``, fmt.Errorf(`vendor lookup failed - %s`, hr)
-	} else if err := hr.Content().Decode(&s); err != nil {
+	} else if !hs.Accepted() {
+		return ``, fmt.Errorf(`lookup failed - %s`, hs)
+	} else if err = json.Unmarshal(j, &s); err != nil {
 		return ``, err
 	} else {
-		sl.Printf(`vendor lookup succeeded - %s`, hr.Status())
+		sl.Printf(`lookup succeeded - %s`, hs)
 		return s, nil
 	}
 }
 
 // product retrieves the product name given the vid and pid.
-func product(dev usb.Updater) (string, error) {
+func product(dev usb.Updater) (s string, err error) {
 
 	url := conf.API.Server + fmt.Sprintf(
-		conf.API.Endpoints[`usb_meta_product`], dev.VID(), dev.PID(),
+		conf.API.Endpoints[`usb_meta_product`],
+		dev.VID(), dev.PID(),
 	)
 
-	var s string
-
-	if hr, err := httpGet(url); err != nil {
+	if j, hs, err := httpGet(url); err != nil {
 		return ``, err
-	} else if hr.Status().Rejected() {
-		return ``, fmt.Errorf(`product lookup failed - %s`, hr)
-	} else if err := hr.Content().Decode(&s); err != nil {
+	} else if !hs.Accepted() {
+		return ``, fmt.Errorf(`lookup failed - %s`, hs)
+	} else if err = json.Unmarshal(j, &s); err != nil {
 		return ``, err
 	} else {
-		sl.Printf(`product lookup succeeded - %s`, hr.Status())
+		sl.Printf(`lookup succeeded - %s`, hs)
 		return s, nil
 	}
 }
 
 // httpPost sends http POST requests to cmdbd server endpoints for other functions.
-func httpPost(url string, data []byte ) (*httpResult, error) {
+func httpPost(url string, data []byte ) (body []byte, stat httpStatus, err error) {
 
 	if req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data)); err != nil {
-		return nil, err
+		return body, stat, err
 	} else {
 		req.Header.Add(`Content-Type`, `application/json; charset=UTF8`)
 		return httpRequest(req)
@@ -285,17 +278,17 @@ func httpPost(url string, data []byte ) (*httpResult, error) {
 }
 
 // httpGet sends http GET requests to cmdbd server endpoints for other functions.
-func httpGet(url string) (*httpResult, error) {
+func httpGet(url string) (body []byte, stat httpStatus, err error) {
 
 	if req, err := http.NewRequest(http.MethodGet, url, nil); err != nil {
-		return nil, err
+		return body, stat, err
 	} else {
 		return httpRequest(req)
 	}
 }
 
 // httpRequest sends http requests to cmdbd server endpoints for other functions.
-func httpRequest(req *http.Request) (*httpResult, error) {
+func httpRequest(req *http.Request) (body []byte, stat httpStatus, err error) {
 
 	req.Header.Add(`Accept`, `application/json; charset=UTF8`)
 	req.Header.Add(`X-Custom-Header`, `cmdbc`)
@@ -305,13 +298,13 @@ func httpRequest(req *http.Request) (*httpResult, error) {
 	resp, err := httpClient.Do(req)
 
 	if err != nil {
-		return nil, err
+		return body, stat, err
 	}
 
 	defer resp.Body.Close()
 
-	stat := httpStatus(resp.StatusCode)
-	body, err := ioutil.ReadAll(resp.Body)
+	stat = httpStatus(resp.StatusCode)
+	body, err = ioutil.ReadAll(resp.Body)
 
-	return &httpResult{stat, body}, err
+	return body, stat, err
 }
