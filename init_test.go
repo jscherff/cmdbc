@@ -58,8 +58,12 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
+
 	flag.Parse()
-	os.Exit(m.Run())
+	rc := m.Run()
+	os.RemoveAll(conf.Loggers.LogDir)
+	os.RemoveAll(conf.Paths.ReportDir)
+	os.Exit(rc)
 }
 
 func resetFlags(tb testing.TB) {

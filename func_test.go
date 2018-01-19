@@ -246,6 +246,7 @@ func TestFuncAudit(t *testing.T) {
 		gotest.Ok(t, err)
 
 		fs := string(fb)
+
 		gotest.Assert(t, strings.Contains(fs, td.Clg[0]) && strings.Contains(fs, td.Clg[1]),
 			`application change log does not contain known device differences`)
 	})
