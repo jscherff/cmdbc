@@ -168,7 +168,7 @@ func makePath(path string) (string, error) {
 
 	path = filepath.Clean(path)
 
-	if dn := filepath.Dir(path); dn == `` {
+	if !filepath.IsAbs(path) {
 		path = filepath.Join(filepath.Dir(os.Args[0]), path)
 	}
 
