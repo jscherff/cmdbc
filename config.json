@@ -4,10 +4,6 @@
 	},
 
 	"API": {
-		"Server_LOCAL": "http://localhost:8080",
-		"Server_SBOX": "http://sysadm-dev-01.24hourfit.com:8080",
-		"Server_DEV": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
-		"Server_PRD": "http://cmdbsvcs.24hourfit.com:8080",
 		"Server": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
 
 		"Endpoints": {
@@ -26,10 +22,6 @@
 
 		"Auth": {
 			"Username": "clubpc",
-			"Password_LOCAL": "rfYDB9SL9bgqz6uy",
-			"Password_SBOX": "rfYDB9SL9bgqz6uy",
-			"Password_DEV": "rfYDB9SL9bgqz6uy",
-			"Password_PRD": "4y3sMtJ7ZsvRhfd9",
 			"Password": "rfYDB9SL9bgqz6uy"
 		}
 	},
