@@ -290,4 +290,4 @@ cmdbc.exe -report -format xml -console -folder c:\reports
 Both of the preceding commands write the device reports in XML format to the console. The `folder` _option flag_ in the second command is ignored because `console` _option flag_ was used.
 
 ### Device Resets
-Reset attached devices using the `reset` _action flag_.mDepending on the device, this either does a host-side reset, refreshing the USB device descriptor, or a low-level hardware reset on the device.
+Reset attached devices using the `reset` _action flag_. Depending on the device, this either does a host-side reset, refreshing the USB device descriptor, or a low-level hardware reset on the device.
