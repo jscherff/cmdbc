@@ -66,7 +66,7 @@ Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
     cmdbc.exe -checkin
     ```
 
-1. _After the_ `cmdbc.exe -checkin` _command has been running weekly for two or three months_, Schedule the following command to run once per month:
+1. After the `cmdbc.exe -checkin` command has been running weekly for a couple months, Schedule the following command to run once per month:
 
     ```sh
     cmdbc.exe -audit
