@@ -23,17 +23,17 @@ The **API** section of the configuration file contains parameters for communicat
 ```json
 "API": {
     "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",
-    "Endpoint": {
-        "cmdb_auth": "v1/cmdbauth",
-        "usb_ci_checkin": "v1/usbci/checkin",
-        "usb_ci_checkout": "v1/usbci/checkout",
-        "usb_ci_newsn": "v1/usbci/newsn",
-        "usb_ci_audit": "v1/usbci/audit",
-        "usb_meta_vendor": "v1/usbmeta/vendor",
-        "usb_meta_product": "v1/usbmeta/product",
-        "usb_meta_class": "v1/usbmeta/class",
-        "usb_meta_subclass": "v1/usbmeta/subclass",
-        "usb_meta_protocol": "v1/usbmeta/protocol"
+    "Endpoints": {
+        "cmdb_auth": "/v2/cmdb/authenticate/%s",
+        "usb_ci_checkin": "/v2/cmdb/ci/usb/checkin/%s/%s/%s",
+        "usb_ci_checkout": "/v2/cmdb/ci/usb/checkout/%s/%s/%s/%s",
+        "usb_ci_newsn": "/v2/cmdb/ci/usb/newsn/%s/%s/%s",
+        "usb_ci_audit": "/v2/cmdb/ci/usb/audit/%s/%s/%s/%s",
+        "usb_meta_vendor": "/v2/cmdb/meta/usb/vendor/%s",
+        "usb_meta_product": "/v2/cmdb/meta/usb/product/%s/%s",
+        "usb_meta_class": "/v2/cmdb/meta/usb/class/%s",
+        "usb_meta_subclass": "/v2/cmdb/meta/usb/subclass/%s/%s",
+        "usb_meta_protocol": "/v2/cmdb/meta/usb/protocol/%s/%s/%s"
     },
     "Auth": {
         "Username": "clubpc",
