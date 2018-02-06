@@ -53,6 +53,7 @@ Save the appropriate executable file and the JSON configuration file to the desi
 
 ### Operation
 Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
+
 1. Schedule the following command to run once per month initially, then once per quarter or as necessary:
 
     ```sh
@@ -65,7 +66,7 @@ Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
     cmdbc.exe -checkin
     ```
 
-1. **After the `checkin` command has been running once per week for two or three months**, Schedule the following command to run once per month:
+1. _After the_ `cmdbc.exe -checkin` _command has been running weekly for two or three months_, Schedule the following command to run once per month:
 
     ```sh
     cmdbc.exe -audit
