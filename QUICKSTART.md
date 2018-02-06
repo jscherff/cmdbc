@@ -13,24 +13,24 @@ Save the appropriate executable file and the JSON configuration file to the desi
 
 ### Configuration
 1. Obtain the username and password of the _CMDB client_ agent.
-    1. In the **API**  section of the JSON configuration file, change the **Username** and **Password** settings in the **Auth** subsection to the correct values.
-    ```json
+    * In the **API**  section of the JSON configuration file, change the **Username** and **Password** settings in the **Auth** subsection to the correct values.
+```json
     "API": {
         "Auth": {
             "Username": "clubpc",
             "Password": "****************"
         }
     }
-    ```
+```
 1. Obtain the hostname (or IP address) and listener port of the _CMDB daemon_ and _syslog server_.
-    1. In the **API** section of the JSON configuration file, change the **Server** setting to the correct value (_`URL:port`_) for the _CMDB daemon_.
-    ```json
+    * In the **API** section of the JSON configuration file, change the **Server** setting to the correct value (_`URL:port`_) for the _CMDB daemon_.
+```json
     "API": {
         "Server": "http://cmdbsvcs.24hourfit.com:8080"
     }
-    ```
-    1. In the **Syslog** section of the JSON configuration file, change the **Host** and **Port** settings to the correct values for the _syslog server_.
-    ```json
+```
+    * In the **Syslog** section of the JSON configuration file, change the **Host** and **Port** settings to the correct values for the _syslog server_.
+```json
     "Syslog": {
         "Enabled": false,
         "Protocol": "udp",
@@ -40,8 +40,8 @@ Save the appropriate executable file and the JSON configuration file to the desi
         "Facility": "LOG_LOCAL7",
         "Severity": "LOG_INFO"
     }
-    ```
-    1. Ensure firewall rules are in place allowing communication from managed workstations to the IP address and port of the _CMDB daemon_ and _syslog server_.
+```
+    * Ensure firewall rules are in place allowing communication from managed workstations to the IP address and port of the _CMDB daemon_ and _syslog server_.
 ### Operation
 Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
 1. Schedule the following command to run once per month initially, then once per quarter or as necessary:
