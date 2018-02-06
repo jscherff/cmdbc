@@ -54,15 +54,21 @@ Save the appropriate executable file and the JSON configuration file to the desi
 ### Operation
 Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
 1. Schedule the following command to run once per month initially, then once per quarter or as necessary:
+
     ```sh
     cmdbc.exe -serial -fetch
     ```
+
 1. Schedule the following command to run once per week:
+
     ```sh
     cmdbc.exe -checkin
     ```
-1. Schedule the following command to run once per month:
+
+1. **After the `checkin` command has been running once per week for two or three months**, Schedule the following command to run once per month:
+
     ```sh
     cmdbc.exe -audit
     ```
+
 1. Periodically parse the contents of `error.log` for issues. This file is located in the "log" subdirectory beneath the installation folder.
