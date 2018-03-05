@@ -12,6 +12,18 @@ Save the appropriate executable file and the JSON configuration file to the desi
 * [**`config.json`**](https://github.com/jscherff/cmdbc/raw/master/config.json) (Configuration file)
 
 ### Configuration
+1. Obtain the hostname (or IP address) and listener port of the _CMDB daemon_ and _syslog server_.
+
+    + In the **Server** section of the JSON configuration file, change the **Protocol**, **HostName**, and **Port** settings to the correct values for the _CMDB daemon_.
+
+        ```json
+        "Server": {
+            "Protocol": "http",
+            "HostName": "cmdbsvcs.24hourfit.com",
+            "Port": "8080"
+        }
+        ```
+
 1. Obtain the username and password of the _CMDB client_ agent.
 
     + In the **Server**  section of the JSON configuration file, change the **Username** and **Password** settings in the **Auth** subsection to the correct values.
@@ -22,16 +34,6 @@ Save the appropriate executable file and the JSON configuration file to the desi
                 "Username": "clubpc",
                 "Password": "****************"
             }
-        }
-        ```
-
-1. Obtain the hostname (or IP address) and listener port of the _CMDB daemon_ and _syslog server_.
-
-    + In the **Serverr** section of the JSON configuration file, change the **Server** setting to the correct value (_`URL:port`_) for the _CMDB daemon_.
-
-        ```json
-        "Server": {
-            "URL": "http://cmdbsvcs.24hourfit.com:8080"
         }
         ```
 
@@ -54,19 +56,20 @@ Save the appropriate executable file and the JSON configuration file to the desi
 ### Operation
 Using an _enterprise endpoint managment solution_ like **IBM BigFix**:
 
-1. Schedule the following command to run once per month initially, then once per quarter or as necessary:
+1. Schedule the following command to run daily for one week to allow the majority of unserialized devices to obtain serial numbers:
 
     ```sh
     cmdbc.exe -serial -fetch
     ```
 
-1. Schedule the following command to run once per week:
+1. Schedule the following commands to run once per week on Mondays:
 
     ```sh
+    cmdbc.exe -serial -fetch
     cmdbc.exe -checkin
     ```
 
-1. After the `cmdbc.exe -checkin` command has been running weekly for a couple months, Schedule the following command to run once per month:
+1. Schedule the following command to run once per week on Sundays after the previous commands have run at least once: 
 
     ```sh
     cmdbc.exe -audit
