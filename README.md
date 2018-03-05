@@ -18,11 +18,32 @@ Pre-compiled binaries are available for both 32- and 64-bit Windows systems and 
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
+#### Client Settings
+The **Client** section of the configuration file contains parameters for the HTTP client.
+```json
+"Client": {
+    "Timeout": 0,
+    "IdleConnTimeout": 0,
+    "ResponseHeaderTimeout": 0,
+    "MaxResponseHeaderBytes": 0
+}
+```
+* **`Timeout`** specifies the time limit in seconds for requests made by the Client. The timeout includes connection time, any redirects, and reading the response body. The timer remains running after Get, Head, Post, or Do return and will  interrupt reading of the Response.Body. A value of zero means "no limit."
+* **`IdleConnTimeout`** is the maximum amount of time in seconds a keep-alive connection will remain idle before closing itself. A value of zero means "no limit."
+* **`ResponseHeaderTimeout`** specifies the amount of time in seconds to wait for a server's response headers after fully writing the request, including its body, if any. This does not include the time to read the response body. A value of zero means "no limit."
+* **`MaxResponseHeaderBytes`** specifies the maximum size in bytes of the server's response header. A value of zero means "use the default limit."
+
 #### Server Settings
 The **Server** section of the configuration file contains parameters for communicating with the **CMDBd** server and URL paths for the REST API endpoints.
 ```json
-"API": {
-    "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",
+"Server": {
+    "Protocol": "http",
+    "HostName": "cmdbsvcs.24hourfit.com",
+    "Port": "8080",
+    "Auth": {
+        "Username": "clubpc",
+        "Password": "****************"
+    },
     "Endpoints": {
         "cmdb_auth": "/v2/cmdb/authenticate/%s",
         "usb_ci_checkin": "/v2/cmdb/ci/usb/checkin/%s/%s/%s",
@@ -34,16 +55,17 @@ The **Server** section of the configuration file contains parameters for communi
         "usb_meta_class": "/v2/cmdb/meta/usb/class/%s",
         "usb_meta_subclass": "/v2/cmdb/meta/usb/subclass/%s/%s",
         "usb_meta_protocol": "/v2/cmdb/meta/usb/protocol/%s/%s/%s"
-    },
-    "Auth": {
-        "Username": "clubpc",
-        "Password": "****************"
     }
 }
 ```
-* **`Server`** is the base URL for the server hosting the REST API.
+* **`Protocol`** is the TCP protocol used for communicating with the server.
+* **`HostName`** is the host name or IP address of the server.
+* **`Port`** is the TCP port on which the server is listening.
+* **`Auth`** contains the credentials the client will use to authenticate with the server using basic authentication.
+    * **`Username`** is the username component of the client credentials. The default is shown.
+    * **`Password`** is the password component of the client credentials.
 * **`Endpoints`** is a collection of URL paths that represent the base of the REST API endpoints on the server. The API endpoints and their parameters are described more fully in the [API Endpoints](https://github.com/jscherff/cmdbd/blob/master/README.md#api-endpoints) section of the server documentation. You should not modify anything in this section unless asked to do so by a systems administrator or application designer.
-    * **`cmdb_auth`** is the base path of the API on which the client authenticates using basic authentication (see `Auth`, below). On successful authentication, the server will issue token (JWT) that the client will use to access protected endpoints for the remainder of the session.
+    * **`cmdb_auth`** is the base path of the API on which the client authenticates using basic authentication (see `Auth`, above). On successful authentication, the server will issue token (JWT) that the client will use to access protected endpoints for the remainder of the session.
     * **`usb_ci_checkin`** is the base path of the API on which the client submits configuration information for a new device or update information for an existing device.
     * **`usb_ci_checkout`** is the base path of the API on which the client obtains configuration information for a previously-registered, serialized device in order to perform a change audit.
     * **`usb_ci_newsn`** is the base path of the API on which the client obtains a new unique serial number from the server for assignment to the attached device.
@@ -53,9 +75,6 @@ The **Server** section of the configuration file contains parameters for communi
     * **`usb_meta_class`** is the base path of the API on which the client obtains the USB class description by providing the class ID.
     * **`usb_meta_subclass`** is the base path of the API on which the client obtains the USB class and subclass descriptions by providing the class and subclass IDs.
     * **`usb_meta_protocol`** is the base path of the API on which the client obtains the USB class, subclass, and protocol descriptions by providing the class, subclass, and protocol IDs.
-* **`Auth`** contains the credentials the client will use to authenticate with the server using basic authentication.
-    * **`Username`** is the username component of the client credentials. The default is shown.
-    * **`Password`** is the password component of the client credentials.
 
 #### Path Settings
 The **Paths** section of the configuration file specifies directories where various files will be written. Relative paths are prepended with the installation directory.
