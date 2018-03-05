@@ -18,8 +18,8 @@ Pre-compiled binaries are available for both 32- and 64-bit Windows systems and 
 ### Configuration
 The JSON configuration file, [`config.json`](https://github.com/jscherff/cmdbd/blob/master/config.json), is mostly self-explanatory. The default settings are sane and you should not have to change them in most use cases.
 
-#### API Settings
-The **API** section of the configuration file contains parameters for communicating with the **CMDBd** server and URL paths for the REST API endpoints.
+#### Server Settings
+The **Server** section of the configuration file contains parameters for communicating with the **CMDBd** server and URL paths for the REST API endpoints.
 ```json
 "API": {
     "Server": "http://cmdbsvcs-prd-01.24hourfit.com:8080",

@@ -34,46 +34,64 @@ const (
 var (
 	// Program name and version.
 
-	program = filepath.Base(os.Args[0])
-	version = `undefined`
+	program string
+	version string
 
 	// HTTP Transport and Client.
 
-	httpTransp = &http.Transport{ResponseHeaderTimeout: 10 * time.Second}
-	httpClient = &http.Client{Transport: httpTransp}
+	httpTransport *http.Transport
+	httpClient *http.Client
 
 	// Configuration aliases.
 
 	sl, cl, el *Logger
 )
 
+// Program name (from command line) and version (set at compile time)
+func init() {
+	program = filepath.Base(os.Args[0])
+	version = `undefined`
+}
+
 // Config holds the application configuration settings. The struct tags
 // must match the field names in the JSON configuration file.
 type Config struct {
 
-	HostName string
+	Client struct {
+
+		HostName string				// Hostname or IP address of client
+		Timeout time.Duration			// Time limit for entire request
+		IdleConnTimeout time.Duration		// Time limit for idle connections
+		ResponseHeaderTimeout time.Duration	// Time limit for response headers
+		MaxResponseHeaderBytes int64		// Size limit for response headers
+	}
+
+	Server struct {
+
+		Protocol string				// Protocol for server connections
+		HostName string				// Hostname or IP address of server
+		Port string				// TCP port on which server listens
+
+		Auth struct {
+			Username string			// Username for client utility
+			Password string			// Password for client utility 
+		}
+
+		Endpoints map[string]string		// REST server API endpoints
+	}
 
 	Paths struct {
 		ReportDir string
 	}
 
-	API struct {
-		Server string
-		Endpoints map[string]string
-		Auth struct {
-			Username string
-			Password string
-		}
-	}
+	Syslog *Syslog
+	Loggers *Loggers
 
 	Include struct {
 		VendorID map[string]bool
 		ProductID map[string]map[string]bool
 		Default bool
 	}
-
-	Syslog *Syslog
-	Loggers *Loggers
 
 	DebugLevel int
 }
@@ -95,12 +113,36 @@ func newConfig(cf string) (*Config, error) {
 		return nil, err
 	}
 
-	// Set the hostname.
+	// Configure HTTP client.
 
 	if hn, err := os.Hostname(); err != nil {
 		return nil, err
 	} else {
-		this.HostName = hn
+		this.Client.HostName = hn
+	}
+
+	httpTransport = &http.Transport{
+		IdleConnTimeout: this.Client.IdleConnTimeout * time.Second,
+		ResponseHeaderTimeout: this.Client.ResponseHeaderTimeout * time.Second,
+		MaxResponseHeaderBytes: this.Client.MaxResponseHeaderBytes,
+	}
+
+	httpClient = &http.Client{
+		Timeout: this.Client.Timeout * time.Second,
+		Transport: httpTransport,
+	}
+
+	// Prepend protocol, host, and port to endpoints.
+
+	for key, path := range this.Server.Endpoints {
+
+		baseUrl := fmt.Sprintf(`%s://%s:%s`,
+			this.Server.Protocol,
+			this.Server.HostName,
+			this.Server.Port,
+		)
+
+		this.Server.Endpoints[key] = baseUrl + path
 	}
 
 	// Create and initialize the Syslog object.

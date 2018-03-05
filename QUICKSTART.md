@@ -14,10 +14,10 @@ Save the appropriate executable file and the JSON configuration file to the desi
 ### Configuration
 1. Obtain the username and password of the _CMDB client_ agent.
 
-    + In the **API**  section of the JSON configuration file, change the **Username** and **Password** settings in the **Auth** subsection to the correct values.
+    + In the **Server**  section of the JSON configuration file, change the **Username** and **Password** settings in the **Auth** subsection to the correct values.
 
         ```json
-        "API": {
+        "Server": {
             "Auth": {
                 "Username": "clubpc",
                 "Password": "****************"
@@ -27,11 +27,11 @@ Save the appropriate executable file and the JSON configuration file to the desi
 
 1. Obtain the hostname (or IP address) and listener port of the _CMDB daemon_ and _syslog server_.
 
-    + In the **API** section of the JSON configuration file, change the **Server** setting to the correct value (_`URL:port`_) for the _CMDB daemon_.
+    + In the **Serverr** section of the JSON configuration file, change the **Server** setting to the correct value (_`URL:port`_) for the _CMDB daemon_.
 
         ```json
-        "API": {
-            "Server": "http://cmdbsvcs.24hourfit.com:8080"
+        "Server": {
+            "URL": "http://cmdbsvcs.24hourfit.com:8080"
         }
         ```
 

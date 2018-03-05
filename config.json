@@ -1,13 +1,22 @@
 {
-	"Paths": {
-		"ReportDir": "report"
+	"Client": {
+		"Timeout": 0,
+		"IdleConnTimeout": 0,
+		"ResponseHeaderTimeout": 0,
+		"MaxResponseHeaderBytes": 0
 	},
 
-	"API": {
-		"Server": "http://cmdbsvcs-dev-01.24hourfit.com:8080",
+	"Server": {
+		"Protocol": "http",
+		"HostName": "cmdbsvcs-dev-01.24hourfit.com",
+		"Port": "8080",
+
+		"Auth": {
+			"Username": "clubpc",
+			"Password": "rfYDB9SL9bgqz6uy"
+		},
 
 		"Endpoints": {
-
 			"cmdb_auth": "/v2/cmdb/authenticate/%s",
 			"usb_ci_checkin": "/v2/cmdb/ci/usb/checkin/%s/%s/%s",
 			"usb_ci_checkout": "/v2/cmdb/ci/usb/checkout/%s/%s/%s/%s",
@@ -18,12 +27,11 @@
 			"usb_meta_class": "/v2/cmdb/meta/usb/class/%s",
 			"usb_meta_subclass": "/v2/cmdb/meta/usb/subclass/%s/%s",
 			"usb_meta_protocol": "/v2/cmdb/meta/usb/protocol/%s/%s/%s"
-		},
-
-		"Auth": {
-			"Username": "clubpc",
-			"Password": "rfYDB9SL9bgqz6uy"
 		}
+	},
+
+	"Paths": {
+		"ReportDir": "report"
 	},
 
 	"Loggers": {

@@ -9,8 +9,8 @@ func TestAuth(t *testing.T) {
 
 	var err error
 
-	goodUsername := conf.API.Auth.Username
-	goodPassword := conf.API.Auth.Password
+	goodUsername := conf.Server.Auth.Username
+	goodPassword := conf.Server.Auth.Password
 
 	t.Run(`Success with Good Credentials`, func(t *testing.T) {
 
@@ -24,11 +24,11 @@ func TestAuth(t *testing.T) {
 		defer mux.Unlock()
 
 		authenticated = false
-		conf.API.Auth.Username = `baduser`
-		conf.API.Auth.Password = goodPassword
+		conf.Server.Auth.Username = `baduser`
+		conf.Server.Auth.Password = goodPassword
 
 		err = auth()
-		conf.API.Auth.Username = goodUsername
+		conf.Server.Auth.Username = goodUsername
 		gotest.Assert(t, err != nil, `authentication with bad username should fail`)
 	})
 
@@ -38,11 +38,11 @@ func TestAuth(t *testing.T) {
 		defer mux.Unlock()
 
 		authenticated = false
-		conf.API.Auth.Username = goodUsername
-		conf.API.Auth.Password = `badpass`
+		conf.Server.Auth.Username = goodUsername
+		conf.Server.Auth.Password = `badpass`
 
 		err = auth()
-		conf.API.Auth.Password = goodPassword
+		conf.Server.Auth.Password = goodPassword
 		gotest.Assert(t, err != nil, `authentication with bad password should fail`)
 	})
 }
