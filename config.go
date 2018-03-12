@@ -34,8 +34,8 @@ const (
 var (
 	// Program name and version.
 
-	program string
-	version string
+	program string = filepath.Base(os.Args[0])
+	version string = `undefined`
 
 	// HTTP Transport and Client.
 
@@ -46,12 +46,6 @@ var (
 
 	sl, cl, el *Logger
 )
-
-// Program name (from command line) and version (set at compile time)
-func init() {
-	program = filepath.Base(os.Args[0])
-	version = `undefined`
-}
 
 // Config holds the application configuration settings. The struct tags
 // must match the field names in the JSON configuration file.
