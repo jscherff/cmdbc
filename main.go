@@ -17,6 +17,7 @@ package main
 import (
 	`log`
 	`os`
+	`strings`
 	`github.com/google/gousb`
 )
 
@@ -62,6 +63,12 @@ func main() {
 	if conf, err = newConfig(configFile); err != nil {
 		log.Fatal(err)
 	}
+
+	// Write command line action and options to system log.
+
+	sl.Printf(`command action and options selected: %s`,
+		strings.Join(os.Args[1:], ` `),
+	)
 
 	// Instantiate context to enumerate devices.
 
