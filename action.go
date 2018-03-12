@@ -28,7 +28,9 @@ func audit(dev usb.Auditer) (err error) {
 	var ch [][]string
 
 	if dev.SN() == `` {
-		sl.Printf(`device %s-%s skipping audit, no SN`, dev.VID(), dev.PID())
+		sl.Printf(`device %s-%s skipping audit, no serial number`,
+			dev.VID(), dev.PID(),
+		)
 		return err
 	}
 
@@ -39,10 +41,9 @@ func audit(dev usb.Auditer) (err error) {
 	var j []byte
 
 	if j, err = checkout(dev); err != nil {
-		j, err = dev.Clone().(usb.Auditer).JSON()
-	}
-
-	if err != nil {
+		sl.Printf(`device %s-%s-%s skipping audit: no previous state`,
+			dev.VID(), dev.PID(), dev.SN(),
+		)
 		return err
 	}
 
