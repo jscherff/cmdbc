@@ -135,7 +135,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	if *fSerialErase {
 
-		sl.Printf(`device %s-%s erasing serial '%s'`,
+		sl.Printf(`device %s-%s erasing serial number '%s'`,
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 
@@ -146,7 +146,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	if !*fSerialForce && dev.SN() != `` {
 
-		return fmt.Errorf(`device %s-%s serial already set to '%s'`,
+		return fmt.Errorf(`device %s-%s serial number already set to '%s'`,
 			dev.VID(), dev.PID(), dev.SN(),
 		)
 
@@ -154,37 +154,29 @@ func serial(dev usb.Serializer) (err error) {
 
 	switch {
 
+	case *fSerialDefault:
+
+		sl.Printf(`device %s-%s setting serial number to default`,
+			dev.VID(), dev.PID(),
+		)
+
+		err = dev.SetDefaultSN()
+
 	case *fSerialFetch:
 
 		if s, err = newSn(dev); err != nil {
 			break
 		}
 
-		sl.Printf(`device %s-%s setting serial to '%s'`,
+		sl.Printf(`device %s-%s setting serial number to '%s'`,
 			dev.VID(), dev.PID(), s,
 		)
 
-		if err = dev.SetDeviceSN(s); err != nil {
-			break
-		}
-
-		sl.Printf(`device %s-%s-%s checking in with server`,
-			dev.VID(), dev.PID(), dev.SN(),
-		)
-
-		err = checkin(dev)
-
-	case *fSerialDefault:
-
-		sl.Printf(`device %s-%s setting serial to default`,
-			dev.VID(), dev.PID(),
-		)
-
-		err = dev.SetDefaultSN()
+		err = dev.SetDeviceSN(s)
 
 	case *fSerialSet != ``:
 
-		sl.Printf(`device %s-%s setting serial to '%s'`,
+		sl.Printf(`device %s-%s setting serial number to '%s'`,
 			dev.VID(), dev.PID(), *fSerialSet,
 		)
 
