@@ -25,7 +25,10 @@ import (
 // audit performs a change audit against properties from the last checkin.
 func audit(dev usb.Auditer) (err error) {
 
-	var ch [][]string
+	var (
+		j []byte
+		ch [][]string
+	)
 
 	if dev.SN() == `` {
 		sl.Printf(`device %s-%s skipping audit, no serial number`,
@@ -37,8 +40,6 @@ func audit(dev usb.Auditer) (err error) {
 	sl.Printf(`device %s-%s-%s fetching previous state from server`,
 		dev.VID(), dev.PID(), dev.SN(),
 	)
-
-	var j []byte
 
 	if j, err = checkout(dev); err != nil {
 		sl.Printf(`device %s-%s-%s skipping audit: no previous state`,
@@ -133,7 +134,7 @@ func serial(dev usb.Serializer) (err error) {
 
 	var s string
 
-	if *fSerialErase {
+	if *fSerialErase && dev.SN() != `` {
 
 		sl.Printf(`device %s-%s erasing serial number '%s'`,
 			dev.VID(), dev.PID(), dev.SN(),
@@ -163,6 +164,10 @@ func serial(dev usb.Serializer) (err error) {
 		err = dev.SetDefaultSN()
 
 	case *fSerialFetch:
+
+		sl.Printf(`device %s-%s obtaining serial number from server`,
+			dev.VID(), dev.PID(),
+		)
 
 		if s, err = newSn(dev); err != nil {
 			break
